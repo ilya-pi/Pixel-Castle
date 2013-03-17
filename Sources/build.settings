@@ -1,0 +1,28 @@
+settings = 
+{
+android =
+{
+versionCode = "1",
+installLocation="preferExternal"
+}, 
+
+   androidPermissions =
+   {
+       "android.permission.READ_PHONE_STATE",
+       "android.permission.VIBRATE"
+	   
+   }, 
+
+	orientation = 
+	{
+		default = "landscapeLeft",
+		supported = 
+		{
+		"landscapeRight", "landscapeLeft",
+		},
+					
+	}
+
+
+}
+	
