@@ -64,30 +64,9 @@ end
 
 -- Main game loop
 local function gameLoop()
-	-- if (state == "FIRE_PRESSED") then
-	-- 	shotStrenth = shotStrenth + 1
-	-- 	t.text = shotStrenth
-	-- 	if (shotStrenth >= 27) then
-	-- 		state = "FIRE_RELEASED"
-	-- 	end
-	-- elseif (state == "FIRE_RELEASED") then
-	-- 	t.text = "fire !!!"
-	-- 	--todo actually call fire method
-	-- 	-- currentBullet = fireBullet(15, h - 15, shotStrenth, shotStrenth)
-	-- 	if (game.state == "PLAYER1") then
-	-- 		local cannonX = (game.castle1xOffset + game.castleWidth / 2) * game.pixel
-	-- 		local cannonY =  game.worldHeight - (game.castle1.yLevel + game.castleHeight + game.cannonYOffset) * game.castleHeight
-	-- 		currentBullet = fireBullet(cannonX, cannonY, 6, 6)
-	-- 	end
-
-	-- 	-- currentBullet = fireBullet(15, h - 15, 9, 9)
-	-- 	state = "FIRED"
-	-- 	shotStrenth = 0
-	-- elseif (state == "FIRED") then
-	-- 	shotTimeout = shotTimeout + delay
-	-- end
-
-	-- check the bullet time
+	-- todo
+	-- check the bullet time and nill it if expired
+	-- and check that the bullet is still within the world limits, otherwise nill it 
 
 	if (game.bullet == nill or game.bullet.x == nil or game.bullet.y == nill) then
 		if (game.state == "PLAYER1") then
@@ -140,9 +119,6 @@ function startGame()
 	}
 
 	fireButton.x, fireButton.y = display.contentWidth - fireButton.width / 2, display.contentHeight - fireButton.height / 2
-
-	-- print("aha")
-	-- print(game.castle1.absX)
 
 	Runtime:addEventListener("collision", onCollision)
 	Runtime:addEventListener( "enterFrame", 

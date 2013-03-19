@@ -3,9 +3,7 @@ module(..., package.seeall)
 GameModel = {delay = 100,
 	pixel = 10,
 	worldWidth = 1000,
-	worldHeight = 600, -- nb! should be 600 was 320
-	viewportWidth = 100,
-	viewportHeight = 100,	
+	worldHeight = 600,
 	castleWidth = 10, -- in Pixel
 	castleHeight = 10, -- in Pixel
 	groundYOffset = 3,
