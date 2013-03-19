@@ -1,7 +1,6 @@
 module(..., package.seeall)
 
-EarthViewController = {width = 1000,
-	height = 600}
+EarthViewController = {}
 
 local castle_module = require("scripts.CastleViewController")	
 
@@ -43,7 +42,7 @@ end
 function EarthViewController:render(physics, world, game)	
 	local yLimit = game.worldHeight / ( 2 * game.pixel )
 	local prevY = calculateYGround(5, 0, game)
-	local nY = game.groundYOffset + prevY
+	local nY = game.groundYOffset + prevY	
 
 	for i=0,(game.worldWidth / game.pixel) do
 		for l=0,nY do
@@ -68,12 +67,16 @@ function EarthViewController:render(physics, world, game)
 		if (i == game.castle1xOffset + 1) then
 			game.castle1 = castle_module.CastleViewController:new()
 			game.castle1.yLevel = nY + 1
+			game.castle1.absX = i * game.pixel
+			game.castle1.absY = game.castle1.yLevel * game.pixel
 			game.castle1:render(physics, world, game, i, nY + 1)
 		end
 
 		if (i == game.castle2xOffset + 1) then
 			game.castle2 = castle_module.CastleViewController:new()
 			game.castle2.yLevel = nY + 1
+			game.castle2.absX = i * game.pixel
+			game.castle2.absY = game.castle2.yLevel * game.pixel			
 			game.castle2:render(physics, world, game, i, nY + 1)
 		end		
 	end

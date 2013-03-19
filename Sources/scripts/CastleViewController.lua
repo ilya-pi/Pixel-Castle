@@ -31,3 +31,13 @@ function CastleViewController:render(physics, world, game, x, y)
 	end
 	print("Rendered castle with " .. x .. ", " .. y)	
 end
+
+function CastleViewController:cannonX(game)
+	--todo move into the castel model
+	--todo implement
+end
+
+function CastleViewController:cannonY(game)
+	--todo move into the castel model
+	--todo implement	
+end
