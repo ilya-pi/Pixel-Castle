@@ -64,11 +64,16 @@ end
 
 -- Main game loop
 local function gameLoop()
-	-- todo
-	-- check the bullet time and nill it if expired
-	-- and check that the bullet is still within the world limits, otherwise nill it 
 
-	if (game.bullet == nill or game.bullet.x == nil or game.bullet.y == nill) then
+	if (game.bullet ~= nil and game.bullet.x ~= nil and game.bullet.y ~= nil) then
+		if (game.bullet.x > game.worldWidth or game.bullet.x < 0 or game.bullet.y > game.worldHeight) then
+			game.bullet = nil
+			-- todo remove the bullet objecty itself
+		end
+	end
+
+	-- camera interactions
+	if (game.bullet == nil or game.bullet.x == nil or game.bullet.y == nil) then
 		if (game.state == "PLAYER1") then
 			game.cameraState = "CASTLE1_FOCUS"
 		elseif (game.state == "PLAYER2") then
@@ -83,6 +88,13 @@ local fireButtonPress = function(event)
 		local cannonY =  game.worldHeight - (game.castle1.yLevel + game.castleHeight + game.cannonYOffset) * game.castleHeight
 		game.bullet = fireBullet(cannonX, cannonY, 6, 6)
 		game.cameraState = "CANNONBALL_FOCUS"
+		game.state = "PLAYER2"
+	elseif (game.state == "PLAYER2") then
+		local cannonX = (game.castle2xOffset + game.castleWidth / 2) * game.pixel
+		local cannonY =  game.worldHeight - (game.castle2.yLevel + game.castleHeight + game.cannonYOffset) * game.castleHeight
+		game.bullet = fireBullet(cannonX, cannonY, -6, 6)
+		game.cameraState = "CANNONBALL_FOCUS"
+		game.state = "PLAYER1"		
 	end
 end
 
