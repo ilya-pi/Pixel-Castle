@@ -1,5 +1,8 @@
 module(..., package.seeall)
 
+castle = require("data.castle")
+imageHelper = require("scripts.util.image")
+
 CastleViewController = {}
 
 bricks = {}
@@ -14,21 +17,17 @@ end
 
 -- physics — physics object to attach to
 -- world - display group for the whole scene
-function CastleViewController:render(physics, world, game, x, y)	
+function CastleViewController:render(physics, world, game, x, y)
+    local worldHeight = game.worldHeight / game.pixel
+    local castleImage = castle.castles[self.type]
 
-	for i=0,game.castleWidth do
-		for l=0,game.castleHeight do
-			local current = i * 10 + l;
-			bricks[current] = display.newRect(x * game.pixel  + i * game.pixel, game.worldHeight - y * game.pixel - l * game.pixel, game.pixel , game.pixel)
-			world:insert(bricks[current])
-			bricks[current].myName = "brick"
-			bricks[current].strokeWidth = 0
-			bricks[current]:setFillColor(26, 55, 37)
-			bricks[current]:setStrokeColor(26, 55, 37)
-
-			physics.addBody(bricks[current], "static")
-		end
-	end
+    local pixels = imageHelper.renderImage(x, worldHeight - y - castleImage.height + 1, castleImage, game)  --todo: explain magic numbers
+    for i,v in ipairs(pixels) do
+        bricks[i] = v
+        world:insert(v)
+        v.myName = "brick"
+        physics.addBody(v, "static")
+    end
 	print("Rendered castle with " .. x .. ", " .. y)	
 end
 

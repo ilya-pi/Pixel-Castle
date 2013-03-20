@@ -4,8 +4,8 @@ GameModel = {delay = 100,
 	pixel = 10,
 	worldWidth = 1000,
 	worldHeight = 600,
-	castleWidth = 10, -- in Pixel
-	castleHeight = 10, -- in Pixel
+	castleWidth = 10, -- in Pixel  todo castle width should be dynamic
+	castleHeight = 10, -- in Pixel todo castle height should be dynamic
 	groundYOffset = 3,
 	castle1xOffset = 5, -- in Pixel
 	castle2xOffset = 70, -- in Pixel

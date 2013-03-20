@@ -1,6 +1,7 @@
 module(..., package.seeall)
 
 cloud = require("data.cloud")
+imageHelper = require("scripts.util.image")
 
 SkyViewController = { clouds = true }
 
@@ -27,32 +28,7 @@ function SkyViewController:render(physics, world, game)
     local maxDistanceBetweenClouds = 20 -- in Pixels
 
     local worldWidth = game.worldWidth / game.pixel -- in Pixels
-
     local cloudsCount = table.getn(cloud.clouds)
-    print("clouds count " .. cloudsCount)
-
-    local function renderCloud(xCloudPosition, yCloudPosition, cloud)
-        local cloudHeight = cloud.height
-        local cloudWidth = cloud.width
-        local primitiveColorsCount = 3
-        for y = 0, cloudHeight - 1 do
-            for x = 0, cloudWidth - 1 do
-                local rPosition = y * cloudWidth * primitiveColorsCount + x * primitiveColorsCount + 1
-                local r = cloud.pixels[rPosition]
-                local g = cloud.pixels[rPosition + 1]
-                local b = cloud.pixels[rPosition + 2]
-                if (r + g + b ~= 0) then
-                    local left = (xCloudPosition + x) * game.pixel
-                    local top = (yCloudPosition + y) * game.pixel
-                    local pixel = display.newRect(left, top, game.pixel, game.pixel)
-                    pixel.strokeWidth = 0
-                    pixel:setFillColor(r, g, b)
-                    pixel:setStrokeColor(r, g, b)
-                    world:insert(pixel)
-                end
-            end
-        end
-    end
 
     local cloudXright = 2
     while cloudXright < worldWidth do
@@ -62,8 +38,12 @@ function SkyViewController:render(physics, world, game)
             local yPosition = math.random(minCloudY, maxCloudY - cloudMargin - newCloud.height)
             local xPosition = math.random(cloudXright + cloudMargin, cloudXright + maxDistanceBetweenClouds)
             cloudXright = xPosition + newCloud.width
-            print("render cloud " .. xPosition .. " " .. yPosition)
-            renderCloud(xPosition, yPosition, newCloud)
+
+            pixels = imageHelper.renderImage(xPosition, yPosition, newCloud, game)
+            for i,v in ipairs(pixels) do
+                world:insert(v)
+            end
+
         else
             cloudXright = worldWidth --TODO: refactor this condition to exit loop
         end
