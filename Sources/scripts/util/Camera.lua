@@ -33,35 +33,26 @@ end
 
 -- Camera follows bolder automatically
 function Camera:moveCamera()		
-	-- if (state == "FIRED" and currentBullet.x ~= nil and currentBullet.x > 80 and currentBullet.x < 1100) then
-	-- 	world.x = -currentBullet.x + 80
-	-- elseif (state == "FIRED" and shotTimeout > 1700) then
-	-- 	shotTimeout = 0
-	-- 	transition.to(world, {time = 100, x = 0})
-	-- 	state = nil
-	-- end
 	if (self.game.cameraState == "CASTLE1_FOCUS") then		
 		if (self.game.castle1 ~= nil) then
 			local cannonX = (self.game.castle1xOffset + self.game.castleWidth / 2) * self.game.pixel
 			local cannonY =  self.game.worldHeight - (self.game.castle1.yLevel + self.game.castleHeight + self.game.cannonYOffset) * self.game.castleHeight
-			-- self.world.x = calculateX(self.game.castle1.absX, self.game, self.display)
-			-- self.world.y = calculateY(self.game.castle1.absY, self.game, self.display)
-			self.world.x = calculateX(cannonX, self.game, self.display)
-			self.world.y = calculateY(cannonY, self.game, self.display)			
+			transition.to(self.world, {time = 100, x = calculateX(cannonX, self.game, self.display), y = calculateY(cannonY, self.game, self.display)})
+			self.game.cameraState = "FOCUSING"
 		end	
 	elseif (self.game.cameraState == "CASTLE2_FOCUS") then
 		if (self.game.castle2 ~= nil) then
 			local cannonX = (self.game.castle2xOffset + self.game.castleWidth / 2) * self.game.pixel
 			local cannonY =  self.game.worldHeight - (self.game.castle2.yLevel + self.game.castleHeight + self.game.cannonYOffset) * self.game.castleHeight			
-			-- self.world.x = calculateX(self.game.castle2.absX, self.game, self.display)
-			-- self.world.y = calculateY(self.game.castle2.absY, self.game, self.display)
-			self.world.x = calculateX(cannonX, self.game, self.display)
-			self.world.y = calculateY(cannonY, self.game, self.display)
+			transition.to(self.world, {time = 100, x = calculateX(cannonX, self.game, self.display), y = calculateY(cannonY, self.game, self.display)})
+			self.game.cameraState = "FOCUSING"
 		end		
 	elseif (self.game.cameraState == "CANNONBALL_FOCUS") then
 		if (self.game.bullet ~= nil and self.game.bullet.x ~= nil and self.game.bullet.y ~= nil) then
 			self.world.x = calculateX(self.game.bullet.x, self.game, self.display)
 			self.world.y = calculateY(self.game.bullet.y, self.game, self.display)
 		end
+	elseif (self.game.cameraState == "FOCUSING") then
+		-- do nothing
 	end
 end

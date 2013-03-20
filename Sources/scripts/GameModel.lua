@@ -10,7 +10,7 @@ GameModel = {delay = 100,
 	castle1xOffset = 5, -- in Pixel
 	castle2xOffset = 70, -- in Pixel
 	cannonYOffset = 5, -- in Pixel
-	cameraState = "CASTLE1_FOCUS", -- "CASTLE2_FOCUS", "CANNONBALL_FOCUS",
+	cameraState = "CASTLE1_FOCUS", -- "CASTLE2_FOCUS", "CANNONBALL_FOCUS", "FOCUSING"
 	state = "PLAYER1" -- "PLAYER2", "PLAYER1_LOST", "PLAYER2_LOST"
 	}	
 
