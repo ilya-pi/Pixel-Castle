@@ -57,6 +57,8 @@ end
 
 local function onCollision(event)
    if (event.object1.myName == "brick" or event.object2.myName == "brick") then
+   		event.object1.state = "removed"
+   		event.object2.state = "removed"
    		event.object1:removeSelf()
    		event.object2:removeSelf()
    end
@@ -89,12 +91,28 @@ local fireButtonPress = function(event)
 		game.bullet = fireBullet(cannonX, cannonY, 6, 6)
 		game.cameraState = "CANNONBALL_FOCUS"
 		game.state = "PLAYER2"
+		-- todo remove code duplication here!
+		if game.castle2:isDestroyed(game) then
+			game.state = "PLAYER2_LOST"
+			-- todo refactor
+			local t = display.newText("Player 2 Lost", 0, 0, "AmericanTypewriter-Bold", 42)
+			t.x, t.y = display.contentCenterX, display.contentCenterY
+			t:setTextColor(255, 0, 0)
+		end
 	elseif (game.state == "PLAYER2") then
 		local cannonX = (game.castle2xOffset + game.castleWidth / 2) * game.pixel
 		local cannonY =  game.worldHeight - (game.castle2.yLevel + game.castleHeight + game.cannonYOffset) * game.castleHeight
 		game.bullet = fireBullet(cannonX, cannonY, -6, 6)
-		game.cameraState = "CANNONBALL_FOCUS"
+		game.cameraState = "CANNONBALL_FOCUS"		
 		game.state = "PLAYER1"		
+		-- todo remove code duplication here! and here!
+		if game.castle1:isDestroyed(game) then
+			game.state = "PLAYER1_LOST"
+			-- todo refactor
+			local t = display.newText("Player 1 Lost", 0, 0, "AmericanTypewriter-Bold", 42)
+			t.x, t.y = display.contentCenterX, display.contentCenterY
+			t:setTextColor(255, 0, 0)
+		end
 	end
 end
 
