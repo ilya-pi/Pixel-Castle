@@ -1,5 +1,7 @@
 module(..., package.seeall)
 
+dkjson = require("scripts.util.dkjson")
+
 function renderImage(xPosition, yPosition, image, game)
     local pixels = {}
     local primitiveColorsCount = 3
@@ -21,4 +23,34 @@ function renderImage(xPosition, yPosition, image, game)
         end
     end
     return pixels
+end
+
+function loadImageData(filename)
+    -- set default base dir if none specified
+    local base = system.ResourceDirectory
+
+    -- create a file path for corona i/o
+    local path = system.pathForFile( filename, base )
+
+    -- will hold contents of file
+    local contents
+
+    -- io.open opens a file at path. returns nil if no file found
+    local file = io.open( path, "r" )
+    if file then
+        -- read all contents of file into a string
+        contents = file:read( "*a" )
+        io.close( file )    -- close the file after using it
+        --return decoded json string
+
+        local obj, pos, err = dkjson.decode (contents, 1, nil)
+        if err then
+            print ("Error:", err)
+        else
+            return obj
+        end
+    else
+        --or return nil if file didn't ex
+        return nil
+    end
 end

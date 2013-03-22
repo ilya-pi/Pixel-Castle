@@ -1,6 +1,5 @@
 module(..., package.seeall)
 
-cloud = require("data.cloud")
 imageHelper = require("scripts.util.image")
 
 SkyViewController = { clouds = true }
@@ -28,12 +27,13 @@ function SkyViewController:render(physics, world, game)
     local maxDistanceBetweenClouds = 20 -- in Pixels
 
     local worldWidth = game.worldWidth / game.pixel -- in Pixels
-    local cloudsCount = table.getn(cloud.clouds)
+    local clouds = imageHelper.loadImageData("data/clouds.json") --todo move to static initialization
+    local cloudsCount = table.getn(clouds)
 
     local cloudXright = 2
     while cloudXright < worldWidth do
         local type = math.random(cloudsCount)
-        local newCloud = cloud.clouds[type]
+        local newCloud = clouds[type]
         if (cloudXright + cloudMargin + newCloud.width < worldWidth) then
             local yPosition = math.random(minCloudY, maxCloudY - cloudMargin - newCloud.height)
             local xPosition = math.random(cloudXright + cloudMargin, cloudXright + maxDistanceBetweenClouds)
@@ -43,7 +43,6 @@ function SkyViewController:render(physics, world, game)
             for i,v in ipairs(pixels) do
                 world:insert(v)
             end
-
         else
             cloudXright = worldWidth --TODO: refactor this condition to exit loop
         end
