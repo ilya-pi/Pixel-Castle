@@ -2,6 +2,7 @@ application =
 {
 	content =
 	{
+        antialias = true,
 		width = 320,
 		height = 480,
 		scale = "zoomStretch",

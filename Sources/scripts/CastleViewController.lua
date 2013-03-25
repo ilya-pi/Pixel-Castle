@@ -5,7 +5,7 @@ imageHelper = require("scripts.util.image")
 CastleViewController = {}
 
 -- Constructor
-function CastleViewController:new (o)
+function CastleViewController:new (o) --todo save (physics, world, game, x, y) at this point since tower is static
 	o = o or {}   -- create object if user does not provide one
 	o.bricks = {}
 	setmetatable(o, self)
@@ -15,7 +15,7 @@ end
 
 -- physics — physics object to attach to
 -- world - display group for the whole scene
-function CastleViewController:render(physics, world, game, x, y)
+function CastleViewController:render(physics, world, game, x, y) --todo remove redundant params
     local worldHeight = game.worldHeight / game.pixel
 
     local castles = imageHelper.loadImageData("data/castles.json") --todo move to static initialization

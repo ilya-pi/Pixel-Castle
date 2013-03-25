@@ -14,6 +14,7 @@ local game_module = require("scripts.GameModel")
 local sky_module = require("scripts.SkyViewController")
 local earth_module = require("scripts.EarthViewController")
 local camera_module = require("scripts.util.Camera")
+local controls_module = require("scripts.Controls")
 
 local game = game_module.GameModel:new()
 
@@ -21,8 +22,9 @@ local game = game_module.GameModel:new()
 local splash = require("scripts.splash")
 
 -- Initialising scene
-
 local world = display.newGroup()
+
+local controls1
 
 local function createCannonBallPixel(x, y)
 	local result = display.newRect(x, y, game.pixel, game.pixel)
@@ -78,6 +80,7 @@ local function gameLoop()
 	if (game.bullet == nil or game.bullet.x == nil or game.bullet.y == nil) then
 		if (game.state == "PLAYER1") then
 			game.cameraState = "CASTLE1_FOCUS"
+            --controls1:render(100, 100)
 		elseif (game.state == "PLAYER2") then
 			game.cameraState = "CASTLE2_FOCUS"
 		end
@@ -139,6 +142,10 @@ function startGame()
 	local earth = earth_module.EarthViewController:new()
 	earth:render(physics, world, game)
 
+    controls1 = controls_module.Controls:new({game = game, angle = 45})
+    --controls1:render(100, 100)
+    local controls2 = controls_module.Controls:new({game = game, angle = 45})
+
 	local fireButton = widget.newButton{
 		default = "images/fireButton.png",
 		over = "images/fireButtonHover.png",
@@ -154,7 +161,8 @@ function startGame()
 	Runtime:addEventListener( "enterFrame", 
 		function ()
 			camera:moveCamera()
-		end)
+        end
+    )
 
 	timer.performWithDelay(game.delay, gameLoop, 0)
 end
