@@ -65,6 +65,7 @@ function Controls:setCoordinates()
     self.angleVectorLine = display.newLine(self.angleVectorLineX1, self.angleVectorLineY1, self.angleVectorLineX2, self.angleVectorLineY2)
     self.angleVectorLine.width = lineThickness
     self.angleVectorLine:setColor(0, 0, 0)
+    self.group:insert(self.angleVectorLine)
 end
 
 -- Constructor
@@ -74,24 +75,31 @@ function Controls:new(o)
     self.__index = self
 
     --creating objects
+    o.group = display.newGroup()
     o.angleCircle = display.newCircle(-100, -100, angleCircleRadius)
     o.angleCircle.strokeWidth = blackBorderWidth
     o.angleCircle:setStrokeColor(0, 0, 0)
     o.angleCircle:setFillColor(255, 255, 255)
+    o.group:insert(o.angleCircle)
+
     o.angleHorisontalLine = display.newLine(0, -100, (angleCircleRadius - linePadding)*2, -100)
     o.angleHorisontalLine.width = lineThickness
     o.angleHorisontalLine:setColor(0, 0, 0)
+    o.group:insert(o.angleHorisontalLine)
+
     o.angleText = display.newText( "fake", -100, -100, native.systemFont, 20) --todo change font
     o.angleText:setReferencePoint(display.TopRightReferencePoint)
     o.angleText.x = -100
     o.angleText.y = -100
     o.angleText:setTextColor(0, 0, 0)
+    o.group:insert(o.angleText)
 
     o.touchArea = display.newRect(-100, -100, touchAreaWidth, touchAreaHeight)
     o.touchArea.strokeWidth = blackBorderWidth
     o.touchArea:setStrokeColor(0, 0, 0)
     o.touchArea:setFillColor(207, 229, 130)
     o.touchArea:setReferencePoint(display.TopLeftReferencePoint)
+    o.group:insert(o.touchArea)
     o.listener = o.touchArea:addEventListener("touch", o)
 
     o.button = display.newRect(-100, -100, buttonWidth, buttonHeight)
@@ -99,12 +107,15 @@ function Controls:new(o)
     o.button:setStrokeColor(0, 0, 0)
     o.button:setFillColor(214, 79, 116)
     o.button:setReferencePoint(display.TopLeftReferencePoint)
+    o.group:insert(o.button)
 
     o.buttonText = display.newText("FIRE", -100, -100, native.systemFontBold, 12)
     o.buttonText:setReferencePoint(display.CenterReferencePoint);
     o.buttonText:setTextColor(255, 255, 255)
+    o.group:insert(o.buttonText)
 
     o.angleVectorLine = display.newLine(0, 0, 0, 0)
+    o.group:insert(o.angleVectorLine)
 
     return o
 end
@@ -135,8 +146,15 @@ function Controls:render(x, y)
 end
 
 function Controls:hide()
+    self.group.isVisible = false
 end
 
 function Controls:show()
+    self.group.isVisible = true
 end
+
+function Controls:getAngle()
+    return self.angle
+end
+
 

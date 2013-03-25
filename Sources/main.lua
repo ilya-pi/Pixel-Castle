@@ -81,44 +81,52 @@ local function gameLoop()
 	if (game.bullet == nil or game.bullet.x == nil or game.bullet.y == nil) then
 		if (game.state == "PLAYER1") then
 			game.cameraState = "CASTLE1_FOCUS"
+            controls2:hide()
+            controls1:show()
             controls1:render(30, 200)
 		elseif (game.state == "PLAYER2") then
 			game.cameraState = "CASTLE2_FOCUS"
+            controls1:hide()
+            controls2:show()
             controls2:render(300, 200)
 		end
 	end
 end
 
+local impulse = 9
+
 local fireButtonPress = function(event)
-	if (game.state == "PLAYER1") then
-		local cannonX = (game.castle1xOffset + game.castleWidth / 2) * game.pixel
-		local cannonY =  game.worldHeight - (game.castle1.yLevel + game.castleHeight + game.cannonYOffset) * game.castleHeight
-		game.bullet = fireBullet(cannonX, cannonY, 6, 6)
-		game.cameraState = "CANNONBALL_FOCUS"
-		game.state = "PLAYER2"
-		-- todo remove code duplication here!
-		if game.castle2:isDestroyed(game) then
-			game.state = "PLAYER2_LOST"
-			-- todo refactor
-			local t = display.newText("Player 2 Lost", 0, 0, "AmericanTypewriter-Bold", 42)
-			t.x, t.y = display.contentCenterX, display.contentCenterY
-			t:setTextColor(255, 0, 0)
-		end
-	elseif (game.state == "PLAYER2") then
-		local cannonX = (game.castle2xOffset + game.castleWidth / 2) * game.pixel
-		local cannonY =  game.worldHeight - (game.castle2.yLevel + game.castleHeight + game.cannonYOffset) * game.castleHeight
-		game.bullet = fireBullet(cannonX, cannonY, -6, 6)
-		game.cameraState = "CANNONBALL_FOCUS"		
-		game.state = "PLAYER1"		
-		-- todo remove code duplication here! and here!
-		if game.castle1:isDestroyed(game) then
-			game.state = "PLAYER1_LOST"
-			-- todo refactor
-			local t = display.newText("Player 1 Lost", 0, 0, "AmericanTypewriter-Bold", 42)
-			t.x, t.y = display.contentCenterX, display.contentCenterY
-			t:setTextColor(255, 0, 0)
-		end
-	end
+    if (event.phase == "ended") then
+        if (game.state == "PLAYER1") then
+            local cannonX = (game.castle1xOffset + game.castleWidth / 2) * game.pixel
+            local cannonY =  game.worldHeight - (game.castle1.yLevel + game.castleHeight + game.cannonYOffset) * game.castleHeight
+            game.bullet = fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(controls1:getAngle())), impulse * math.cos(math.rad(controls1:getAngle()))) --todo refactor
+            game.cameraState = "CANNONBALL_FOCUS"
+            game.state = "PLAYER2"
+            -- todo remove code duplication here!
+            if game.castle2:isDestroyed(game) then
+                game.state = "PLAYER2_LOST"
+                -- todo refactor
+                local t = display.newText("Player 2 Lost", 0, 0, "AmericanTypewriter-Bold", 42)
+                t.x, t.y = display.contentCenterX, display.contentCenterY
+                t:setTextColor(255, 0, 0)
+            end
+        elseif (game.state == "PLAYER2") then
+            local cannonX = (game.castle2xOffset + game.castleWidth / 2) * game.pixel
+            local cannonY =  game.worldHeight - (game.castle2.yLevel + game.castleHeight + game.cannonYOffset) * game.castleHeight
+            game.bullet = fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(controls2:getAngle())), impulse * math.cos(math.rad(controls2:getAngle()))) --todo refactor
+            game.cameraState = "CANNONBALL_FOCUS"
+            game.state = "PLAYER1"
+            -- todo remove code duplication here! and here!
+            if game.castle1:isDestroyed(game) then
+                game.state = "PLAYER1_LOST"
+                -- todo refactor
+                local t = display.newText("Player 1 Lost", 0, 0, "AmericanTypewriter-Bold", 42)
+                t.x, t.y = display.contentCenterX, display.contentCenterY
+                t:setTextColor(255, 0, 0)
+            end
+        end
+    end
 end
 
 local fireButtonRelease = function(event)
@@ -146,7 +154,10 @@ function startGame()
 
     controls1 = controls_module.Controls:new({game = game, angle = 45, x = 30, y = 200, name = "controls one"})
     controls2 = controls_module.Controls:new({game = game, angle = -45, x = 300, y = 200, name = "controls two"})
+    controls1.button:addEventListener("touch", fireButtonPress)
+    controls2.button:addEventListener("touch", fireButtonPress)
 
+--[[
 	local fireButton = widget.newButton{
 		default = "images/fireButton.png",
 		over = "images/fireButtonHover.png",
@@ -155,8 +166,9 @@ function startGame()
 		label = "FIRE",
 		emboss = true,
 	}
+]]
 
-	fireButton.x, fireButton.y = display.contentWidth - fireButton.width / 2, display.contentHeight - fireButton.height / 2
+	--fireButton.x, fireButton.y = display.contentWidth - fireButton.width / 2, display.contentHeight - fireButton.height / 2
 
 	Runtime:addEventListener("collision", onCollision)
 	Runtime:addEventListener( "enterFrame", 
