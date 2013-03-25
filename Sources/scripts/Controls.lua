@@ -7,7 +7,7 @@ local touchAreaWidth = 130
 local touchAreaHeight = 38
 local buttonHeight, buttonWidth = touchAreaHeight, touchAreaHeight
 local angleCircleRadius = 33
-local circleTouchPadding = 14
+local circleTouchPadding = 12
 local buttonTouchPadding = 12
 local linePadding = 4
 local lineThickness = 1
@@ -15,70 +15,128 @@ local lineThickness = 1
 local fullHeight = angleCircleRadius * 2 + touchAreaHeight + circleTouchPadding
 local fullWidth = touchAreaWidth + buttonWidth + buttonTouchPadding
 
+function Controls:calculateCoordinates()
+    self.angleCircleX = self.x + touchAreaWidth / 2 + 4
+    self.angleCircleY = self.y + angleCircleRadius
+
+    self.angleHorisontalLineX1 = self.angleCircleX - angleCircleRadius + linePadding
+    self.angleHorisontalLineY1 = self.angleCircleY
+    self.angleHorisontalLineX2 = self.angleCircleX + angleCircleRadius - linePadding
+    self.angleHorisontalLineY2 = self.angleCircleY
+
+    self.angleVectorLineX1 = self.angleCircleX
+    self.angleVectorLineY1 = self.angleCircleY
+    self.tmpAngle = math.rad(self.angle)
+    self.angleVectorLineX2 = (angleCircleRadius - linePadding) * math.sin(self.tmpAngle) + self.angleVectorLineX1
+    self.angleVectorLineY2 = -((angleCircleRadius - linePadding) * math.cos(self.tmpAngle)) + self.angleVectorLineY1
+
+    self.angleTextX = self.angleCircleX + 23
+    self.angleTextY = self.angleCircleY + 2
+
+    self.touchX = self.x
+    self.touchY = self.y + angleCircleRadius * 2 + circleTouchPadding
+
+    self.buttonX = self.x + touchAreaWidth + buttonTouchPadding
+    self.buttonY = self.touchY
+
+    self.buttonTextX = self.buttonX + buttonWidth/2 + 3
+    self.buttonTextY = self.buttonY + buttonHeight/2 + 3
+end
+
+function Controls:setCoordinates()
+    self.angleCircle.x = self.angleCircleX
+    self.angleCircle.y = self.angleCircleY
+    self.angleHorisontalLine.x = self.angleHorisontalLineX1
+    self.angleHorisontalLine.y = self.angleHorisontalLineY1
+    self.angleText.x = self.angleTextX
+    self.angleText.y = self.angleTextY
+    self.angleText.text = self.angle .. "°"
+    --print(self)
+
+    self.touchArea.x = self.touchX
+    self.touchArea.y = self.touchY
+
+    self.button.x = self.buttonX
+    self.button.y = self.buttonY
+    self.buttonText.x = self.buttonTextX
+    self.buttonText.y = self.buttonTextY
+
+    self.angleVectorLine:removeSelf()
+    self.angleVectorLine = display.newLine(self.angleVectorLineX1, self.angleVectorLineY1, self.angleVectorLineX2, self.angleVectorLineY2)
+    self.angleVectorLine.width = lineThickness
+    self.angleVectorLine:setColor(0, 0, 0)
+end
+
 -- Constructor
-function Controls:new (o)
+function Controls:new(o)
     o = o or {}   -- create object if user does not provide one
     setmetatable(o, self)
     self.__index = self
+
+    --creating objects
+    o.angleCircle = display.newCircle(-100, -100, angleCircleRadius)
+    o.angleCircle.strokeWidth = blackBorderWidth
+    o.angleCircle:setStrokeColor(0, 0, 0)
+    o.angleCircle:setFillColor(255, 255, 255)
+    o.angleHorisontalLine = display.newLine(0, -100, (angleCircleRadius - linePadding)*2, -100)
+    o.angleHorisontalLine.width = lineThickness
+    o.angleHorisontalLine:setColor(0, 0, 0)
+    o.angleText = display.newText( "fake", -100, -100, native.systemFont, 20) --todo change font
+    o.angleText:setReferencePoint(display.TopRightReferencePoint)
+    o.angleText.x = -100
+    o.angleText.y = -100
+    o.angleText:setTextColor(0, 0, 0)
+
+    o.touchArea = display.newRect(-100, -100, touchAreaWidth, touchAreaHeight)
+    o.touchArea.strokeWidth = blackBorderWidth
+    o.touchArea:setStrokeColor(0, 0, 0)
+    o.touchArea:setFillColor(207, 229, 130)
+    o.touchArea:setReferencePoint(display.TopLeftReferencePoint)
+    o.listener = o.touchArea:addEventListener("touch", o)
+
+    o.button = display.newRect(-100, -100, buttonWidth, buttonHeight)
+    o.button.strokeWidth = blackBorderWidth
+    o.button:setStrokeColor(0, 0, 0)
+    o.button:setFillColor(214, 79, 116)
+    o.button:setReferencePoint(display.TopLeftReferencePoint)
+
+    o.buttonText = display.newText("FIRE", -100, -100, native.systemFontBold, 12)
+    o.buttonText:setReferencePoint(display.CenterReferencePoint);
+    o.buttonText:setTextColor(255, 255, 255)
+
+    o.angleVectorLine = display.newLine(0, 0, 0, 0)
+
     return o
 end
 
 function Controls:touch(event)
-    local angle = math.floor((event.x - self.x)/touchAreaWidth * 180 - 90)
-    --print(angle)
-    if (angle < -90) then angle = -90 end
-    if (angle > 90) then angle = 90 end
-    self.angle = angle
-
+    local angleNew = math.floor((event.x - self.x)/touchAreaWidth * 180 - 90)
+    if (angleNew < -90) then angleNew = -90 end
+    if (angleNew > 90) then angleNew = 90 end
+    self.angle = angleNew
+    --print(self)
 end
-
-
 
 function Controls:render(x, y)
 --[[    local extBorder = display.newRect(x, y, fullWidth, fullHeight)
     extBorder.strokeWidth = 1
     extBorder:setStrokeColor(255, 0, 0)
     extBorder:setFillColor(0, 0, 0, 0)]]
-    self.x = x
-    self.y = y
+    --print("x="..x .." y="..y .. " width="..fullWidth .. " height=".. fullHeight)
 
-    local angleCircleX = x + touchAreaWidth / 2
-    local angleCircleY = y + angleCircleRadius
-    local circle = display.newCircle(angleCircleX, angleCircleY, angleCircleRadius)
-    circle.strokeWidth = blackBorderWidth
-    circle:setStrokeColor(0, 0, 0)
-    circle:setFillColor(255, 255, 255)
-    local line = display.newLine(angleCircleX - angleCircleRadius + linePadding, angleCircleY, angleCircleX + angleCircleRadius - linePadding, angleCircleY)
-    line.width = lineThickness
-    line:setColor(0, 0, 0)
-    local angleText = display.newText( self.angle.."°", angleCircleX, angleCircleY, native.systemFont, 20) --todo change font
-    angleText:setReferencePoint(display.TopRightReferencePoint)
-    angleText.x = angleCircleX + 25
-    angleText.y = angleCircleY + 2
-    angleText:setTextColor(0, 0, 0)
-
-    local touchX = x
-    local touchY = y + angleCircleRadius * 2 + circleTouchPadding
-    local touchArea = display.newRect(touchX, touchY, touchAreaWidth, touchAreaHeight)
-    touchArea.strokeWidth = blackBorderWidth
-    touchArea:setStrokeColor(0, 0, 0)
-    touchArea:setFillColor(207, 229, 130)
-    if(self.listener == nil) then
-        self.listener = touchArea:addEventListener("touch", self)
-    end
-
-    local buttonX = x + touchAreaWidth + buttonTouchPadding
-    local buttonY = touchY
-    local button = display.newRect(buttonX, buttonY, buttonWidth, buttonHeight)
-    button.strokeWidth = blackBorderWidth
-    button:setStrokeColor(0, 0, 0)
-    button:setFillColor(214, 79, 116)
-    local text = display.newText("FIRE", buttonX + buttonWidth/2, buttonY + buttonHeight/2, native.systemFontBold, 12)
-    text:setReferencePoint(display.CenterReferencePoint);
-    text.x = buttonX + buttonWidth/2
-    text.y = buttonY + buttonHeight/2
-    text:setTextColor(255, 255, 255)
-
+    --if(self.x ~= x or self.y ~= y) then
+        self.x = x
+        self.y = y
+        self:calculateCoordinates()
+        self:setCoordinates()
+        --print(self)
+   --end
     --(167, 185, 255)
-
 end
+
+function Controls:hide()
+end
+
+function Controls:show()
+end
+

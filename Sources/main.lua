@@ -25,6 +25,7 @@ local splash = require("scripts.splash")
 local world = display.newGroup()
 
 local controls1
+local controls2
 
 local function createCannonBallPixel(x, y)
 	local result = display.newRect(x, y, game.pixel, game.pixel)
@@ -80,9 +81,10 @@ local function gameLoop()
 	if (game.bullet == nil or game.bullet.x == nil or game.bullet.y == nil) then
 		if (game.state == "PLAYER1") then
 			game.cameraState = "CASTLE1_FOCUS"
-            --controls1:render(100, 100)
+            controls1:render(30, 200)
 		elseif (game.state == "PLAYER2") then
 			game.cameraState = "CASTLE2_FOCUS"
+            controls2:render(300, 200)
 		end
 	end
 end
@@ -142,9 +144,8 @@ function startGame()
 	local earth = earth_module.EarthViewController:new()
 	earth:render(physics, world, game)
 
-    controls1 = controls_module.Controls:new({game = game, angle = 45})
-    --controls1:render(100, 100)
-    local controls2 = controls_module.Controls:new({game = game, angle = 45})
+    controls1 = controls_module.Controls:new({game = game, angle = 45, x = 30, y = 200, name = "controls one"})
+    controls2 = controls_module.Controls:new({game = game, angle = -45, x = 300, y = 200, name = "controls two"})
 
 	local fireButton = widget.newButton{
 		default = "images/fireButton.png",
