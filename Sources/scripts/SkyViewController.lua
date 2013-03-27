@@ -1,6 +1,6 @@
 module(..., package.seeall)
 
-imageHelper = require("scripts.util.image")
+imageHelper = require("scripts.util.Image")
 
 SkyViewController = { clouds = true }
 
