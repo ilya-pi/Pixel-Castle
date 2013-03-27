@@ -31,6 +31,16 @@ function GameModel:addState(state)
     table.insert(self.states, state)
 end
 
+function GameModel:setState(stateName)
+    for i, v in ipairs(self.states) do
+        if (v.name == stateName) then
+            self.stateNumber = i
+            self.state = v
+            break
+        end
+    end
+end
+
 function GameModel:nextState()
     self.state.listener()
     self.stateNumber = self.stateNumber + 1
@@ -38,6 +48,7 @@ function GameModel:nextState()
         self.stateNumber = 1
     end
     self.state = self.states[self.stateNumber]
+    print("In state " .. self.state.name)
 end
 
 

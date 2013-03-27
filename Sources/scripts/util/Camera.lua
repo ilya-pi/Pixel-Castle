@@ -48,9 +48,12 @@ function Camera:moveCamera()
 			self.game.cameraState = "FOCUSING"
 		end		
 	elseif (self.game.cameraState == "CANNONBALL_FOCUS") then
-		if (self.game.bullet ~= nil and self.game.bullet.x ~= nil and self.game.bullet.y ~= nil) then
-			self.world.x = calculateX(self.game.bullet.x, self.game, self.display)
-			self.world.y = calculateY(self.game.bullet.y, self.game, self.display)
+		if (self.game.bullet ~= nil and self.game.bullet:isAlive()) then
+--            print("Camera coords")
+--            print(self.game.bullet:getX())
+--            print(self.game.bullet:getY())
+			self.world.x = calculateX(self.game.bullet:getX(), self.game, self.display)
+			self.world.y = calculateY(self.game.bullet:getY(), self.game, self.display)
 		end
 	elseif (self.game.cameraState == "FOCUSING") then
 		-- do nothing
