@@ -77,19 +77,41 @@ local function gameLoop()
 		end
 	end
 
-	-- camera interactions
 	if (game.bullet == nil or game.bullet.x == nil or game.bullet.y == nil) then
-		if (game.state == "PLAYER1") then
-			game.cameraState = "CASTLE1_FOCUS"
-            controls2:hide()
-            controls1:show()
-            controls1:render(30, 200)
-		elseif (game.state == "PLAYER2") then
-			game.cameraState = "CASTLE2_FOCUS"
-            controls1:hide()
-            controls2:show()
-            controls2:render(300, 200)
+		
+		if (game.state == "PLAYER1" or game.state == "PLAYER2") then
+
+			-- state transition check
+			if game.castle2:isDestroyed(game) then
+				game.state = "PLAYER2_LOST"
+				game.cameraState = "CASTLE2_FOCUS"
+        	elseif game.castle1:isDestroyed(game) then
+        		game.state = "PLAYER1_LOST"
+        		game.cameraState = "CASTLE1_FOCUS"
+        	end
+
+        	-- state interaction
+        	if (game.state == "PLAYER1") then
+        		game.cameraState = "CASTLE1_FOCUS"
+        		controls1:show()
+        		controls1:render(30, 200)
+        	elseif (game.state == "PLAYER2") then
+        		game.cameraState = "CASTLE2_FOCUS"
+        		controls2:show()
+        		controls2:render(300, 200)
+        	end
 		end
+
+        if (game.state == "PLAYER1_LOST" or game.state == "PLAYER2_LOST") then
+        	game.state = "END"
+        	local message = "First player won"
+        	if (game.state == "PLAYER1_LOST") then
+        		message = "Second player won"
+        	end
+        	local t = display.newText(message, 0, 0, "AmericanTypewriter-Bold", 36)
+            t.x, t.y = display.contentCenterX, display.contentCenterY
+            t:setTextColor(214, 79, 116)
+        end
 	end
 end
 
@@ -103,28 +125,14 @@ local fireButtonPress = function(event)
             game.bullet = fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(controls1:getAngle())), impulse * math.cos(math.rad(controls1:getAngle()))) --todo refactor
             game.cameraState = "CANNONBALL_FOCUS"
             game.state = "PLAYER2"
-            -- todo remove code duplication here!
-            if game.castle2:isDestroyed(game) then
-                game.state = "PLAYER2_LOST"
-                -- todo refactor
-                local t = display.newText("Player 2 Lost", 0, 0, "AmericanTypewriter-Bold", 42)
-                t.x, t.y = display.contentCenterX, display.contentCenterY
-                t:setTextColor(255, 0, 0)
-            end
+            controls1:hide()
         elseif (game.state == "PLAYER2") then
             local cannonX = (game.castle2xOffset + game.castleWidth / 2) * game.pixel
             local cannonY =  game.worldHeight - (game.castle2.yLevel + game.castleHeight + game.cannonYOffset) * game.castleHeight
             game.bullet = fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(controls2:getAngle())), impulse * math.cos(math.rad(controls2:getAngle()))) --todo refactor
             game.cameraState = "CANNONBALL_FOCUS"
             game.state = "PLAYER1"
-            -- todo remove code duplication here! and here!
-            if game.castle1:isDestroyed(game) then
-                game.state = "PLAYER1_LOST"
-                -- todo refactor
-                local t = display.newText("Player 1 Lost", 0, 0, "AmericanTypewriter-Bold", 42)
-                t.x, t.y = display.contentCenterX, display.contentCenterY
-                t:setTextColor(255, 0, 0)
-            end
+            controls2:hide()
         end
     end
 end
