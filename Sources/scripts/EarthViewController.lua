@@ -51,7 +51,7 @@ function EarthViewController:render(physics, world, game)
 			world:insert(grass)
 			grass.myName = "brick"
 			grass.strokeWidth = 0
-			if (l == nY or math.random(255) % 17 == 0) then
+			if (l == nY or (l == nY - 1 and i % 2 == 1) or math.random(255) % 17 == 0) then
 				grass:setFillColor(66, 110, 44)
 				grass:setStrokeColor(66, 110, 44)
 			else
