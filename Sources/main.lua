@@ -15,17 +15,15 @@ local sky_module = require("scripts.SkyViewController")
 local earth_module = require("scripts.EarthViewController")
 local camera_module = require("scripts.util.Camera")
 local controls_module = require("scripts.Controls")
+local wind_module = require("scripts.Wind")
 
 local game = game_module.GameModel:new()
-
--- Load external Splash Screen
 local splash = require("scripts.splash")
-
--- Initialising scene
 local world = display.newGroup()
 
 local controls1
 local controls2
+local wind = wind_module.Wind:new({x = 10, y = 10})
 
 local function createCannonBallPixel(x, y)
 	local result = display.newRect(x, y, game.pixel, game.pixel)
@@ -73,9 +71,20 @@ local function gameLoop()
 	if (game.bullet ~= nil and game.bullet.x ~= nil and game.bullet.y ~= nil) then
 		if (game.bullet.x > game.worldWidth or game.bullet.x < 0 or game.bullet.y > game.worldHeight) then
 			game.bullet = nil
-			-- todo remove the bullet objecty itself
+			-- todo remove the bullet object itself
 		end
-	end
+    end
+
+    if (game.state.name == "P1") then
+        controls1:render(30, 200)
+    elseif (game.state.name == "BULLET") then
+        --todo: camera:update(bullet.x, bullet.y)
+    elseif (game.state.name == "MOVE_TO_P2") then
+        --nothing
+    elseif (game.state.name == "P2") then
+        controls2:render(300, 200)
+    elseif (game.state.name == "MOVE_TO_P1") then
+        --nothing
 
 	-- camera interactions
 	if (game.bullet == nil or game.bullet.x == nil or game.bullet.y == nil) then
@@ -93,7 +102,7 @@ local function gameLoop()
 	end
 end
 
-local impulse = 9
+local impulse = 11
 
 local fireButtonPress = function(event)
     if (event.phase == "ended") then
@@ -132,10 +141,49 @@ end
 local fireButtonRelease = function(event)
 end
 
-function startGame()
+local function cameraListener()
+    print("move complete!")
+end
+
+local function eventPlayer1Fire()
+    controls1:hide()
+    --todo: fireBullet() -> on remove listener(game:nextState)
+end
+
+local function eventPlayer2Fire()
+    controls2:hide()
+    --todo: fireBullet() -> on remove listener(game:nextState)
+end
+
+local function eventBulletRemoved()
+    --move camera to next player
+    --todo: camera:moveTo(x, y) -> listener(game:nextState())
+end
+
+local function eventPlayer1Active()
+    wind:update()
+    controls1:show()
+    --todo: button.push -> listener(game:nextState)
+end
+
+local function eventPlayer2Active()
+    wind:update()
+    controls2:show()
+    random_carma(castle)
+    --todo: button.push -> listener(game:nextState)
+end
+
+
+local function startGame()
      splash.dismissSplashScreen()
 
-     local camera = camera_module.Camera:new({game = game, world = world, display = display})     
+     game:addState({"P1", player1Fire})
+     game:addState({"BULLET", bulletRemoved})
+     game:addState({"MOVE_TO_P2", player2Active})
+     game:addState({"P2", player2Fire})
+     game:addState({"MOVE_TO_P1", player1Active})
+
+     local camera = camera_module.Camera:new({game = game, world = world, display = display, listener = cameraListener})
 
      --todo insert ground later
      -- ground
@@ -152,26 +200,13 @@ function startGame()
 	local earth = earth_module.EarthViewController:new()
 	earth:render(physics, world, game)
 
-    controls1 = controls_module.Controls:new({game = game, angle = 45, x = 30, y = 200, name = "controls one"})
-    controls2 = controls_module.Controls:new({game = game, angle = -45, x = 300, y = 200, name = "controls two"})
-    controls1.button:addEventListener("touch", fireButtonPress)
-    controls2.button:addEventListener("touch", fireButtonPress)
-
---[[
-	local fireButton = widget.newButton{
-		default = "images/fireButton.png",
-		over = "images/fireButtonHover.png",
-		onPress = fireButtonPress,
-		onRelease = fireButtonRelease,
-		label = "FIRE",
-		emboss = true,
-	}
-]]
-
-	--fireButton.x, fireButton.y = display.contentWidth - fireButton.width / 2, display.contentHeight - fireButton.height / 2
+    controls1 = controls_module.Controls:new({angle = 45, x = 30, y = 200})
+    controls2 = controls_module.Controls:new({angle = -45, x = 300, y = 200})
+    controls1.button:addEventListener("touch", game:nextState())
+    controls2.button:addEventListener("touch", game:nextState())
 
 	Runtime:addEventListener("collision", onCollision)
-	Runtime:addEventListener( "enterFrame", 
+	Runtime:addEventListener( "enterFrame",
 		function ()
 			camera:moveCamera()
         end

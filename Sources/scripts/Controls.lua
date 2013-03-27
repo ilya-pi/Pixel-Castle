@@ -1,6 +1,6 @@
 module(..., package.seeall)
 
-Controls = {} --properties(game, angle)
+Controls = {}
 
 local blackBorderWidth = 5
 local touchAreaWidth = 130
