@@ -35,15 +35,19 @@ end
 function Camera:moveCamera()		
 	if (self.game.cameraState == "CASTLE1_FOCUS") then		
 		if (self.game.castle1 ~= nil) then
+--[[
 			local cannonX = (self.game.castle1xOffset + self.game.castleWidth / 2) * self.game.pixel
 			local cannonY =  self.game.worldHeight - (self.game.castle1.yLevel + self.game.castleHeight + self.game.cannonYOffset) * self.game.castleHeight
+]]
+			local cannonX = self.game.castle1:cannonX()
+			local cannonY =  self.game.castle1:cannonY()
 			transition.to(self.world, {time = 100, x = calculateX(cannonX, self.game, self.display), y = calculateY(cannonY, self.game, self.display), onComplete = self.listener})
 			self.game.cameraState = "FOCUSING"
 		end	
 	elseif (self.game.cameraState == "CASTLE2_FOCUS") then
 		if (self.game.castle2 ~= nil) then
-			local cannonX = (self.game.castle2xOffset + self.game.castleWidth / 2) * self.game.pixel
-			local cannonY =  self.game.worldHeight - (self.game.castle2.yLevel + self.game.castleHeight + self.game.cannonYOffset) * self.game.castleHeight			
+			local cannonX = self.game.castle2:cannonX()
+			local cannonY =  self.game.castle2:cannonY()
 			transition.to(self.world, {time = 100, x = calculateX(cannonX, self.game, self.display), y = calculateY(cannonY, self.game, self.display), onComplete = self.listener})
 			self.game.cameraState = "FOCUSING"
 		end		

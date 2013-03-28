@@ -26,14 +26,19 @@ function CastleViewController:render(physics, world, game, x, y) --todo remove r
         end
     end
 
-    local pixels = imageHelper.renderImage(x, worldHeight - y - castle.height + 1, castle, game)  --todo: explain magic numbers
+    self.leftX = x * game.pixel
+    self.rightX = (x + castle.width) * game.pixel
+    local topYPixels = worldHeight - y - castle.height + 1
+    self.topY = topYPixels * game.pixel
+
+    local pixels = imageHelper.renderImage(x, topYPixels, castle, game)  --todo: explain magic numbers
     for i,v in ipairs(pixels) do
         self.bricks[i] = v
         world:insert(v)
         v.myName = "brick"
         physics.addBody(v, "static")
     end
-	print("Rendered castle with " .. x .. ", " .. y)	
+    print("Rendered castle with " .. x .. ", " .. y)
 end
 
 function CastleViewController:isDestroyed(game)
@@ -59,12 +64,14 @@ function CastleViewController:health()
 	return score
 end
 
-function CastleViewController:cannonX(game)
-	--todo move into the castel model
-	--todo implement
+function CastleViewController:cannonX()
+    if (self.location == "left") then
+	    return self.rightX
+    else
+        return self.leftX
+    end
 end
 
-function CastleViewController:cannonY(game)
-	--todo move into the castel model
-	--todo implement	
+function CastleViewController:cannonY()
+    return self.topY
 end

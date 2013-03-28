@@ -65,7 +65,7 @@ function EarthViewController:render(physics, world, game)
 		nY = game.groundYOffset + prevY		
 
 		if (i == game.castle1xOffset + 1) then
-			game.castle1 = castle_module.CastleViewController:new{castleName = "green_castle"} --todo calculate types count
+			game.castle1 = castle_module.CastleViewController:new{castleName = "castle1", location = "left"}
 			game.castle1.yLevel = nY + 1
 			game.castle1.absX = i * game.pixel
 			game.castle1.absY = game.castle1.yLevel * game.pixel
@@ -73,7 +73,7 @@ function EarthViewController:render(physics, world, game)
 		end
 
 		if (i == game.castle2xOffset + 1) then
-			game.castle2 = castle_module.CastleViewController:new{castleName = "red_castle"}  --todo calculate types count
+			game.castle2 = castle_module.CastleViewController:new{castleName = "castle2", location = "right"}
 			game.castle2.yLevel = nY + 1
 			game.castle2.absX = i * game.pixel
 			game.castle2.absY = game.castle2.yLevel * game.pixel			

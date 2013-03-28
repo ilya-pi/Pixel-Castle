@@ -43,45 +43,6 @@ local function gameLoop()
         game.cameraState = "CASTLE1_FOCUS"
         game:nextState()
     end
-
-    --[[
-        if (game.bullet == nil or game.bullet.x == nil or game.bullet.y == nil) then
-
-            if (game.state == "PLAYER1" or game.state == "PLAYER2") then
-
-                -- state transition check
-                if game.castle2:isDestroyed(game) then
-                    game.state = "PLAYER2_LOST"
-                    game.cameraState = "CASTLE2_FOCUS"
-                elseif game.castle1:isDestroyed(game) then
-                    game.state = "PLAYER1_LOST"
-                    game.cameraState = "CASTLE1_FOCUS"
-                end
-
-                -- state interaction
-                if (game.state == "PLAYER1") then
-                    game.cameraState = "CASTLE1_FOCUS"
-                    controls1:show()
-                    controls1:render(30, 200)
-                elseif (game.state == "PLAYER2") then
-                    game.cameraState = "CASTLE2_FOCUS"
-                    controls2:show()
-                    controls2:render(300, 200)
-                end
-            end
-
-            if (game.state == "PLAYER1_LOST" or game.state == "PLAYER2_LOST") then
-                game.state = "END"
-                local message = "First player won"
-                if (game.state == "PLAYER1_LOST") then
-                    message = "Second player won"
-                end
-                local t = display.newText(message, 0, 0, "AmericanTypewriter-Bold", 36)
-                t.x, t.y = display.contentCenterX, display.contentCenterY
-                t:setTextColor(214, 79, 116)
-            end
-        end
-    ]]
 end
 
 local impulse = 11
@@ -95,8 +56,8 @@ end
 
 local function eventPlayer1Fire()
     controls1:hide()
-    local cannonX = (game.castle1xOffset + game.castleWidth / 2) * game.pixel
-    local cannonY = game.worldHeight - (game.castle1.yLevel + game.castleHeight + game.cannonYOffset) * game.castleHeight
+    local cannonX = game.castle1:cannonX()
+    local cannonY = game.castle1:cannonY()
     game.bullet = bullet_module.Bullet:new({game = game, world = world})
     game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(controls1:getAngle())), impulse * math.cos(math.rad(controls1:getAngle())))
     game.cameraState = "CANNONBALL_FOCUS"
@@ -104,8 +65,8 @@ end
 
 local function eventPlayer2Fire()
     controls2:hide()
-    local cannonX = (game.castle2xOffset + game.castleWidth / 2) * game.pixel
-    local cannonY = game.worldHeight - (game.castle2.yLevel + game.castleHeight + game.cannonYOffset) * game.castleHeight
+    local cannonX = game.castle2:cannonX()
+    local cannonY = game.castle2:cannonY()
     game.bullet = bullet_module.Bullet:new({game = game, world = world})
     game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(controls2:getAngle())), impulse * math.cos(math.rad(controls2:getAngle())))
     game.cameraState = "CANNONBALL_FOCUS"
