@@ -1,5 +1,5 @@
-[
-  {
+{
+  "cloud1": {
     "height": 7,
     "width": 22,
     "name": "cloud1",
@@ -622,7 +622,7 @@
       255
     ]
   },
-  {
+  "cloud2": {
     "height": 5,
     "width": 16,
     "name": "cloud2",
@@ -949,4 +949,4 @@
       255
     ]
   }
-]
+}

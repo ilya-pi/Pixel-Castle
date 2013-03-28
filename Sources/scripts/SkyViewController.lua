@@ -28,12 +28,17 @@ function SkyViewController:render(physics, world, game)
 
     local worldWidth = game.worldWidth / game.pixel -- in Pixels
     local clouds = imageHelper.loadImageData("data/clouds.json") --todo move to static initialization
-    local cloudsCount = table.getn(clouds)
+    local cloudsCount = 0
+    local keysTable = {}
+    for k,v in pairs(clouds) do
+        cloudsCount = cloudsCount + 1
+        table.insert(keysTable, k)
+    end
 
     local cloudXright = 2
     while cloudXright < worldWidth do
         local type = math.random(cloudsCount)
-        local newCloud = clouds[type]
+        local newCloud = clouds[keysTable[type]]
         if (cloudXright + cloudMargin + newCloud.width < worldWidth) then
             local yPosition = math.random(minCloudY, maxCloudY - cloudMargin - newCloud.height)
             local xPosition = math.random(cloudXright + cloudMargin, cloudXright + maxDistanceBetweenClouds)

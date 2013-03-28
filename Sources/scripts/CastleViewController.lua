@@ -19,12 +19,7 @@ function CastleViewController:render(physics, world, game, x, y) --todo remove r
     local worldHeight = game.worldHeight / game.pixel
 
     local castles = imageHelper.loadImageData("data/castles.json") --todo move to static initialization
-    local castle
-    for i=1, table.getn(castles), 1 do --todo modify json to get castle by name?
-        if (castles[i].name == self.castleName) then
-            castle = castles[i]
-        end
-    end
+    local castle = castles[self.castleName]
 
     self.leftX = x * game.pixel
     self.rightX = (x + castle.width) * game.pixel

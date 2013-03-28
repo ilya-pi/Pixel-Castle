@@ -11,7 +11,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PNGParser {
 
@@ -44,11 +46,12 @@ public class PNGParser {
             File folder = new File("src/main/resources/" + imageFolder);
             File[] listOfFiles = folder.listFiles();
             if (listOfFiles != null) {
-                List<ImageData> imagesForJson = new ArrayList<ImageData>();
+                Map<String, ImageData> imagesForJson = new HashMap<String, ImageData>();
                 for (File file : listOfFiles) { //todo filter out non extension files
                     System.out.println("processing file = " + file.getName());
-                    ImageData imageData = parseImage(file);
-                    imagesForJson.add(imageData);
+                    String name = FilenameUtils.removeExtension(file.getName());
+                    ImageData imageData = parseImage(file, name);
+                    imagesForJson.put(name, imageData);
                 }
                 String jsonString = gson.toJson(imagesForJson);
                 FileUtils.writeStringToFile(new File(outputFolder + "/" + imageFolder + ".json"), jsonString);
@@ -56,8 +59,7 @@ public class PNGParser {
         }
     }
 
-    private static ImageData parseImage(File file) throws IOException {
-        String name = FilenameUtils.removeExtension(file.getName());
+    private static ImageData parseImage(File file, String name) throws IOException {
         List<Integer> pixels = new ArrayList<Integer>(2000);
         BufferedImage image = ImageIO.read(file); //todo catch exceptions?
         int width = image.getWidth();
