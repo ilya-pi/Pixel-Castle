@@ -26,7 +26,7 @@ function CastleViewController:render(physics, world, game, x, y) --todo remove r
     local topYPixels = worldHeight - y - castle.height + 1
     self.topY = topYPixels * game.pixel
 
-    local pixels = imageHelper.renderImage(x, topYPixels, castle, game)  --todo: explain magic numbers
+    local pixels = imageHelper.renderImage(x, topYPixels, castle, game.pixel)  --todo: explain magic numbers
     for i,v in ipairs(pixels) do
         self.bricks[i] = v
         world:insert(v)

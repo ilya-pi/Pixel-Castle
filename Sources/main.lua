@@ -21,7 +21,7 @@ local world = display.newGroup()
 -- todo sergey: move to a specific object
 local controls1
 local controls2
-local wind = wind_module.Wind:new({ x = 10, y = 10 })
+local wind = wind_module.Wind:new({ x = 1, y = 1, game = game })
 
 -- Main game loop
 local function gameLoop()

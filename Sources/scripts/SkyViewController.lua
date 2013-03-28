@@ -44,7 +44,7 @@ function SkyViewController:render(physics, world, game)
             local xPosition = math.random(cloudXright + cloudMargin, cloudXright + maxDistanceBetweenClouds)
             cloudXright = xPosition + newCloud.width
 
-            pixels = imageHelper.renderImage(xPosition, yPosition, newCloud, game)
+            pixels = imageHelper.renderImage(xPosition, yPosition, newCloud, game.pixel)
             for i,v in ipairs(pixels) do
                 world:insert(v)
             end

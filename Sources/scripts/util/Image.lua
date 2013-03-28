@@ -2,7 +2,7 @@ module(..., package.seeall)
 
 dkjson = require("scripts.util.dkjson")
 
-function renderImage(xPosition, yPosition, image, game)
+function renderImage(xPosition, yPosition, image, pixel)
     local pixels = {}
     local primitiveColorsCount = 4
     for y = 0, image.height - 1 do
@@ -13,9 +13,9 @@ function renderImage(xPosition, yPosition, image, game)
             local b = image.pixels[rPosition + 2]
             local a = image.pixels[rPosition + 3]
             if (a ~= 0) then
-                local left = (xPosition + x) * game.pixel
-                local top = (yPosition + y) * game.pixel
-                local pixel = display.newRect(left, top, game.pixel, game.pixel)
+                local left = (xPosition + x) * pixel
+                local top = (yPosition + y) * pixel
+                local pixel = display.newRect(left, top, pixel, pixel)
                 pixel.strokeWidth = 0
                 pixel:setFillColor(r, g, b, a)
                 pixel:setStrokeColor(r, g, b, a)
