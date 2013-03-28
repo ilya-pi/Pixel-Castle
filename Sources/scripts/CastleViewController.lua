@@ -1,6 +1,6 @@
 module(..., package.seeall)
 
-imageHelper = require("scripts.util.Image")
+imageHelper = require("scripts.util.image")
 
 CastleViewController = {}
 

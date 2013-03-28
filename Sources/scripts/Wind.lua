@@ -1,7 +1,7 @@
 module(..., package.seeall)
 
 physics = require("physics")
-imageHelper = require("scripts.util.Image")
+imageHelper = require("scripts.util.image")
 
 Wind = {}
 
