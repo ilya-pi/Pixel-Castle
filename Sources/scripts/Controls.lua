@@ -109,7 +109,7 @@ function Controls:new(o)
     o.button:setReferencePoint(display.TopLeftReferencePoint)
     o.group:insert(o.button)
 
-    o.buttonText = display.newText("FIRE", -100, -100, native.systemFontBold, 12)
+    o.buttonText = display.newText("BANG", -100, -100, native.systemFontBold, 12)
     o.buttonText:setReferencePoint(display.CenterReferencePoint);
     o.buttonText:setTextColor(255, 255, 255)
     o.group:insert(o.buttonText)

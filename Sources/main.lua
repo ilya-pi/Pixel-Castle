@@ -7,6 +7,7 @@ physics.setGravity(0, 9.8)
 
 local game_module = require("scripts.GameModel")
 local sky_module = require("scripts.SkyViewController")
+local background_module = require("scripts.Background")
 local earth_module = require("scripts.EarthViewController")
 local camera_module = require("scripts.util.Camera")
 local controls_module = require("scripts.Controls")
@@ -16,7 +17,14 @@ local wind_module = require("scripts.Wind")
 local game = game_module.GameModel:new()
 
 local splash = require("scripts.splash")
+local sky = display.newGroup()
+sky.distanceRatio = 0.4
+local background = display.newGroup()
+background.distanceRatio = 0.7
 local world = display.newGroup()
+world.distanceRatio = 1.0
+
+
 
 -- todo sergey: move to a specific object
 local controls1
@@ -106,10 +114,13 @@ local function startGame()
 
     game:setState("P1")
 
-    local camera = camera_module.Camera:new({ game = game, world = world, display = display, listener = cameraListener })
+    local camera = camera_module.Camera:new({ game = game, world = world, sky = sky, background = background, listener = cameraListener })
 
-    local sky = sky_module.SkyViewController:new()
-    sky:render(physics, world, game)
+    local skyObj = sky_module.SkyViewController:new()
+    skyObj:render(sky, game)
+
+    local backgroundObj = background_module.Background:new()
+    backgroundObj:render(background, game)
 
     local earth = earth_module.EarthViewController:new()
     earth:render(physics, world, game)

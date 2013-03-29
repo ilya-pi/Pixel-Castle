@@ -1,9 +1,10 @@
 module(..., package.seeall)
 
-Camera = {game = nil, world = nil, display = nil}	
+Camera = {game = nil, world = nil, sky = nil, background = nil}
 
 -- Constructor
 -- Requires object with game, world and display parametres
+--todo: refactor code duplication
 function Camera:new (o)
 	o = o or {}   -- create object if user does not provide one
 	setmetatable(o, self)
@@ -11,7 +12,7 @@ function Camera:new (o)
 	return o
 end
 
-local function calculateX(desiredX, game, display)
+local function calculateX(desiredX, game)
 	if (desiredX < display.contentWidth / 2) then
 		return 0
 	elseif (desiredX > game.worldWidth - display.contentWidth / 2) then
@@ -21,7 +22,7 @@ local function calculateX(desiredX, game, display)
 	end
 end
 
-local function calculateY(desiredY, game, display)
+local function calculateY(desiredY, game)
 	if (desiredY < display.contentHeight / 4) then
 		return 0
 	elseif (desiredY > game.worldHeight - 3 * display.contentHeight / 4) then
@@ -35,20 +36,20 @@ end
 function Camera:moveCamera()		
 	if (self.game.cameraState == "CASTLE1_FOCUS") then		
 		if (self.game.castle1 ~= nil) then
---[[
-			local cannonX = (self.game.castle1xOffset + self.game.castleWidth / 2) * self.game.pixel
-			local cannonY =  self.game.worldHeight - (self.game.castle1.yLevel + self.game.castleHeight + self.game.cannonYOffset) * self.game.castleHeight
-]]
 			local cannonX = self.game.castle1:cannonX()
 			local cannonY =  self.game.castle1:cannonY()
-			transition.to(self.world, {time = 100, x = calculateX(cannonX, self.game, self.display), y = calculateY(cannonY, self.game, self.display), onComplete = self.listener})
+			transition.to(self.world, {time = 100, x = calculateX(cannonX, self.game), y = calculateY(cannonY, self.game), onComplete = self.listener})
+			transition.to(self.sky, {time = 100, x = calculateX(cannonX, self.game) * self.sky.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
+			transition.to(self.background, {time = 100, x = calculateX(cannonX, self.game) * self.background.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
 			self.game.cameraState = "FOCUSING"
 		end	
 	elseif (self.game.cameraState == "CASTLE2_FOCUS") then
 		if (self.game.castle2 ~= nil) then
 			local cannonX = self.game.castle2:cannonX()
 			local cannonY =  self.game.castle2:cannonY()
-			transition.to(self.world, {time = 100, x = calculateX(cannonX, self.game, self.display), y = calculateY(cannonY, self.game, self.display), onComplete = self.listener})
+			transition.to(self.world, {time = 100, x = calculateX(cannonX, self.game), y = calculateY(cannonY, self.game), onComplete = self.listener})
+			transition.to(self.sky, {time = 100, x = calculateX(cannonX, self.game) * self.sky.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
+			transition.to(self.background, {time = 100, x = calculateX(cannonX, self.game) * self.background.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
 			self.game.cameraState = "FOCUSING"
 		end		
 	elseif (self.game.cameraState == "CANNONBALL_FOCUS") then
@@ -56,8 +57,12 @@ function Camera:moveCamera()
 --            print("Camera coords")
 --            print(self.game.bullet:getX())
 --            print(self.game.bullet:getY())
-			self.world.x = calculateX(self.game.bullet:getX(), self.game, self.display)
-			self.world.y = calculateY(self.game.bullet:getY(), self.game, self.display)
+			self.world.x = calculateX(self.game.bullet:getX(), self.game)
+			self.world.y = calculateY(self.game.bullet:getY(), self.game)
+			self.sky.x = calculateX(self.game.bullet:getX(), self.game) * self.sky.distanceRatio
+			self.sky.y = calculateY(self.game.bullet:getY(), self.game)
+			self.background.x = calculateX(self.game.bullet:getX(), self.game) * self.background.distanceRatio
+			self.background.y = calculateY(self.game.bullet:getY(), self.game)
 		end
 	elseif (self.game.cameraState == "FOCUSING") then
 		-- do nothing

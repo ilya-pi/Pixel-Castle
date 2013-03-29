@@ -14,7 +14,7 @@ end
 
 -- physics — physics object to attach to
 -- world - display group for the whole scene
-function SkyViewController:render(physics, world, game)
+function SkyViewController:render(world, game)
     local sky = display.newRect(0, 0, game.worldWidth, game.worldHeight)
     sky:setFillColor(207, 229, 130)
     sky:setStrokeColor(207, 229, 130)
@@ -44,7 +44,7 @@ function SkyViewController:render(physics, world, game)
             local xPosition = math.random(cloudXright + cloudMargin, cloudXright + maxDistanceBetweenClouds)
             cloudXright = xPosition + newCloud.width
 
-            pixels = imageHelper.renderImage(xPosition, yPosition, newCloud, game.pixel)
+            local pixels = imageHelper.renderImage(xPosition, yPosition, newCloud, game.pixel)
             for i,v in ipairs(pixels) do
                 world:insert(v)
             end
