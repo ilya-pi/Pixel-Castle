@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class PNGParser {
 
-    public static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    public static Gson gson = new GsonBuilder().create();
     public static Configuration config;
 
     public static class ImageData {
