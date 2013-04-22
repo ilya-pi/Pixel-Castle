@@ -24,12 +24,9 @@ background.distanceRatio = 0.7
 local world = display.newGroup()
 world.distanceRatio = 1.0
 
-
-
 -- todo sergey: move to a specific object
 local controls1
 local controls2
-local wind = wind_module.Wind:new({ x = 1, y = 1, game = game })
 
 -- Main game loop
 local function gameLoop()
@@ -88,12 +85,12 @@ local function eventBulletRemoved()
 end
 
 local function eventPlayer1Active()
-    wind:update()
+    game.wind:update()
     controls1:show()
 end
 
 local function eventPlayer2Active()
-    wind:update()
+    game.wind:update()
     controls2:show()
 end
 
@@ -117,6 +114,8 @@ local function startGame()
 
     local skyObj = sky_module.SkyViewController:new()
     skyObj:render(sky, game)
+
+    game.wind = wind_module.Wind:new({ x = 1, y = 1, game = game })    
 
     local backgroundObj = background_module.Background:new()
     backgroundObj:render(background, game)
