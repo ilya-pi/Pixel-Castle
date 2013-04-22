@@ -26,6 +26,17 @@ function renderImage(xPosition, yPosition, image, pixel)
     return pixels
 end
 
+function pixel(x, y, image)
+    local pixels = {}
+    local primitiveColorsCount = 4
+    local rPosition = image.width * (y % image.height) * primitiveColorsCount + (x % image.width) * primitiveColorsCount
+    local r = image.pixels[rPosition]
+    local g = image.pixels[rPosition + 1]
+    local b = image.pixels[rPosition + 2]
+    local a = image.pixels[rPosition + 3]
+    return {r, g, b, a}
+end
+
 function loadImageData(filename)
     -- set default base dir if none specified
     local base = system.ResourceDirectory
