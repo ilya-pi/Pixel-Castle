@@ -36,20 +36,24 @@ local function gameLoop()
 
     if (game.state.name == "P1") then
         controls1:render(30, 200)
-    elseif (game.state.name == "BULLET") then
+    elseif (game.state.name == "BULLET1" or game.state.name == "BULLET2") then
         if (game.bullet ~= nil and not game.bullet:isAlive()) then
             game.bullet:remove()
             game.bullet = nil
-            game:nextState()
+            if (game.state.name == "BULLET1") then
+                game:goto("MOVE_TO_P2")
+            else
+                game:goto("MOVE_TO_P1")
+            end
         end
     elseif (game.state.name == "MOVE_TO_P2") then
         game.cameraState = "CASTLE2_FOCUS"
-        game:nextState()
+        game:goto("P2")
     elseif (game.state.name == "P2") then
         controls2:render(300, 200)
     elseif (game.state.name == "MOVE_TO_P1") then
         game.cameraState = "CASTLE1_FOCUS"
-        game:nextState()
+        game:goto("P1")
     end
 end
 
@@ -81,21 +85,16 @@ local function eventPlayer2Fire()
 end
 
 local function eventBulletRemoved()
-    --move camera to next player
-    --todo: camera:moveTo(x, y) -> listener(game:nextState())
 end
 
 local function eventPlayer1Active()
     wind:update()
     controls1:show()
-    --todo: button.push -> listener(game:nextState)
 end
 
 local function eventPlayer2Active()
     wind:update()
     controls2:show()
---    random_carma(castle)
-    --todo: button.push -> listener(game:nextState)
 end
 
 
@@ -105,12 +104,12 @@ local function startGame()
     --todo pre-step P1
     game.cameraState = "CASTLE1_FOCUS"
 
-    game:addState({ name = "P1", listener = eventPlayer1Fire })
-    game:addState({ name = "BULLET", listener = eventBulletRemoved })
-    game:addState({ name = "MOVE_TO_P2", listener = eventPlayer2Active })
-    game:addState({ name = "P2", listener = eventPlayer2Fire })
-    game:addState({ name = "BULLET", listener = eventBulletRemoved })
-    game:addState({ name = "MOVE_TO_P1", listener = eventPlayer1Active })
+    game:addState({ name = "P1", transitions = {BULLET1 = eventPlayer1Fire} })
+    game:addState({ name = "BULLET1", transitions = {MOVE_TO_P2 = eventBulletRemoved} })
+    game:addState({ name = "MOVE_TO_P2", transitions = { P2 = eventPlayer2Active} })
+    game:addState({ name = "P2", transitions = {BULLET2 = eventPlayer2Fire} })
+    game:addState({ name = "BULLET2", transitions = {MOVE_TO_P1 = eventBulletRemoved} })    
+    game:addState({ name = "MOVE_TO_P1", transitions = { P1 = eventPlayer1Active } })
 
     game:setState("P1")
 
@@ -127,8 +126,8 @@ local function startGame()
 
     controls1 = controls_module.Controls:new({ angle = 45, x = 30, y = 200 })
     controls2 = controls_module.Controls:new({ angle = -45, x = 300, y = 200 })
-    controls1.button:addEventListener("touch", function() game:nextState() end)
-    controls2.button:addEventListener("touch", function() game:nextState() end)
+    controls1.button:addEventListener("touch", function() game:goto("BULLET1") end)
+    controls2.button:addEventListener("touch", function() game:goto("BULLET2") end)
 
     --    Runtime:addEventListener("collision", onCollision)
     Runtime:addEventListener("enterFrame",

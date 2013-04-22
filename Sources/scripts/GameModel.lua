@@ -1,5 +1,7 @@
 module(..., package.seeall)
 
+-- local dataDumper = require("scripts.ext.DataDumper")
+
 GameModel = {
     delay = 100,
 	pixel = 10,
@@ -27,28 +29,19 @@ function GameModel:new(o)
 	return o
 end
 
+-- state looks like {name = "STATE_NAME", transitions = {SECOND_STATE_NAME = transitionMethod, THIRD_STATE_NAME = thirdTransitionMethod}}
 function GameModel:addState(state)
-    table.insert(self.states, state)
+    self.states[state.name] = state
 end
 
-function GameModel:setState(stateName)
-    for i, v in ipairs(self.states) do
-        if (v.name == stateName) then
-            self.stateNumber = i
-            self.state = v
-            break
-        end
-    end
+function GameModel:setState(stateName)        
+    self.state = self.states[stateName]
 end
 
-function GameModel:nextState()
-    self.state.listener()
-    self.stateNumber = self.stateNumber + 1
-    if(self.stateNumber > table.getn(self.states)) then
-        self.stateNumber = 1
-    end
-    self.state = self.states[self.stateNumber]
-    print("In state " .. self.state.name)
+function GameModel:goto(gotoState)
+    print(self.state.name .. ' -> ' .. gotoState)
+    self.state.transitions[gotoState]()
+    self.state = self.states[gotoState]
 end
 
 
