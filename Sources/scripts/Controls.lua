@@ -2,24 +2,17 @@ module(..., package.seeall)
 
 Controls = {}
 
-local blackBorderWidth = 5
-local touchAreaWidth = 130
-local touchAreaHeight = 38
-local buttonHeight, buttonWidth = touchAreaHeight, touchAreaHeight
-local angleCircleRadius = 33
-local circleTouchPadding = 12
-local buttonTouchPadding = 12
-local linePadding = 4
-local lineThickness = 1
-
-local fullHeight = angleCircleRadius * 2 + touchAreaHeight + circleTouchPadding
-local fullWidth = touchAreaWidth + buttonWidth + buttonTouchPadding
+local padding = 10
+local scaleFactor = 0.5
+local touchScaleFactor = 8
 
 function Controls:calculateCoordinates()
-    self.angleCircleX = self.x + touchAreaWidth / 2 + 4
-    self.angleCircleY = self.y + angleCircleRadius
+--[[
+    self.angleCircleX = self.x
+    self.angleCircleY = self.y
+]]
 
-    self.angleHorisontalLineX1 = self.angleCircleX - angleCircleRadius + linePadding
+--[[    self.angleHorisontalLineX1 = self.angleCircleX - angleCircleRadius + linePadding
     self.angleHorisontalLineY1 = self.angleCircleY
     self.angleHorisontalLineX2 = self.angleCircleX + angleCircleRadius - linePadding
     self.angleHorisontalLineY2 = self.angleCircleY
@@ -40,32 +33,15 @@ function Controls:calculateCoordinates()
     self.buttonY = self.touchY
 
     self.buttonTextX = self.buttonX + buttonWidth/2 + 3
-    self.buttonTextY = self.buttonY + buttonHeight/2 + 3
+    self.buttonTextY = self.buttonY + buttonHeight/2 + 3]]
 end
 
 function Controls:setCoordinates()
-    self.angleCircle.x = self.angleCircleX
-    self.angleCircle.y = self.angleCircleY
-    self.angleHorisontalLine.x = self.angleHorisontalLineX1
-    self.angleHorisontalLine.y = self.angleHorisontalLineY1
-    self.angleText.x = self.angleTextX
-    self.angleText.y = self.angleTextY
+    self.group.x = self.x
+    self.group.y = self.y
+
     self.angleText.text = self.angle .. "°"
-    --print(self)
-
-    self.touchArea.x = self.touchX
-    self.touchArea.y = self.touchY
-
-    self.button.x = self.buttonX
-    self.button.y = self.buttonY
-    self.buttonText.x = self.buttonTextX
-    self.buttonText.y = self.buttonTextY
-
-    self.angleVectorLine:removeSelf()
-    self.angleVectorLine = display.newLine(self.angleVectorLineX1, self.angleVectorLineY1, self.angleVectorLineX2, self.angleVectorLineY2)
-    self.angleVectorLine.width = lineThickness
-    self.angleVectorLine:setColor(0, 0, 0)
-    self.group:insert(self.angleVectorLine)
+    self.angleLine.rotation = self.angle
 end
 
 -- Constructor
@@ -76,73 +52,63 @@ function Controls:new(o)
 
     --creating objects
     o.group = display.newGroup()
-    o.angleCircle = display.newCircle(-100, -100, angleCircleRadius)
-    o.angleCircle.strokeWidth = blackBorderWidth
-    o.angleCircle:setStrokeColor(0, 0, 0)
-    o.angleCircle:setFillColor(255, 255, 255)
-    o.group:insert(o.angleCircle)
 
-    o.angleHorisontalLine = display.newLine(0, -100, (angleCircleRadius - linePadding)*2, -100)
-    o.angleHorisontalLine.width = lineThickness
-    o.angleHorisontalLine:setColor(0, 0, 0)
-    o.group:insert(o.angleHorisontalLine)
+    o.circle = display.newImage("images/castle_control/circle.png")
+    o.circle:scale(scaleFactor, scaleFactor)
+    o.circle.x = 0
+    o.circle.y = 0
+    o.group:insert(o.circle)
 
-    o.angleText = display.newText( "fake", -100, -100, native.systemFont, 20) --todo change font
-    o.angleText:setReferencePoint(display.TopRightReferencePoint)
-    o.angleText.x = -100
-    o.angleText.y = -100
+    o.angleText = display.newText( o.angle .. "°", 0, 10, native.systemFont, 20) --todo change font
+    o.angleText:setReferencePoint(display.CenterReferencePoint)
+    o.angleText.x = 0
+    o.angleText.y = o.circle.height / 4 * scaleFactor - 4
     o.angleText:setTextColor(0, 0, 0)
     o.group:insert(o.angleText)
 
-    o.touchArea = display.newRect(-100, -100, touchAreaWidth, touchAreaHeight)
-    o.touchArea.strokeWidth = blackBorderWidth
-    o.touchArea:setStrokeColor(0, 0, 0)
-    o.touchArea:setFillColor(207, 229, 130)
-    o.touchArea:setReferencePoint(display.TopLeftReferencePoint)
-    o.group:insert(o.touchArea)
-    o.listener = o.touchArea:addEventListener("touch", o)
+    o.slidePad = display.newImage("images/castle_control/slide-pad.png")
+    o.slidePad:scale(scaleFactor, scaleFactor)
+    o.slidePad.x = 0
+    local yControls = (o.circle.height / 2 + padding * 2 + o.slidePad.height / 2) * scaleFactor
+    o.slidePad.y = yControls
+    o.listener = o.slidePad:addEventListener("touch", o)
+    o.group:insert(o.slidePad)
 
-    o.button = display.newRect(-100, -100, buttonWidth, buttonHeight)
-    o.button.strokeWidth = blackBorderWidth
-    o.button:setStrokeColor(0, 0, 0)
-    o.button:setFillColor(214, 79, 116)
-    o.button:setReferencePoint(display.TopLeftReferencePoint)
-    o.group:insert(o.button)
+    o.fireButton = display.newImage("images/castle_control/fire_button.png")
+    o.fireButton:scale(scaleFactor, scaleFactor)
+    o.fireButton.x = (o.slidePad.width / 2 + padding + o.fireButton.width / 2) * scaleFactor
+    o.fireButton.y = yControls
+    o.group:insert(o.fireButton)
 
-    o.buttonText = display.newText("BANG", -100, -100, native.systemFontBold, 12)
-    o.buttonText:setReferencePoint(display.CenterReferencePoint);
-    o.buttonText:setTextColor(255, 255, 255)
-    o.group:insert(o.buttonText)
+    o.angleLine = display.newImage("images/castle_control/angle_stick.png")
+    o.angleLine:scale(scaleFactor, scaleFactor)
+    o.angleLine:setReferencePoint(display.BottomCenterReferencePoint);
+    o.angleLine.x = 0
+    o.angleLine.y = 0
+    o.angleLine.rotation = o.angle
+    o.group:insert(o.angleLine)
 
-    o.angleVectorLine = display.newLine(0, 0, 0, 0)
-    o.group:insert(o.angleVectorLine)
-
+    o.world:insert(o.group)
     return o
 end
 
 function Controls:touch(event)
-    local angleNew = math.floor((event.x - self.x)/touchAreaWidth * 180 - 90)
-    if (angleNew < -90) then angleNew = -90 end
-    if (angleNew > 90) then angleNew = 90 end
-    self.angle = angleNew
-    --print(self)
+    if event.phase == "began" then
+        self.lastAngle = self.angle
+        self.beginX = event.x
+    elseif event.phase == "moved" then
+        self.delta = self.beginX - event.x
+        self.angle = self.lastAngle - round(self.delta / touchScaleFactor)
+        if (self.angle < -90) then self.angle = -90 end
+        if (self.angle > 90) then self.angle = 90 end
+    elseif event.phase == "ended" or event.phase == "cancelled" then
+        self.lastAngle = self.angle
+    end
 end
 
-function Controls:render(x, y)
---[[    local extBorder = display.newRect(x, y, fullWidth, fullHeight)
-    extBorder.strokeWidth = 1
-    extBorder:setStrokeColor(255, 0, 0)
-    extBorder:setFillColor(0, 0, 0, 0)]]
-    --print("x="..x .." y="..y .. " width="..fullWidth .. " height=".. fullHeight)
-
-    --if(self.x ~= x or self.y ~= y) then
-        self.x = x
-        self.y = y
-        self:calculateCoordinates()
-        self:setCoordinates()
-        --print(self)
-   --end
-    --(167, 185, 255)
+function Controls:render()
+    self:calculateCoordinates()
+    self:setCoordinates()
 end
 
 function Controls:hide()
@@ -155,6 +121,14 @@ end
 
 function Controls:getAngle()
     return self.angle
+end
+
+function round(x) --> (number)
+    if x >= 0 then
+        return math.ceil(x + 0.5)
+    else
+        return math.floor(x - 0.5)
+    end
 end
 
 

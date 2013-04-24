@@ -32,7 +32,7 @@ local controls2
 local function gameLoop()
 
     if (game.state.name == "P1") then
-        controls1:render(30, 200)
+        controls1:render()
     elseif (game.state.name == "BULLET1" or game.state.name == "BULLET2") then
         if (game.bullet ~= nil and not game.bullet:isAlive()) then
             game.bullet:remove()
@@ -47,7 +47,7 @@ local function gameLoop()
         game.cameraState = "CASTLE2_FOCUS"
         game:goto("P2")
     elseif (game.state.name == "P2") then
-        controls2:render(300, 200)
+        controls2:render()
     elseif (game.state.name == "MOVE_TO_P1") then
         game.cameraState = "CASTLE1_FOCUS"
         game:goto("P1")
@@ -123,10 +123,11 @@ local function startGame()
     local earth = earth_module.EarthViewController:new()
     earth:render(physics, world, game)
 
-    controls1 = controls_module.Controls:new({ angle = 45, x = 30, y = 200 })
-    controls2 = controls_module.Controls:new({ angle = -45, x = 300, y = 200 })
-    controls1.button:addEventListener("touch", function() game:goto("BULLET1") end)
-    controls2.button:addEventListener("touch", function() game:goto("BULLET2") end)
+
+    controls1 = controls_module.Controls:new({ world = world, angle = 45, x = game.castle1:cannonX(), y = game.castle1:cannonY()})
+    controls2 = controls_module.Controls:new({ world = world, angle = -45, x = game.castle2:cannonX(), y = game.castle2:cannonY()})
+    controls1.fireButton:addEventListener("tap", function() game:goto("BULLET1") end)
+    controls2.fireButton:addEventListener("tap", function() game:goto("BULLET2") end)
 
     --    Runtime:addEventListener("collision", onCollision)
     Runtime:addEventListener("enterFrame",
