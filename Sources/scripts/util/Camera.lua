@@ -13,22 +13,22 @@ function Camera:new (o)
 end
 
 local function calculateX(desiredX, game)
-	if (desiredX < display.contentWidth / 2) then
-		return 0
-	elseif (desiredX > game.worldWidth - display.contentWidth / 2) then
-		return - (game.worldWidth - display.contentWidth)
+	if (desiredX + display.screenOriginX < display.contentWidth / 2) then
+		return display.screenOriginX
+	elseif (desiredX - display.screenOriginX > game.worldWidth - display.contentWidth / 2) then
+		return - display.screenOriginX - (game.worldWidth - display.contentWidth)
 	else
-		return -desiredX + display.contentWidth / 2
+		return - desiredX + display.contentWidth / 2
 	end
 end
 
 local function calculateY(desiredY, game)
-	if (desiredY < display.contentHeight / 4) then
-		return 0
+	if (desiredY + display.screenOriginY < display.contentHeight / 4) then
+		return display.screenOriginY
 	elseif (desiredY > game.worldHeight - 3 * display.contentHeight / 4) then
-		return - (game.worldHeight - display.contentHeight)
-	else
-		return -desiredY + display.contentHeight / 4
+		return  - (game.worldHeight - display.contentHeight)
+    else
+		return - desiredY + display.contentHeight / 4
 	end	
 end
 

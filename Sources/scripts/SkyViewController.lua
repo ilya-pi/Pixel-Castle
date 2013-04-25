@@ -15,7 +15,7 @@ end
 -- physics — physics object to attach to
 -- world - display group for the whole scene
 function SkyViewController:render(world, game)
-    local sky = display.newRect(0, 0, game.worldWidth, game.worldHeight)
+    local sky = display.newRect(display.screenOriginX, display.screenOriginY, game.worldWidth, game.worldHeight)
     sky:setFillColor(207, 229, 130)
     sky:setStrokeColor(207, 229, 130)
     world:insert(sky)
@@ -52,8 +52,6 @@ function SkyViewController:render(world, game)
             cloudXright = worldWidth --TODO: refactor this condition to exit loop
         end
     end
-
-    --TODO: add parallax scrolling: 1-castles,ground,trees 2-pyramid,hills 3-sun,clouds
 
     print("Rendered sky with " .. tostring(game.worldWidth) .. ", " .. tostring(game.worldHeight))
 end

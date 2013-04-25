@@ -8,6 +8,9 @@ application =
 		scale = "zoomStretch",
 		fps = 30, 
 		launchpad = false,
+        scale = "letterbox",
+        xAlign = "center",
+        yAlign = "center"
 		-- antialias = true
 	},
 }

@@ -60,6 +60,8 @@ function Controls:new(o)
     o.angleLine.y = 0
     o.angleLine.rotation = o.angle
     o.group:insert(o.angleLine)
+    o.group.x = -1000
+    o.group.y = -1000
 
     o.world:insert(o.group)
     return o

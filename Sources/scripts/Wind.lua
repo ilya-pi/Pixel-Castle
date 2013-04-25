@@ -10,6 +10,9 @@ Wind = {}
 
 -- Constructor
 function Wind:new (o)
+    print("vieable content " .. display.viewableContentWidth .. " " .. display.contentHeight)
+    print("display content " .. display.contentWidth .. " " .. display.viewableContentHeight)
+    print("origin content " .. display.screenOriginX .. " " .. display.screenOriginY)
     o = o or {}   -- create object if user does not provide one
     setmetatable(o, self)
     self.__index = self
@@ -23,6 +26,10 @@ function Wind:new (o)
     o.wind_hud:setReferencePoint(display.TopLeftReferencePoint)
     o.wind_hud.x = 0
     o.wind_hud.y = 0
+
+    o.group:insert(o.wind_hud)
+    o.group.x = display.screenOriginX
+    o.group.y = display.screenOriginY
 
     local tmp = display.newImage("images/wind/triangle_left.png")
     o.arrowWidth = tmp.width * scaleFactor
@@ -56,6 +63,7 @@ function Wind:update()
         arrow.x = pixelsX
         arrow.y = pixelsY
         pixelsX = pixelsX + arrow.width * scaleFactor + pixelsPadding
+        self.group:insert(arrow)
         table.insert(self.pixels, arrow)
         self:drawPixels(pixelsX, pixelsY, math.abs(self.speed))
     elseif (self.speed > 0) then
@@ -67,6 +75,7 @@ function Wind:update()
         arrow:setReferencePoint(display.CenterLeftReferencePoint)
         arrow.x = pixelsX
         arrow.y = pixelsY
+        self.group:insert(arrow)
         table.insert(self.pixels, arrow)
     else
         --todo: draw 0?
@@ -82,6 +91,7 @@ function Wind:drawPixels(x, y, count)
         pixel:setReferencePoint(display.CenterLeftReferencePoint)
         pixel.x = currentX
         pixel.y = y
+        self.group:insert(pixel)
         table.insert(self.pixels, pixel)
         currentX = currentX + pixel.width * scaleFactor + pixelsPadding
     end
