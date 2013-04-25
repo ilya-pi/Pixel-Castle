@@ -1,13 +1,12 @@
 module(..., package.seeall)
 
 physics = require("physics")
-imageHelper = require("scripts.util.Image")
+
+local scaleFactor = 0.5
+local pixelsPadding = 1
+local leftMargin = 44
 
 Wind = {}
-
-local windPixel = 7
-
---todo: refactor this shit!!!!!!!!!!!
 
 -- Constructor
 function Wind:new (o)
@@ -16,41 +15,59 @@ function Wind:new (o)
     self.__index = self
     o.speed = 0
     o.pixels = {}
-    local assets = imageHelper.loadImageData("data/other.json")
-    local windWordImage = assets.wind_text
-    o.imgWidth = windWordImage.width
-    o.imgHeight = windWordImage.height
-    o.leftArrow = assets.left_wind_arrow
-    o.rightArrow = assets.right_wind_arrow
-    imageHelper.renderImage(o.x, o.y, windWordImage, windPixel)  --todo pixel size decreased so it doesn't depend on game.pixel
+
+    o.group = display.newGroup()
+
+    o.wind_hud = display.newImage("images/wind/wind_hud.png")
+    o.wind_hud:scale(scaleFactor, scaleFactor)
+    o.wind_hud:setReferencePoint(display.TopLeftReferencePoint)
+    o.wind_hud.x = 0
+    o.wind_hud.y = 0
+
+    local tmp = display.newImage("images/wind/triangle_left.png")
+    o.arrowWidth = tmp.width * scaleFactor
+    tmp:removeSelf()
+    tmp = display.newImage("images/wind/wind_point.png")
+    o.windPointWidth = tmp.width * scaleFactor
+    tmp:removeSelf()
+
     return o
 end
 
 function Wind:update()
     self.speed = math.random(-5, 5)
     physics.setGravity(self.speed, 9.8)
-    local pixelsX = (self.x + self.imgWidth + 3) * windPixel
-    local pixelsY = (self.y + self.imgHeight/2 - 0.5) * windPixel
+
+    local centerOfArrow = (self.wind_hud.width * scaleFactor - leftMargin) / 2 + leftMargin
+    local lengthOfArrow = self.arrowWidth + pixelsPadding + math.abs(self.speed) * self.windPointWidth + (math.abs(self.speed) - 1) * pixelsPadding
+    local pixelsX = centerOfArrow - lengthOfArrow / 2
+    --local pixelsX = leftMargin
+    local pixelsY = self.wind_hud.height / 2 * scaleFactor - 2
+
     for i, v in ipairs(self.pixels) do
         v:removeSelf()
         self.pixels[i] = nil
     end
 
     if (self.speed < 0) then
-        local arrowTable = imageHelper.renderImage(pixelsX / windPixel, self.y, self.leftArrow, windPixel)
-        pixelsX = pixelsX + (self.leftArrow.width + 1) * windPixel
-        for i, v in ipairs(arrowTable) do
-            table.insert(self.pixels, v)
-        end
-
+        local arrow = display.newImage("images/wind/triangle_left.png")
+        arrow:scale(scaleFactor, scaleFactor)
+        arrow:setReferencePoint(display.CenterLeftReferencePoint)
+        arrow.x = pixelsX
+        arrow.y = pixelsY
+        pixelsX = pixelsX + arrow.width * scaleFactor + pixelsPadding
+        table.insert(self.pixels, arrow)
         self:drawPixels(pixelsX, pixelsY, math.abs(self.speed))
     elseif (self.speed > 0) then
         local lineEndX = self:drawPixels(pixelsX, pixelsY, math.abs(self.speed))
         pixelsX = lineEndX
-        local arrowTable = imageHelper.renderImage(pixelsX / windPixel, self.y, self.rightArrow, windPixel)
-        for i, v in ipairs(arrowTable) do
-            table.insert(self.pixels, v)
-        end
+
+        local arrow = display.newImage("images/wind/triangle_right.png")
+        arrow:scale(scaleFactor, scaleFactor)
+        arrow:setReferencePoint(display.CenterLeftReferencePoint)
+        arrow.x = pixelsX
+        arrow.y = pixelsY
+        table.insert(self.pixels, arrow)
     else
         --todo: draw 0?
     end
@@ -58,13 +75,15 @@ end
 
 function Wind:drawPixels(x, y, count)
     local currentX = x
+    print(count)
     for i = 1, count do
-        local pixel = display.newRect(currentX, y, windPixel, windPixel) --todo pixel size decreased so it doesn't depend on game.pixel
-        pixel.strokeWidth = 0
-        pixel:setFillColor(26, 55, 37, 255)
-        pixel:setStrokeColor(26, 55, 37, 255)
+        local pixel = display.newImage("images/wind/wind_point.png")
+        pixel:scale(scaleFactor, scaleFactor)
+        pixel:setReferencePoint(display.CenterLeftReferencePoint)
+        pixel.x = currentX
+        pixel.y = y
         table.insert(self.pixels, pixel)
-        currentX = currentX + windPixel * 2
+        currentX = currentX + pixel.width * scaleFactor + pixelsPadding
     end
     return currentX
 end

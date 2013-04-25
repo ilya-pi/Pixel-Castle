@@ -7,33 +7,6 @@ local scaleFactor = 0.5
 local touchScaleFactor = 8
 
 function Controls:calculateCoordinates()
---[[
-    self.angleCircleX = self.x
-    self.angleCircleY = self.y
-]]
-
---[[    self.angleHorisontalLineX1 = self.angleCircleX - angleCircleRadius + linePadding
-    self.angleHorisontalLineY1 = self.angleCircleY
-    self.angleHorisontalLineX2 = self.angleCircleX + angleCircleRadius - linePadding
-    self.angleHorisontalLineY2 = self.angleCircleY
-
-    self.angleVectorLineX1 = self.angleCircleX
-    self.angleVectorLineY1 = self.angleCircleY
-    self.tmpAngle = math.rad(self.angle)
-    self.angleVectorLineX2 = (angleCircleRadius - linePadding) * math.sin(self.tmpAngle) + self.angleVectorLineX1
-    self.angleVectorLineY2 = -((angleCircleRadius - linePadding) * math.cos(self.tmpAngle)) + self.angleVectorLineY1
-
-    self.angleTextX = self.angleCircleX + 23
-    self.angleTextY = self.angleCircleY + 2
-
-    self.touchX = self.x
-    self.touchY = self.y + angleCircleRadius * 2 + circleTouchPadding
-
-    self.buttonX = self.x + touchAreaWidth + buttonTouchPadding
-    self.buttonY = self.touchY
-
-    self.buttonTextX = self.buttonX + buttonWidth/2 + 3
-    self.buttonTextY = self.buttonY + buttonHeight/2 + 3]]
 end
 
 function Controls:setCoordinates()

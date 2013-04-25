@@ -115,7 +115,8 @@ local function startGame()
     local skyObj = sky_module.SkyViewController:new()
     skyObj:render(sky, game)
 
-    game.wind = wind_module.Wind:new({ x = 1, y = 1, game = game })    
+    game.wind = wind_module.Wind:new({ x = 1, y = 1, game = game })
+    game.wind:update()
 
     local backgroundObj = background_module.Background:new()
     backgroundObj:render(background, game)
