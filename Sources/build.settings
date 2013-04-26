@@ -1,27 +1,39 @@
 settings = 
 {
-android =
-{
-versionCode = "1",
-installLocation="preferExternal"
-}, 
+    android =
+    {
+        versionCode = "1",
+        installLocation="preferExternal"
+    },
 
-   androidPermissions =
-   {
-       "android.permission.READ_PHONE_STATE",
-       "android.permission.VIBRATE"
+    androidPermissions =
+    {
+        "android.permission.READ_PHONE_STATE",
+        "android.permission.VIBRATE"
 	   
-   }, 
+    },
 
 	orientation = 
 	{
 		default = "landscapeLeft",
 		supported = 
 		{
-		"landscapeRight", "landscapeLeft",
+		    "landscapeRight", "landscapeLeft",
 		},
 					
-	}
+	},
+
+	iphone =
+	{
+        plist = {
+            UIAppFonts = {
+                "fonts/Trebuchet MS.ttf",
+                "fonts/Trebuchet MS Bold Italic.ttf",
+                "fonts/Trebuchet MS Bold.ttf",
+                "fonts/Trebuchet MS Italic.ttf"
+            }
+        },
+    },
 
 
 }
