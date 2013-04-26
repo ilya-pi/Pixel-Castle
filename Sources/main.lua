@@ -17,6 +17,7 @@ local wind_module = require("scripts.Wind")
 local game = game_module.GameModel:new()
 
 local splash = require("scripts.splash")
+local tutorial = require("scripts.tutorial")
 local sky = display.newGroup()
 sky.distanceRatio = 0.4
 local background = display.newGroup()
@@ -96,7 +97,6 @@ end
 
 
 local function startGame()
-    splash.dismissSplashScreen()
 
     --todo pre-step P1
     game.cameraState = "CASTLE1_FOCUS"
@@ -137,9 +137,22 @@ local function startGame()
         end)
 
     timer.performWithDelay(game.delay, gameLoop, 0)
+    tutorial.dismissTutorialScreen()
+end
+
+local function closeTutorialScreen()
+    startGame()
+end
+
+local function closeSplashScreen()
+    splash.dismissSplashScreen()
+    tutorial.tutorialScreen()
+    tutorial.tutorialImage:addEventListener("tap", closeTutorialScreen)
 end
 
 splash.splashScreen()
--- splash.fullSplash:addEventListener("tap", startGame)
-startGame()
+splash.fullSplash:addEventListener("tap", closeSplashScreen)
+
+
+--startGame()
 

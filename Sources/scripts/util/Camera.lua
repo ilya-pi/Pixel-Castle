@@ -24,10 +24,13 @@ end
 
 local function calculateY(desiredY, game)
 	if (desiredY + display.screenOriginY < display.contentHeight / 4) then
+        --print("1")
 		return display.screenOriginY
-	elseif (desiredY > game.worldHeight - 3 * display.contentHeight / 4) then
-		return  - (game.worldHeight - display.contentHeight)
+	elseif (desiredY - display.screenOriginY > game.worldHeight - 3 * display.contentHeight / 4) then
+        --print("2")
+		return  - display.screenOriginY - (game.worldHeight - display.contentHeight)
     else
+        --print("3")
 		return - desiredY + display.contentHeight / 4
 	end	
 end
