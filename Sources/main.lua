@@ -5,6 +5,8 @@ physics = require("physics")
 physics.start()
 physics.setGravity(0, 9.8)
 
+local imageHelper = require("scripts.util.Image")
+
 local game_module = require("scripts.GameModel")
 local sky_module = require("scripts.SkyViewController")
 local background_module = require("scripts.Background")
@@ -121,6 +123,9 @@ local function startGame()
     local backgroundObj = background_module.Background:new()
     backgroundObj:render(background, game)
 
+
+    -- tood preload level image map
+    game.level_map = imageHelper.loadImageData("data/level1.json");
     local earth = earth_module.EarthViewController:new()
     earth:render(physics, world, game)
 
