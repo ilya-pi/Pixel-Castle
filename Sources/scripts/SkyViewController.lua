@@ -1,6 +1,6 @@
 module(..., package.seeall)
 
-imageHelper = require("scripts.util.Image")
+local imageHelper = require("scripts.util.Image")
 
 SkyViewController = { clouds = true }
 
@@ -19,39 +19,9 @@ function SkyViewController:render(world, game)
     sky:setFillColor(207, 229, 130)
     sky:setStrokeColor(207, 229, 130)
     world:insert(sky)
-
-    --todo move configuration for clouds to config?
-    local cloudMargin = 5 -- in Pixels
-    local maxCloudY = 40 -- in Pixels
-    local minCloudY = 10 -- in Pixels
-    local maxDistanceBetweenClouds = 20 -- in Pixels
-
-    local worldWidth = game.worldWidth / game.pixel -- in Pixels
-    local clouds = imageHelper.loadImageData("data/clouds.json") --todo move to static initialization
-    local cloudsCount = 0
-    local keysTable = {}
-    for k,v in pairs(clouds) do
-        cloudsCount = cloudsCount + 1
-        table.insert(keysTable, k)
+    local pixels = imageHelper.renderImage(0, 0, game.level_map.sky, game.pixel)
+    for i,v in ipairs(pixels) do
+        world:insert(v)
     end
-
-    local cloudXright = 2
-    while cloudXright < worldWidth do
-        local type = math.random(cloudsCount)
-        local newCloud = clouds[keysTable[type]]
-        if (cloudXright + cloudMargin + newCloud.width < worldWidth) then
-            local yPosition = math.random(minCloudY, maxCloudY - cloudMargin - newCloud.height)
-            local xPosition = math.random(cloudXright + cloudMargin, cloudXright + maxDistanceBetweenClouds)
-            cloudXright = xPosition + newCloud.width
-
-            local pixels = imageHelper.renderImage(xPosition, yPosition, newCloud, game.pixel)
-            for i,v in ipairs(pixels) do
-                world:insert(v)
-            end
-        else
-            cloudXright = worldWidth --TODO: refactor this condition to exit loop
-        end
-    end
-
-    print("Rendered sky with " .. tostring(game.worldWidth) .. ", " .. tostring(game.worldHeight))
+    print("Rendered sky")
 end
