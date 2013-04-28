@@ -13,15 +13,9 @@ function Background:new(o)
 end
 
 function Background:render(world, game)
-    local assets = imageHelper.loadImageData("data/other.json") --todo move to static initialization
-    local pixels = imageHelper.renderImage(0, 30, assets.bg_pyramids, game.pixel)
+    local pixels = imageHelper.renderImage(0, 0, game.level_map.background, game.pixel)
     for i,v in ipairs(pixels) do
         world:insert(v)
     end
-    local pixels = imageHelper.renderImage(50, 30, assets.bg_pyramids, game.pixel)
-    for i,v in ipairs(pixels) do
-        world:insert(v)
-    end
-
-    print("Rendered background ")
+    print("Rendered background")
 end
