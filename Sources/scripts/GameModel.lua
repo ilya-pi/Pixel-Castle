@@ -10,12 +10,9 @@ GameModel = {
 	castleWidth = 10, -- in Pixel  todo castle width should be dynamic
 	castleHeight = 10, -- in Pixel todo castle height should be dynamic
 	groundYOffset = 3,
-	castle1xOffset = 5, -- in Pixel
-	castle2xOffset = 70, -- in Pixel
 	cannonYOffset = 5, -- in Pixel
 	cameraState = "CASTLE1_FOCUS", -- "CASTLE2_FOCUS", "CANNONBALL_FOCUS", "FOCUSING"
 	minCastleHealth = 70,
-
     state = "PLAYER1", -- "PLAYER2", "PLAYER1_LOST", "PLAYER2_LOST"
     stateNumber = 1,
     states = {}
