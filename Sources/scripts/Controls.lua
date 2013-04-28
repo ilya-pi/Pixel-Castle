@@ -71,7 +71,7 @@ function Controls:touch(event)
     if event.phase == "began" then
         self.lastAngle = self.angle
         self.beginX = event.x
-    elseif event.phase == "moved" then
+    elseif event.phase == "moved" and self.beginX ~= nil then        
         self.delta = self.beginX - event.x
         self.angle = self.lastAngle - round(self.delta / touchScaleFactor)
         if (self.angle < -90) then self.angle = -90 end
