@@ -21,9 +21,9 @@ local game = game_module.GameModel:new()
 local splash = require("scripts.splash")
 local tutorial = require("scripts.tutorial")
 local sky = display.newGroup()
-sky.distanceRatio = 0.4
+sky.distanceRatio = 0.6
 local background = display.newGroup()
-background.distanceRatio = 0.7
+background.distanceRatio = 0.8
 local world = display.newGroup()
 world.distanceRatio = 1.0
 
