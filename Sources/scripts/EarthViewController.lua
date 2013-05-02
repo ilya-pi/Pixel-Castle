@@ -21,7 +21,6 @@ function EarthViewController:render(physics, world, game)
 			local r, g, b, a = imageHelper.pixel(i, l, game.level_map.level)
 			-- Is it pink and should we render castle then?
 			if (r == 255 and g == 0 and b == 255 and a == 255) then
-				print("dablya! " .. i .. " " .. l)
 				local castleY = game.level_map.level.height - l
 				if (self.castleCount == 1) then
 					print("render first castle")

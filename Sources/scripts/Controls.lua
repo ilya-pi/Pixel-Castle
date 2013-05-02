@@ -79,6 +79,8 @@ function Controls:touch(event)
     elseif event.phase == "ended" or event.phase == "cancelled" then
         self.lastAngle = self.angle
     end
+    -- return true, so that touch event wont be fired for the background
+    return true
 end
 
 function Controls:render()

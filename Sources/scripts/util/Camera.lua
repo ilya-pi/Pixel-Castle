@@ -9,6 +9,15 @@ function Camera:new (o)
 	o = o or {}   -- create object if user does not provide one
 	setmetatable(o, self)
 	self.__index = self
+
+	-- camera pad to detect dragging worl by finger
+	-- todo ilya pimenov : refactor constants
+	o.cameraPad = display.newRect(0, 0, 1000, 600)
+	o.cameraPad:setFillColor(0, 0, 0, 150)
+	o.world:insert(o.cameraPad)
+	o.listener = o.cameraPad:addEventListener("touch", o)
+
+	o.name = "camera"
 	return o
 end
 
@@ -24,15 +33,36 @@ end
 
 local function calculateY(desiredY, game)
 	if (desiredY + display.screenOriginY < display.contentHeight / 4) then
-        --print("1")
 		return display.screenOriginY
 	elseif (desiredY - display.screenOriginY > game.worldHeight - 3 * display.contentHeight / 4) then
-        --print("2")
 		return  - display.screenOriginY - (game.worldHeight - display.contentHeight)
     else
-        --print("3")
 		return - desiredY + display.contentHeight / 4
 	end	
+end
+
+function Camera:touch(event)
+    if event.phase == "began" then
+        self.beginX = event.x
+        self.beginY = event.y
+    elseif event.phase == "moved" and self.beginX ~= nil then        
+        self.xDelta = self.beginX - event.x
+        self.beginX = event.x
+        self.yDelta = self.beginY - event.y
+        self.beginY = event.y
+
+        -- todo ilya pimenov: introduce world limits
+
+			self.world.x = self.world.x - self.xDelta
+			self.world.y = self.world.y - self.yDelta
+			self.sky.x = self.sky.x - self.xDelta * self.sky.distanceRatio
+			self.sky.y = self.sky.y - self.yDelta * self.sky.distanceRatio
+			self.background.x = self.background.x - self.xDelta * self.background.distanceRatio
+			self.background.y = self.background.y - self.yDelta * self.background.distanceRatio			
+    elseif event.phase == "ended" or event.phase == "cancelled" then
+    	-- todo ilya pimenov: put timer here to come back
+    end
+    return true
 end
 
 -- Camera follows bolder automatically
