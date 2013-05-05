@@ -17,8 +17,11 @@ local bullet_module = require("scripts.Bullet")
 local wind_module = require("scripts.Wind")
 
 local gameover_module = require("scripts.screens.GameOverScreen")
+local mainmenu_module = require("scripts.screens.MainMenuScreen")
 
 local game = game_module.GameModel:new()
+
+local mainMenuScreen = mainmenu_module.MainMenuScreen:new({game = game})
 
 local splash = require("scripts.splash")
 local tutorial = require("scripts.tutorial")
@@ -108,28 +111,14 @@ local function eventPlayer2Active()
     controls2:show()
 end
 
-local function gameover()
-    local gameoverScreen = gameover_module.GameOverScreen:new({game = game})
-    gameoverScreen:render()
-end
-
 local function startGame()
+    mainMenuScreen:dismiss()
 
     -- Loading game resources
     game.level_map = imageHelper.loadImageData("data/level1.json");
 
     --todo pre-step P1
     game.cameraState = "CASTLE1_FOCUS"
-
-    game:addState({ name = "P1", transitions = {BULLET1 = eventPlayer1Fire} })
-    game:addState({ name = "BULLET1", transitions = {MOVE_TO_P2 = eventBulletRemoved} })
-    game:addState({ name = "MOVE_TO_P2", transitions = { P2 = eventPlayer2Active, GAMEOVER = gameover} })
-    game:addState({ name = "P2", transitions = {BULLET2 = eventPlayer2Fire} })
-    game:addState({ name = "BULLET2", transitions = {MOVE_TO_P1 = eventBulletRemoved} })    
-    game:addState({ name = "MOVE_TO_P1", transitions = { P1 = eventPlayer1Active, GAMEOVER = gameover } })
-    game:addState({ name = "GAMEOVER", transitions = { } })
-
-    game:setState("P1")
 
     local camera = camera_module.Camera:new({ game = game, world = world, sky = sky, background = background, listener = cameraListener })
 
@@ -157,22 +146,29 @@ local function startGame()
         end)
 
     timer.performWithDelay(game.delay, gameLoop, 0)
-    tutorial.dismissTutorialScreen()
 end
 
-local function closeTutorialScreen()
-    startGame()
+local function gameOver()
+    local gameoverScreen = gameover_module.GameOverScreen:new({game = game})
+    gameoverScreen:render()
 end
 
-local function closeSplashScreen()
-    splash.dismissSplashScreen()
-    tutorial.tutorialScreen()
-    tutorial.tutorialImage:addEventListener("tap", closeTutorialScreen)
+local function init()
+
+    game:addState({ name = "MAINMENU", transitions = {P1 = startGame}})
+
+    game:addState({ name = "P1", transitions = {BULLET1 = eventPlayer1Fire} })
+    game:addState({ name = "BULLET1", transitions = {MOVE_TO_P2 = eventBulletRemoved} })
+    game:addState({ name = "MOVE_TO_P2", transitions = { P2 = eventPlayer2Active, GAMEOVER = gameOver} })
+    game:addState({ name = "P2", transitions = {BULLET2 = eventPlayer2Fire} })
+    game:addState({ name = "BULLET2", transitions = {MOVE_TO_P1 = eventBulletRemoved} })    
+    game:addState({ name = "MOVE_TO_P1", transitions = { P1 = eventPlayer1Active, GAMEOVER = gameOver } })
+    game:addState({ name = "GAMEOVER", transitions = { } })
+
+    game:setState("MAINMENU")
+
+    mainMenuScreen:render()
 end
 
-splash.splashScreen()
-splash.fullSplash:addEventListener("tap", closeSplashScreen)
-
-
---startGame()
+init()
 
