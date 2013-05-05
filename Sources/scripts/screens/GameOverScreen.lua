@@ -18,8 +18,8 @@ local function infoText(message, x, y, size, group)
     local text = display.newText(message, x, y, "TrebuchetMS-Bold", size)
     textShadow:setReferencePoint(display.CenterReferencePoint)
     text:setReferencePoint(display.CenterReferencePoint)
-    -- textShadow.x, textShadow.y = x + 2, y + 2
-    -- text.x, text.y = x, y
+    textShadow.x, textShadow.y = x + 2, y + 2
+    text.x, text.y = x, y
     group:insert(textShadow)
     group:insert(text)
     textShadow:setTextColor(255, 255, 255)
@@ -70,8 +70,8 @@ function GameOverScreen:render()
         playerText.text = "Player 2"
     end
 
-    infoText(self.game.castle1:health() .. " bricks", 20, display.contentHeight / 2 + 42, 24, self.displayGroup)
-    infoText(self.game.castle2:health() .. " bricks", 3 * display.contentWidth / 4, display.contentHeight / 2 + 42, 24, self.displayGroup)
+    infoText( self.game.castle1:healthPercent() .. " %", display.contentWidth / 6, display.contentHeight / 2 + 42, 24, self.displayGroup)
+    infoText( self.game.castle2:healthPercent() .. " %", 5 * display.contentWidth / 6, display.contentHeight / 2 + 42, 24, self.displayGroup)
 
     local mainMenuBtn = widget.newButton{
         id = "menubtn",
@@ -116,10 +116,10 @@ function GameOverScreen:render()
 
     local castles = imageHelper.loadImageData("data/castles.json") --todo move to static initialization
 
-    for i,v in ipairs(imageHelper.renderImage(5, 20, castles["castle1"], 5)) do
+    for i,v in ipairs(imageHelper.renderImage((display.contentWidth / 6) / 5 - 10, 18, castles["castle1"], 5)) do
         self.displayGroup:insert(v)
     end
-    for i,v in ipairs(imageHelper.renderImage(75, 20, castles["castle2"], 5)) do
+    for i,v in ipairs(imageHelper.renderImage((5 * display.contentWidth / 6) / 5 - 8, 18, castles["castle2"], 5)) do
         self.displayGroup:insert(v)
     end
 end

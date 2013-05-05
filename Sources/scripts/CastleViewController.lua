@@ -33,6 +33,7 @@ function CastleViewController:render(physics, world, game, x, y) --todo remove r
         v.myName = "brick"
         physics.addBody(v, "static")
     end
+    self.totalHealth = self:health()
     print("Rendered castle with " .. x .. ", " .. y)
 end
 
@@ -46,20 +47,24 @@ end
 
 function CastleViewController:health()
 	-- to let the castles die right away, return 5 health points
-	-- return 5
-	local score = 0
-	for i, v in ipairs(self.bricks) do
-		if (v ~= nil) then
-			if (v.state == "removed") then
-				print("found removed")
-				table.remove(self.bricks, i)
-			else
-				score = score + 1
-			end
-		end
-	end
-	return score
+	return 5
+	-- local score = 0
+	-- for i, v in ipairs(self.bricks) do
+	-- 	if (v ~= nil) then
+	-- 		if (v.state == "removed") then
+	-- 			print("found removed")
+	-- 			table.remove(self.bricks, i)
+	-- 		else
+	-- 			score = score + 1
+	-- 		end
+	-- 	end
+	-- end
+	-- return score
 end
+
+function CastleViewController:healthPercent()
+	return math.round(100 * self:health() / self.totalHealth)
+end	
 
 function CastleViewController:cannonX()
     if (self.location == "left") then
