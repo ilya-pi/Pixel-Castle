@@ -63,7 +63,7 @@ function GameOverScreen:render()
     local mainMenuBtn = widget.newButton{
         id = "menubtn",
         label = "Main menu",
-        font = "Trebuchet MS Bold",
+        font = "TrebuchetMS-Bold",
         fontSize = 24,
         width = 150, height = 40,
         emboss = false,
@@ -80,7 +80,7 @@ function GameOverScreen:render()
     local playAgain = widget.newButton{
         id = "playbtn",
         label = "Play again",
-        font = "Trebuchet MS Bold",
+        font = "TrebuchetMS-Bold",
         fontSize = 24,
         width = 150, height = 40,
         emboss = false,

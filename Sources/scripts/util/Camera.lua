@@ -13,7 +13,6 @@ function Camera:new (o)
 	-- camera pad to detect dragging worl by finger
 	-- todo ilya pimenov : refactor constants
 	o.cameraPad = display.newRect(0, 0, 1000, 600)
-	o.cameraPad.SetSleepingAllowed = false
 	o.cameraPad:setFillColor(0, 0, 0, 0)
 	o.world:insert(o.cameraPad)
 	o.listener = o.cameraPad:addEventListener("touch", o)
@@ -44,44 +43,51 @@ end
 
 function Camera:touch(event)
     if event.phase == "began" then
+    	display.getCurrentStage():setFocus(event.source)
+    	self.isFocus = true
+
         self.beginX = event.x
         self.beginY = event.y
-    elseif event.phase == "moved" and self.beginX ~= nil then        
-        self.xDelta = self.beginX - event.x
-        self.beginX = event.x
-        self.yDelta = self.beginY - event.y
-        self.beginY = event.y
+    elseif self.isFocus then
+	    if event.phase == "moved" and self.beginX ~= nil then        
+	        self.xDelta = self.beginX - event.x
+	        self.beginX = event.x
+	        self.yDelta = self.beginY - event.y
+	        self.beginY = event.y
 
-        -- Check for world limits
-        if (self.world.x - self.xDelta > 0 or self.world.x - self.xDelta < display.contentWidth - self.game.worldWidth) then
-        	self.xDelta = 0
-        end
-        if (self.world.y - self.yDelta > 0 or self.world.y - self.yDelta < display.contentHeight - self.game.worldHeight) then
-        	self.yDelta = 0
-        end
+	        -- Check for world limits
+	        if (self.world.x - self.xDelta > 0 or self.world.x - self.xDelta < display.contentWidth - self.game.worldWidth) then
+	        	self.xDelta = 0
+	        end
+	        if (self.world.y - self.yDelta > 0 or self.world.y - self.yDelta < display.contentHeight - self.game.worldHeight) then
+	        	self.yDelta = 0
+	        end
 
-		self.world.x = self.world.x - self.xDelta		
-		self.world.y = self.world.y - self.yDelta
-		self.sky.x = self.sky.x - self.xDelta * self.sky.distanceRatio
-		self.sky.y = self.sky.y - self.yDelta * self.sky.distanceRatio
-		self.background.x = self.background.x - self.xDelta * self.background.distanceRatio
-		self.background.y = self.background.y - self.yDelta * self.background.distanceRatio			
+			self.world.x = self.world.x - self.xDelta		
+			self.world.y = self.world.y - self.yDelta
+			self.sky.x = self.sky.x - self.xDelta * self.sky.distanceRatio
+			self.sky.y = self.sky.y - self.yDelta * self.sky.distanceRatio
+			self.background.x = self.background.x - self.xDelta * self.background.distanceRatio
+			self.background.y = self.background.y - self.yDelta * self.background.distanceRatio			
 
-		-- if we had a timer to go back we should cancel it
-		if (self.cameraBackTimer ~= nil) then
-			timer.cancel(self.cameraBackTimer)
-			self.cameraBackTimer = nil
-		end
+			-- if we had a timer to go back we should cancel it
+			if (self.cameraBackTimer ~= nil) then
+				timer.cancel(self.cameraBackTimer)
+				self.cameraBackTimer = nil
+			end
 
-    elseif event.phase == "ended" or event.phase == "cancelled" then
-    	self.cameraBackTimer = timer.performWithDelay( self.game.cameraGoBackDelay, function (event)
-    			if (self.game.state.name == "P1") then
-    				self.game.cameraState = "CASTLE1_FOCUS"
-    			elseif (self.game.state.name == "P2") then
-    				self.game.cameraState = "CASTLE2_FOCUS"
-    			end
-    		end);
-    end
+	    elseif event.phase == "ended" or event.phase == "cancelled" then
+	    	self.cameraBackTimer = timer.performWithDelay( self.game.cameraGoBackDelay, function (event)
+	    			if (self.game.state.name == "P1") then
+	    				self.game.cameraState = "CASTLE1_FOCUS"
+	    			elseif (self.game.state.name == "P2") then
+	    				self.game.cameraState = "CASTLE2_FOCUS"
+	    			end
+	    		end);
+	    	display.getCurrentStage():setFocus( nil )
+			self.isFocus = nil
+	    end
+	end
     return true
 end
 
