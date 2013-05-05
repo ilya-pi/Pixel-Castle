@@ -145,10 +145,6 @@ local function startGame()
     local earth = earth_module.EarthViewController:new()
     earth:render(physics, world, game)
 
-    local gameoverScreen = gameover_module.GameOverScreen:new({game = game})
-    gameoverScreen:render()
-
-
     controls1 = controls_module.Controls:new({ world = world, angle = 45, x = game.castle1:cannonX(), y = game.castle1:cannonY()})
     controls2 = controls_module.Controls:new({ world = world, angle = -45, x = game.castle2:cannonX(), y = game.castle2:cannonY()})
     controls1.fireButton:addEventListener("tap", function() game:goto("BULLET1") end)
