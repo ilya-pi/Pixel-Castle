@@ -22,7 +22,7 @@ local mainmenu_module = require("scripts.screens.MainMenuScreen")
 local game = game_module.GameModel:new()
 
 local mainMenuScreen = mainmenu_module.MainMenuScreen:new({game = game})
-local gameoverScreen = gameover_module.GameOverScreen:new({game = game})
+local gameOverScreen = gameover_module.GameOverScreen:new({game = game})
 
 local splash = require("scripts.splash")
 local tutorial = require("scripts.tutorial")
@@ -147,14 +147,18 @@ local function startGame()
 end
 
 local function restartGame()
-    gameoverScreen:dismiss()
+    gameOverScreen:dismiss()
     startGame()
 end    
 
 local function gameOver()
-    local gameoverScreen = gameover_module.GameOverScreen:new({game = game})
-    gameoverScreen:render()
+    gameOverScreen:render()
 end
+
+local function mainMenu()
+    gameOverScreen:dismiss()
+    mainMenuScreen:render()
+end    
 
 local function init()
 
@@ -166,7 +170,7 @@ local function init()
     game:addState({ name = "P2", transitions = {BULLET2 = eventPlayer2Fire} })
     game:addState({ name = "BULLET2", transitions = {MOVE_TO_P1 = eventBulletRemoved} })    
     game:addState({ name = "MOVE_TO_P1", transitions = { P1 = eventPlayer1Active, GAMEOVER = gameOver } })
-    game:addState({ name = "GAMEOVER", transitions = { P1 = restartGame } })
+    game:addState({ name = "GAMEOVER", transitions = { P1 = restartGame, MAINMENU = mainMenu } })
 
     game:setState("MAINMENU")
     mainMenuScreen:render()

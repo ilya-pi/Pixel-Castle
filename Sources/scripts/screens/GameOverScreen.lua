@@ -10,8 +10,6 @@ function GameOverScreen:new (o)
     o = o or {}   -- create object if user does not provide one
     setmetatable(o, self)
     self.__index = self
-
-    o.displayGroup = display.newGroup()
     return o
 end
 
@@ -31,6 +29,8 @@ local function infoText(message, x, y, size, group)
 end
 
 function GameOverScreen:render()
+    self.displayGroup = display.newGroup()
+    print("rnder over scrreen")
     local overlay = display.newRect(0, 0, display.contentWidth, display.contentHeight)
     self.displayGroup:insert(overlay)
     overlay:setFillColor(195, 214, 93, 150)
@@ -85,7 +85,9 @@ function GameOverScreen:render()
         over = "images/button.png",
         labelColor = { default = { 255 }, over = { 0 } },
         onEvent = function(event)
-                print("main menu")
+                if  (self.game.state.name == "GAMEOVER") then    
+                    self.game:goto("MAINMENU")
+                end
             end
     }
     self.displayGroup:insert(mainMenuBtn)
@@ -103,12 +105,10 @@ function GameOverScreen:render()
         over = "images/button.png",
         labelColor = { default = { 255 }, over = { 0 } },
         onEvent = function(event)
-                print("play again")
                 if  (self.game.state.name == "GAMEOVER") then    
                     self.game:goto("P1")
                     print("play")
                 end
-
             end
     }
     self.displayGroup:insert(playAgain)

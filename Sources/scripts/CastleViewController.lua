@@ -45,19 +45,20 @@ function CastleViewController:isDestroyed(game)
 end
 
 function CastleViewController:health()
-	return 5
-	-- local score = 0
-	-- for i, v in ipairs(self.bricks) do
-	-- 	if (v ~= nil) then
-	-- 		if (v.state == "removed") then
-	-- 			print("found removed")
-	-- 			table.remove(self.bricks, i)
-	-- 		else
-	-- 			score = score + 1
-	-- 		end
-	-- 	end
-	-- end
-	-- return score
+	-- to let the castles die right away, return 5 health points
+	-- return 5
+	local score = 0
+	for i, v in ipairs(self.bricks) do
+		if (v ~= nil) then
+			if (v.state == "removed") then
+				print("found removed")
+				table.remove(self.bricks, i)
+			else
+				score = score + 1
+			end
+		end
+	end
+	return score
 end
 
 function CastleViewController:cannonX()
