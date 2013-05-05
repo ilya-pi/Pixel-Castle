@@ -12,7 +12,7 @@ function Camera:new (o)
 
 	-- camera pad to detect dragging worl by finger
 	-- todo ilya pimenov : refactor constants
-	o.cameraPad = display.newRect(0, 0, 1000, 600)
+	o.cameraPad = display.newRect(0, 0, o.game.level_map.level.width * o.game.pixel, o.game.level_map.level.height * o.game.pixel)
 	o.cameraPad:setFillColor(0, 0, 0, 0)
 	o.game.world:insert(o.cameraPad)
 	o.listener = o.cameraPad:addEventListener("touch", o)
@@ -24,8 +24,8 @@ end
 local function calculateX(desiredX, game)
 	if (desiredX + display.screenOriginX < display.contentWidth / 2) then
 		return display.screenOriginX
-	elseif (desiredX - display.screenOriginX > game.worldWidth - display.contentWidth / 2) then
-		return - display.screenOriginX - (game.worldWidth - display.contentWidth)
+	elseif (desiredX - display.screenOriginX > game.level_map.level.width * game.pixel - display.contentWidth / 2) then
+		return - display.screenOriginX - (game.level_map.level.width * game.pixel - display.contentWidth)
 	else
 		return - desiredX + display.contentWidth / 2
 	end
@@ -34,8 +34,8 @@ end
 local function calculateY(desiredY, game)
 	if (desiredY + display.screenOriginY < display.contentHeight / 4) then
 		return display.screenOriginY
-	elseif (desiredY - display.screenOriginY > game.worldHeight - 3 * display.contentHeight / 4) then
-		return  - display.screenOriginY - (game.worldHeight - display.contentHeight)
+	elseif (desiredY - display.screenOriginY > game.level_map.level.height * game.pixel - 3 * display.contentHeight / 4) then
+		return  - display.screenOriginY - (game.level_map.level.height * game.pixel - display.contentHeight)
     else
 		return - desiredY + display.contentHeight / 4
 	end	
@@ -56,10 +56,10 @@ function Camera:touch(event)
 	        self.beginY = event.y
 
 	        -- Check for world limits
-	        if (self.world.x - self.xDelta > 0 or self.world.x - self.xDelta < display.contentWidth - self.game.worldWidth) then
+	        if (self.world.x - self.xDelta > 0 or self.world.x - self.xDelta < display.contentWidth - self.game.level_map.level.width * self.game.pixel) then
 	        	self.xDelta = 0
 	        end
-	        if (self.world.y - self.yDelta > 0 or self.world.y - self.yDelta < display.contentHeight - self.game.worldHeight) then
+	        if (self.world.y - self.yDelta > 0 or self.world.y - self.yDelta < display.contentHeight - self.game.level_map.level.height * self.game.pixel) then
 	        	self.yDelta = 0
 	        end
 

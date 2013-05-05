@@ -16,7 +16,7 @@ end
 -- physics — physics object to attach to
 -- world - display group for the whole scene
 function CastleViewController:render(physics, world, game, x, y) --todo remove redundant params
-    local worldHeight = game.worldHeight / game.pixel
+    local worldHeight = game.level_map.level.height * game.pixel / game.pixel
 
     local castles = imageHelper.loadImageData("data/castles.json") --todo move to static initialization
     local castle = castles[self.castleName]

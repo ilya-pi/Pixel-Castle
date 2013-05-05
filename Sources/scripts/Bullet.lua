@@ -108,7 +108,7 @@ function Bullet:isAlive()
             break
         end
     end
-    if ((not atleastOnePixel) or self:getX() > self.game.worldWidth or self:getX() < 0 or self:getY() > self.game.worldHeight) then
+    if ((not atleastOnePixel) or self:getX() > self.game.level_map.level.width * self.game.pixel or self:getX() < 0 or self:getY() > self.game.level_map.level.height * self.game.pixel) then
         return false
     else
         return true

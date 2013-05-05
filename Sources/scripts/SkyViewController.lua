@@ -15,7 +15,7 @@ end
 -- physics — physics object to attach to
 -- world - display group for the whole scene
 function SkyViewController:render(world, game)
-    local sky = display.newRect(display.screenOriginX, display.screenOriginY, game.worldWidth, game.worldHeight)
+    local sky = display.newRect(display.screenOriginX, display.screenOriginY, game.level_map.level.width * game.pixel, game.level_map.level.height * game.pixel)
     sky:setFillColor(207, 229, 130)
     sky:setStrokeColor(207, 229, 130)
     world:insert(sky)
