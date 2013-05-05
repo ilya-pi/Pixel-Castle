@@ -16,6 +16,8 @@ local controls_module = require("scripts.Controls")
 local bullet_module = require("scripts.Bullet")
 local wind_module = require("scripts.Wind")
 
+local gameover_module = require("scripts.screens.GameOverScreen")
+
 local game = game_module.GameModel:new()
 
 local splash = require("scripts.splash")
@@ -47,13 +49,22 @@ local function gameLoop()
             end
         end
     elseif (game.state.name == "MOVE_TO_P2") then
-        game.cameraState = "CASTLE2_FOCUS"
-        game:goto("P2")
+        print("castel1 " .. game.castle1:health() .. " castle2 " .. game.castle2:health())
+        if game.castle1:isDestroyed(game) or game.castle2:isDestroyed(game) then
+               game:goto("GAMEOVER")
+        else
+            game.cameraState = "CASTLE2_FOCUS"
+            game:goto("P2")
+        end
     elseif (game.state.name == "P2") then
         controls2:render()
     elseif (game.state.name == "MOVE_TO_P1") then
-        game.cameraState = "CASTLE1_FOCUS"
-        game:goto("P1")
+        if game.castle1:isDestroyed(game) or game.castle2:isDestroyed(game) then
+               game:goto("GAMEOVER")
+        else
+            game.cameraState = "CASTLE1_FOCUS"
+            game:goto("P1")
+        end        
     end
 end
 
@@ -97,6 +108,10 @@ local function eventPlayer2Active()
     controls2:show()
 end
 
+local function gameover()
+    local gameoverScreen = gameover_module.GameOverScreen:new({game = game})
+    gameoverScreen:render()
+end
 
 local function startGame()
 
@@ -108,10 +123,11 @@ local function startGame()
 
     game:addState({ name = "P1", transitions = {BULLET1 = eventPlayer1Fire} })
     game:addState({ name = "BULLET1", transitions = {MOVE_TO_P2 = eventBulletRemoved} })
-    game:addState({ name = "MOVE_TO_P2", transitions = { P2 = eventPlayer2Active} })
+    game:addState({ name = "MOVE_TO_P2", transitions = { P2 = eventPlayer2Active, GAMEOVER = gameover} })
     game:addState({ name = "P2", transitions = {BULLET2 = eventPlayer2Fire} })
     game:addState({ name = "BULLET2", transitions = {MOVE_TO_P1 = eventBulletRemoved} })    
-    game:addState({ name = "MOVE_TO_P1", transitions = { P1 = eventPlayer1Active } })
+    game:addState({ name = "MOVE_TO_P1", transitions = { P1 = eventPlayer1Active, GAMEOVER = gameover } })
+    game:addState({ name = "GAMEOVER", transitions = { } })
 
     game:setState("P1")
 
@@ -129,6 +145,8 @@ local function startGame()
     local earth = earth_module.EarthViewController:new()
     earth:render(physics, world, game)
 
+local gameoverScreen = gameover_module.GameOverScreen:new({game = game})
+    gameoverScreen:render()
 
     controls1 = controls_module.Controls:new({ world = world, angle = 45, x = game.castle1:cannonX(), y = game.castle1:cannonY()})
     controls2 = controls_module.Controls:new({ world = world, angle = -45, x = game.castle2:cannonX(), y = game.castle2:cannonY()})
