@@ -13,7 +13,7 @@ function Camera:new (o)
 	-- camera pad to detect dragging worl by finger
 	-- todo ilya pimenov : refactor constants
 	o.cameraPad = display.newRect(0, 0, 1000, 600)
-	o.cameraPad:setFillColor(0, 0, 0, 150)
+	o.cameraPad:setFillColor(0, 0, 0, 0)
 	o.world:insert(o.cameraPad)
 	o.listener = o.cameraPad:addEventListener("touch", o)
 
