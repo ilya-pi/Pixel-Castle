@@ -43,7 +43,7 @@ end
 
 function Camera:touch(event)
     if event.phase == "began" then
-    	display.getCurrentStage():setFocus(event.source)
+    	display.getCurrentStage():setFocus(event.target)
     	self.isFocus = true
 
         self.beginX = event.x
