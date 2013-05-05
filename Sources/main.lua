@@ -22,25 +22,16 @@ local mainmenu_module = require("scripts.screens.MainMenuScreen")
 local game = game_module.GameModel:new()
 
 local mainMenuScreen = mainmenu_module.MainMenuScreen:new({game = game})
+local gameoverScreen = gameover_module.GameOverScreen:new({game = game})
 
 local splash = require("scripts.splash")
 local tutorial = require("scripts.tutorial")
-local sky = display.newGroup()
-sky.distanceRatio = 0.6
-local background = display.newGroup()
-background.distanceRatio = 0.8
-local world = display.newGroup()
-world.distanceRatio = 1.0
-
--- todo sergey: move to a specific object
-local controls1
-local controls2
 
 -- Main game loop
 local function gameLoop()
 
     if (game.state.name == "P1") then
-        controls1:render()
+        game.controls1:render()
     elseif (game.state.name == "BULLET1" or game.state.name == "BULLET2") then
         if (game.bullet ~= nil and not game.bullet:isAlive()) then
             game.bullet:remove()
@@ -60,7 +51,7 @@ local function gameLoop()
             game:goto("P2")
         end
     elseif (game.state.name == "P2") then
-        controls2:render()
+        game.controls2:render()
     elseif (game.state.name == "MOVE_TO_P1") then
         if game.castle1:isDestroyed(game) or game.castle2:isDestroyed(game) then
                game:goto("GAMEOVER")
@@ -81,20 +72,20 @@ local function cameraListener()
 end
 
 local function eventPlayer1Fire()
-    controls1:hide()
+    game.controls1:hide()
     local cannonX = game.castle1:cannonX()
     local cannonY = game.castle1:cannonY()
-    game.bullet = bullet_module.Bullet:new({game = game, world = world})
-    game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(controls1:getAngle())), impulse * math.cos(math.rad(controls1:getAngle())))
+    game.bullet = bullet_module.Bullet:new({game = game, world = game.world})
+    game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls1:getAngle())), impulse * math.cos(math.rad(game.controls1:getAngle())))
     game.cameraState = "CANNONBALL_FOCUS"
 end
 
 local function eventPlayer2Fire()
-    controls2:hide()
+    game.controls2:hide()
     local cannonX = game.castle2:cannonX()
     local cannonY = game.castle2:cannonY()
-    game.bullet = bullet_module.Bullet:new({game = game, world = world})
-    game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(controls2:getAngle())), impulse * math.cos(math.rad(controls2:getAngle())))
+    game.bullet = bullet_module.Bullet:new({game = game, world = game.world})
+    game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls2:getAngle())), impulse * math.cos(math.rad(game.controls2:getAngle())))
     game.cameraState = "CANNONBALL_FOCUS"
 end
 
@@ -103,16 +94,23 @@ end
 
 local function eventPlayer1Active()
     game.wind:update()
-    controls1:show()
+    game.controls1:show()
 end
 
 local function eventPlayer2Active()
     game.wind:update()
-    controls2:show()
+    game.controls2:show()
 end
 
 local function startGame()
     mainMenuScreen:dismiss()
+
+    game.sky = display.newGroup()
+    game.sky.distanceRatio = 0.6
+    game.background = display.newGroup()
+    game.background.distanceRatio = 0.8
+    game.world = display.newGroup()
+    game.world.distanceRatio = 1.0
 
     -- Loading game resources
     game.level_map = imageHelper.loadImageData("data/level1.json");
@@ -120,24 +118,24 @@ local function startGame()
     --todo pre-step P1
     game.cameraState = "CASTLE1_FOCUS"
 
-    local camera = camera_module.Camera:new({ game = game, world = world, sky = sky, background = background, listener = cameraListener })
+    local camera = camera_module.Camera:new({ game = game, world = game.world, sky = game.sky, background = game.background, listener = cameraListener })
 
     local skyObj = sky_module.SkyViewController:new()
-    skyObj:render(sky, game)
+    skyObj:render(game.sky, game)
 
-    game.wind = wind_module.Wind:new({ x = 1, y = 1, game = game })
+    game.wind = wind_module.Wind:new({ x = 1, y = 1, game = game.game })
     game.wind:update()
 
     local backgroundObj = background_module.Background:new()
-    backgroundObj:render(background, game)
+    backgroundObj:render(game.background, game)
 
     local earth = earth_module.EarthViewController:new()
-    earth:render(physics, world, game)
+    earth:render(physics, game.world, game)
 
-    controls1 = controls_module.Controls:new({ world = world, angle = 45, x = game.castle1:cannonX(), y = game.castle1:cannonY()})
-    controls2 = controls_module.Controls:new({ world = world, angle = -45, x = game.castle2:cannonX(), y = game.castle2:cannonY()})
-    controls1.fireButton:addEventListener("tap", function() game:goto("BULLET1") end)
-    controls2.fireButton:addEventListener("tap", function() game:goto("BULLET2") end)
+    game.controls1 = controls_module.Controls:new({ world = game.world, angle = 45, x = game.castle1:cannonX(), y = game.castle1:cannonY()})
+    game.controls2 = controls_module.Controls:new({ world = game.world, angle = -45, x = game.castle2:cannonX(), y = game.castle2:cannonY()})
+    game.controls1.fireButton:addEventListener("tap", function() game:goto("BULLET1") end)
+    game.controls2.fireButton:addEventListener("tap", function() game:goto("BULLET2") end)
 
     --    Runtime:addEventListener("collision", onCollision)
     Runtime:addEventListener("enterFrame",
@@ -147,6 +145,11 @@ local function startGame()
 
     timer.performWithDelay(game.delay, gameLoop, 0)
 end
+
+local function restartGame()
+    gameoverScreen:dismiss()
+    startGame()
+end    
 
 local function gameOver()
     local gameoverScreen = gameover_module.GameOverScreen:new({game = game})
@@ -163,10 +166,9 @@ local function init()
     game:addState({ name = "P2", transitions = {BULLET2 = eventPlayer2Fire} })
     game:addState({ name = "BULLET2", transitions = {MOVE_TO_P1 = eventBulletRemoved} })    
     game:addState({ name = "MOVE_TO_P1", transitions = { P1 = eventPlayer1Active, GAMEOVER = gameOver } })
-    game:addState({ name = "GAMEOVER", transitions = { } })
+    game:addState({ name = "GAMEOVER", transitions = { P1 = restartGame } })
 
     game:setState("MAINMENU")
-
     mainMenuScreen:render()
 end
 
