@@ -28,18 +28,41 @@ end
 
 function MainMenuScreen:render()
     self.displayGroup = display.newGroup()
+
+    local assets = imageHelper.loadImageData("data/assets.json")
+
+    self.bgGroup = display.newGroup()
+    self.displayGroup:insert(self.bgGroup)
+    for i,v in ipairs(imageHelper.renderImage(0, 0, assets["castle_splash"], display.contentHeight / 40)) do
+        self.bgGroup:insert(v)
+    end
+
+    self.bgMoveLeft = true
+    self.bgMovementTimer = timer.performWithDelay(30, function()
+        if self.bgMoveLeft then
+            self.bgGroup.x = self.bgGroup.x - 1
+        else
+            self.bgGroup.x = self.bgGroup.x + 1
+        end
+
+        if (self.bgGroup.x < display.contentWidth - 128 * display.contentHeight / 40) then
+            self.bgMoveLeft = false
+        elseif (self.bgGroup.x > 0) then
+            self.bgMoveLeft = true
+        end
+        end, 0)
+
     local overlay = display.newRect(0, 0, display.contentWidth, display.contentHeight)
     self.displayGroup:insert(overlay)
-    overlay:setFillColor(195, 214, 93, 150)
-
-    infoText("Main Menu", 10, 10, 42, self.displayGroup)
+    local g = graphics.newGradient({ 236, 0, 140, 150 }, { 0, 114, 88, 175 }, "down")
+    overlay:setFillColor(g)    
 
     local play = widget.newButton{
         id = "playbtn",
         label = "Play",
         font = "TrebuchetMS-Bold",
         fontSize = 24,
-        width = 150, height = 40,
+        width = 140, height = 40,
         emboss = false,
         color = 65,
         default = "images/button.png",
@@ -53,10 +76,17 @@ function MainMenuScreen:render()
                 end
             end
     }
-    play.x, play.y = 320, 280
+    play.x, play.y = 5 * display.contentWidth / 7 + 20, 260
     self.displayGroup:insert(play)
+
+    for i,v in ipairs(imageHelper.renderImage((4 * display.contentWidth / 7) / 5 , 10, assets["title"], 5)) do
+        self.displayGroup:insert(v)
+    end
+
 end
 
 function MainMenuScreen:dismiss()
+    timer.cancel(self.bgMovementTimer)
+    self.bgGroup:removeSelf()
     self.displayGroup:removeSelf()
 end
