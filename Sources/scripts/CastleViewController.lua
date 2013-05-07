@@ -1,6 +1,7 @@
 module(..., package.seeall)
 
 imageHelper = require("scripts.util.Image")
+local customUI = require("scripts.util.CustomUI")
 
 CastleViewController = {}
 
@@ -34,14 +35,39 @@ function CastleViewController:render(physics, world, game, x, y) --todo remove r
         physics.addBody(v, "static")
     end
     self.totalHealth = self:health()
+    self.width = castle.width * game.pixel
+
+    self.healthBar = display.newRect(self.leftX, self.topY - 15, self.width, 3)
+    world:insert(self.healthBar)
+   	self.healthBar:setFillColor(0, 255, 0, 150)
+
     print("Rendered castle with " .. x .. ", " .. y)
 end
 
 function CastleViewController:isDestroyed(game)
-	if (self:health() < game.minCastleHealth) then
+	if (self:healthPercent() < game.minCastleHealthPercet) then
 		return true
 	else
 		return false
+	end
+end
+
+function CastleViewController:updateHealth(game)
+	local curr = self:healthPercent()
+
+	local healthEstimation = (curr - game.minCastleHealthPercet ) / (100 - game.minCastleHealthPercet) * 30	
+	if healthEstimation > 20 then
+		self.healthBar:setFillColor(0, 255, 0, 150)
+	elseif healthEstimation > 10 then
+		self.healthBar:setFillColor(255, 255, 0, 150)
+	else
+		self.healthBar:setFillColor(255, 0, 0, 150)
+	end
+
+	if curr <= game.minCastleHealthPercet then
+		self.healthBar.width = 1
+	else		
+		self.healthBar.width = self.width * (curr - game.minCastleHealthPercet ) / (100 - game.minCastleHealthPercet)
 	end
 end
 
