@@ -56,10 +56,10 @@ function Camera:touch(event)
 	        self.beginY = event.y
 
 	        -- Check for world limits
-	        if (self.world.x - self.xDelta > 0 or self.world.x - self.xDelta < display.contentWidth - self.game.level_map.level.width * self.game.pixel) then
+	        if (self.world.x - self.xDelta >= display.screenOriginX or self.world.x - self.xDelta <= display.contentWidth - display.screenOriginX - self.game.level_map.level.width * self.game.pixel) then
 	        	self.xDelta = 0
 	        end
-	        if (self.world.y - self.yDelta > 0 or self.world.y - self.yDelta < display.contentHeight - self.game.level_map.level.height * self.game.pixel) then
+	        if (self.world.y - self.yDelta >= display.screenOriginY or self.world.y - self.yDelta <= display.contentHeight - display.screenOriginY - self.game.level_map.level.height * self.game.pixel) then
 	        	self.yDelta = 0
 	        end
 
