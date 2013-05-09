@@ -151,6 +151,7 @@ end
 local function cleanup()
     Memmory.cancelAllTimers()
     Memmory.cancelAllTransitions()
+    Memmory.monitorMem()
 end
 
 local function restartGame()

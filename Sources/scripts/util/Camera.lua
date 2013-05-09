@@ -99,18 +99,18 @@ function Camera:moveCamera()
 		if (self.game.castle1 ~= nil) then
 			local cannonX = self.game.castle1:cannonX()
 			local cannonY =  self.game.castle1:cannonY()
-			transition.to(self.game.world, {time = 100, x = calculateX(cannonX, self.game), y = calculateY(cannonY, self.game), onComplete = self.listener})
-			transition.to(self.game.sky, {time = 100, x = calculateX(cannonX, self.game) * self.sky.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
-			transition.to(self.game.background, {time = 100, x = calculateX(cannonX, self.game) * self.background.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
+			Memmory.transitionStash.cameraWorldTransition = transition.to(self.game.world, {time = 100, x = calculateX(cannonX, self.game), y = calculateY(cannonY, self.game), onComplete = self.listener})
+			Memmory.transitionStash.cameraSkyTransition = transition.to(self.game.sky, {time = 100, x = calculateX(cannonX, self.game) * self.sky.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
+			Memmory.transitionStash.cameraBgTransition = transition.to(self.game.background, {time = 100, x = calculateX(cannonX, self.game) * self.background.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
 			self.game.cameraState = "FOCUSING"
 		end	
 	elseif (self.game.cameraState == "CASTLE2_FOCUS") then
 		if (self.game.castle2 ~= nil) then
 			local cannonX = self.game.castle2:cannonX()
 			local cannonY =  self.game.castle2:cannonY()
-			transition.to(self.game.world, {time = 100, x = calculateX(cannonX, self.game), y = calculateY(cannonY, self.game), onComplete = self.listener})
-			transition.to(self.game.sky, {time = 100, x = calculateX(cannonX, self.game) * self.sky.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
-			transition.to(self.game.background, {time = 100, x = calculateX(cannonX, self.game) * self.background.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
+			Memmory.transitionStash.cameraWorldTransition = transition.to(self.game.world, {time = 100, x = calculateX(cannonX, self.game), y = calculateY(cannonY, self.game), onComplete = self.listener})
+			Memmory.transitionStash.cameraSkyTransition = transition.to(self.game.sky, {time = 100, x = calculateX(cannonX, self.game) * self.sky.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
+			Memmory.transitionStash.cameraBgTransition = transition.to(self.game.background, {time = 100, x = calculateX(cannonX, self.game) * self.background.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
 			self.game.cameraState = "FOCUSING"
 		end		
 	elseif (self.game.cameraState == "CANNONBALL_FOCUS") then
