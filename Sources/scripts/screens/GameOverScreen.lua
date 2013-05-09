@@ -30,8 +30,8 @@ end
 
 function GameOverScreen:render()
     self.displayGroup = display.newGroup()
-    print("rnder over scrreen")
-    local overlay = display.newRect(0, 0, display.contentWidth, display.contentHeight)
+    
+    local overlay = display.newRect(display.screenOriginX, display.screenOriginY, display.contentWidth - 2 * display.screenOriginX, display.contentHeight - 2 * display.screenOriginY)
     self.displayGroup:insert(overlay)
     overlay:setFillColor(195, 214, 93, 150)
 
@@ -107,7 +107,6 @@ function GameOverScreen:render()
         onEvent = function(event)
                 if  (self.game.state.name == "GAMEOVER") then    
                     self.game:goto("P1")
-                    print("play")
                 end
             end
     }

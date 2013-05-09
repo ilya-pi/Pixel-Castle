@@ -1,6 +1,8 @@
 module(..., package.seeall)
 
 local widget = require("widget")
+
+local Memmory = require("scripts.util.Memmory")
 local imageHelper = require("scripts.util.Image")
 
 MainMenuScreen = {} -- required arg: game
@@ -45,7 +47,7 @@ function MainMenuScreen:render()
     self.bgGroup.x, self.bgGroup.y = display.screenOriginX, display.screenOriginY
 
     self.bgMoveLeft = true
-    self.bgMovementTimer = timer.performWithDelay(30, function()
+    Memmory.timerStash.bgMovementTimer = timer.performWithDelay(30, function()
         if self.bgMoveLeft then
             self.bgGroup.x = self.bgGroup.x - 1
         else
@@ -116,7 +118,7 @@ function MainMenuScreen:render()
 end
 
 function MainMenuScreen: dismiss()
-    timer.cancel(self.bgMovementTimer)
+    timer.cancel(Memmory.timerStash.bgMovementTimer)
     self.bgGroup:removeSelf()
     self.bgGroup = nil
     self.displayGroup:removeSelf()

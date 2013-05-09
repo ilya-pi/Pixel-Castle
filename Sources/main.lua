@@ -5,6 +5,7 @@ physics = require("physics")
 physics.start()
 physics.setGravity(0, 9.8)
 
+local Memmory = require("scripts.util.Memmory")
 local imageHelper = require("scripts.util.Image")
 
 local game_module = require("scripts.GameModel")
@@ -74,7 +75,7 @@ local function eventPlayer1Fire()
     game.controls1:hide()
     local cannonX = game.castle1:cannonX()
     local cannonY = game.castle1:cannonY()
-    game.bullet = bullet_module.Bullet:new({game = game, world = game.world})
+    game.bullet = bullet_module.Bullet:new({game = game})
     game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls1:getAngle())), impulse * math.cos(math.rad(game.controls1:getAngle())))
     game.cameraState = "CANNONBALL_FOCUS"
 end
@@ -83,7 +84,7 @@ local function eventPlayer2Fire()
     game.controls2:hide()
     local cannonX = game.castle2:cannonX()
     local cannonY = game.castle2:cannonY()
-    game.bullet = bullet_module.Bullet:new({game = game, world = game.world})
+    game.bullet = bullet_module.Bullet:new({game = game})
     game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls2:getAngle())), impulse * math.cos(math.rad(game.controls2:getAngle())))
     game.cameraState = "CANNONBALL_FOCUS"
 end
@@ -103,12 +104,37 @@ local function eventPlayer2Active()
     game.controls2:show()
 end
 
+local function cleanup()
+    Memmory.cancelAllTimers()
+    Memmory.cancelAllTransitions()
+
+    Runtime:removeEventListener("enterFrame", game)
+
+    display.remove(game.sky)
+    display.remove(game.background)
+
+
+    -- display.remove(game.world)
+
+    game.level_map = nil
+    game.cameraState = nil
+    game.camera = nil
+
+    game.controls1 = nil
+    game.controls2 = nil
+
+    Memmory.monitorMem()
+end
+
 local function startGame()
+    cleanup()
+
     game.sky = display.newGroup()
-    game.sky.distanceRatio = 0.6
-    game.background = display.newGroup()
-    game.background.distanceRatio = 0.8
+    game.background = display.newGroup()    
     game.world = display.newGroup()
+
+    game.background.distanceRatio = 0.8
+    game.sky.distanceRatio = 0.6
     game.world.distanceRatio = 1.0
 
     -- Loading game resources
@@ -117,7 +143,7 @@ local function startGame()
     --todo pre-step P1
     game.cameraState = "CASTLE1_FOCUS"
 
-    local camera = camera_module.Camera:new({ game = game, world = game.world, sky = game.sky, background = game.background, listener = cameraListener })
+    game.camera = camera_module.Camera:new({ game = game, world = game.world, sky = game.sky, background = game.background, listener = cameraListener })
 
     local skyObj = sky_module.SkyViewController:new()
     skyObj:render(game.sky, game)
@@ -136,13 +162,9 @@ local function startGame()
     game.controls1.fireButton:addEventListener("tap", function() game:goto("BULLET1") end)
     game.controls2.fireButton:addEventListener("tap", function() game:goto("BULLET2") end)
 
-    --    Runtime:addEventListener("collision", onCollision)
-    Runtime:addEventListener("enterFrame",
-        function()
-            camera:moveCamera()
-        end)
+    Runtime:addEventListener("enterFrame", game)
 
-    timer.performWithDelay(game.delay, gameLoop, 0)
+    Memmory.timerStash.gameLoopTimer = timer.performWithDelay(game.delay, gameLoop, 0)
 end
 
 local function restartGame()

@@ -23,5 +23,4 @@ function SkyViewController:render(world, game)
     for i,v in ipairs(pixels) do
         world:insert(v)
     end
-    print("Rendered sky")
 end
