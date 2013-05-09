@@ -1,6 +1,7 @@
 module(..., package.seeall)
 
-imageHelper = require("scripts.util.Image")
+local Memmory = require("scripts.util.Memmory")
+local imageHelper = require("scripts.util.Image")
 local customUI = require("scripts.util.CustomUI")
 
 CastleViewController = {}
@@ -32,7 +33,7 @@ function CastleViewController:render(physics, world, game, x, y) --todo remove r
         self.bricks[i] = v
         world:insert(v)
         v.myName = "brick"
-        physics.addBody(v, "static")
+        Memmory.trackPhys(v); physics.addBody(v, "static")
     end
     self.totalHealth = self:health()
     self.width = castle.width * game.pixel

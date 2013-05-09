@@ -1,9 +1,11 @@
 -- hide status bar
 display.setStatusBar(display.HiddenStatusBar)
 
+
 physics = require("physics")
 physics.start()
 physics.setGravity(0, 9.8)
+-- physics.setDrawMode( "hybrid" )
 
 local Memmory = require("scripts.util.Memmory")
 local imageHelper = require("scripts.util.Image")
@@ -104,6 +106,29 @@ local function eventPlayer2Active()
     game.controls2:show()
 end
 
+local function cleanGroups ( curGroup, level )
+    if curGroup ~= nil and curGroup.numChildren then
+        while curGroup.numChildren > 0 do
+                cleanGroups ( curGroup[curGroup.numChildren], level+1 )
+        end
+        if level > 0 then
+            if curGroup.touch then
+                curGroup:removeEventListener( "touch", o )
+                curGroup.touch = nil
+            end
+            curGroup:removeSelf()
+        end
+    elseif curGroup ~= nil then
+            if curGroup.touch then
+                curGroup:removeEventListener( "touch", o )
+                curGroup.touch = nil
+            end
+            curGroup:removeSelf()
+            curGroup = nil
+        return
+    end
+end
+
 local function cleanup()
     Memmory.cancelAllTimers()
     Memmory.cancelAllTransitions()
@@ -119,8 +144,12 @@ local function cleanup()
 
     display.remove(game.sky)
     display.remove(game.background)
-    -- todo add physicsStash
-    -- display.remove(game.world)
+
+    Memmory.clearPhysics()
+
+    -- cleanGroups(game.world, 0)    
+    display.remove(game.world)
+    game.world = nil    
 
     Memmory.monitorMem()
 end

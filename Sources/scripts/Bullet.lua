@@ -1,5 +1,7 @@
 module(..., package.seeall)
 
+local Memmory = require("scripts.util.Memmory")
+
 Bullet = { pixels = {} }
 
 -- Constructor
@@ -26,7 +28,7 @@ local function createCannonBallPixel(x, y, pixel)
     result.strokeWidth = 1
     result:setFillColor(26, 55, 37)
     result:setStrokeColor(26, 55, 37)
-    physics.addBody(result, { density = 100, friction = 0, bounce = 0 })
+    Memmory.trackPhys(result); physics.addBody(result, { density = 100, friction = 0, bounce = 0 })
     result.isBullet = true
     return result
 end

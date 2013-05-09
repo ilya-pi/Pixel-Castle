@@ -12,10 +12,10 @@ function Background:new(o)
     return o
 end
 
-function Background:render(world, game)
+function Background:render(group, game)
     local pixels = imageHelper.renderImage(0, 0, game.level_map.background, game.pixel)
     for i,v in ipairs(pixels) do
-        world:insert(v)
+        group:insert(v)
     end
     print("Rendered background")
 end

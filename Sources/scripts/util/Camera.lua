@@ -115,9 +115,6 @@ function Camera:moveCamera()
 		end		
 	elseif (self.game.cameraState == "CANNONBALL_FOCUS") then
 		if (self.game.bullet ~= nil and self.game.bullet:isAlive()) then
---            print("Camera coords")
---            print(self.game.bullet:getX())
---            print(self.game.bullet:getY())
 			self.game.world.x = calculateX(self.game.bullet:getX(), self.game)
 			self.game.world.y = calculateY(self.game.bullet:getY(), self.game)
 			self.game.sky.x = calculateX(self.game.bullet:getX(), self.game) * self.game.sky.distanceRatio

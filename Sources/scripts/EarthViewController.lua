@@ -2,6 +2,8 @@ module(..., package.seeall)
 
 EarthViewController = {}
 
+local Memmory = require("scripts.util.Memmory")
+
 local castle_module = require("scripts.CastleViewController")
 local imageHelper = require("scripts.util.Image")
 
@@ -45,7 +47,7 @@ function EarthViewController:render(physics, game)
 				grass.strokeWidth = 0
 				grass:setFillColor(r, g, b)
 				grass:setStrokeColor(r, g, b)				
-				physics.addBody(grass, "static")
+				Memmory.trackPhys(grass); physics.addBody(grass, "static")
 			end
 		end
 	end

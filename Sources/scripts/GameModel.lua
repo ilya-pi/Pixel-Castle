@@ -45,17 +45,3 @@ end
 function GameModel:enterFrame(event)
     self.camera:moveCamera()
 end
-
--- physics — physics object to attach to
--- world - display group for the whole scene
--- function GameModel:render(physics, world)	
--- 	local test = display.newRect(200, 200, 27, 27);
--- 	test:setFillColor(26, 55, 37)
--- 	test:setStrokeColor(26, 55, 37)
--- 	test.myName = "brick"
--- 	world:insert(test)
--- 	physics.addBody(test, "static")
-
--- 	print("Rendered earth with " .. tostring(self.width) .. ", " .. tostring(self.height))
--- 	-- print("test")
--- end

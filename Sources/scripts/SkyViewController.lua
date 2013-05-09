@@ -14,13 +14,13 @@ end
 
 -- physics — physics object to attach to
 -- world - display group for the whole scene
-function SkyViewController:render(world, game)
+function SkyViewController:render(group, game)
     local sky = display.newRect(display.screenOriginX, display.screenOriginY, game.level_map.level.width * game.pixel, game.level_map.level.height * game.pixel)
     sky:setFillColor(207, 229, 130)
     sky:setStrokeColor(207, 229, 130)
-    world:insert(sky)
+    group:insert(sky)
     local pixels = imageHelper.renderImage(0, 0, game.level_map.sky, game.pixel)
     for i,v in ipairs(pixels) do
-        world:insert(v)
+        group:insert(v)
     end
 end

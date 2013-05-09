@@ -1,7 +1,10 @@
 module(..., package.seeall)
 
+physics = require("physics")
+
 timerStash = {}
 transitionStash = {}
+physicsStash = {}
 
 function monitorMem()
     collectgarbage()
@@ -33,4 +36,23 @@ function cancelAllTransitions()
 
     transitionStash = nil
     transitionStash = {}
+end
+
+function trackPhys(obj)
+    table.insert(physicsStash, obj)
+end
+
+function clearPhysics()
+    local k, v
+
+    for k,v in pairs(physicsStash) do
+        if v ~= nil and v.state ~= "removed" then
+            physics.removeBody( v )
+            v:removeSelf()
+            v = nil; k = nil
+        end
+    end
+
+    physicsStash = nil
+    physicsStash = {}
 end
