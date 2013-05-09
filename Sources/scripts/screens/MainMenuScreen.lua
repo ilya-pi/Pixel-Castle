@@ -32,16 +32,17 @@ function MainMenuScreen:render()
 
     local assets = imageHelper.loadImageData("data/assets.json")
 
-    self.bgGroup = display.newGroup()
+    local myPix = (display.contentHeight - 2 * display.screenOriginY) / 40
 
+    self.bgGroup = display.newGroup()
+    -- print("xOffset " .. conf.Conf.absXOffset .. " " .. conf.Conf.absYOffset)
     self.displayGroup:insert(self.bgGroup)
-    -- for i,v in ipairs(imageHelper.renderImage(conf.Conf.absXOffset, conf.Conf.absYOffset, assets["castle_splash"], conf.Conf.absoluteHeight / 40)) do
-    print("xOff " .. conf.Conf.absXOffset .. " " .. conf.Conf.absYOffset)
-    for i,v in ipairs(imageHelper.renderImage(0, 0, assets["castle_splash"], conf.Conf.absoluteHeight / 40)) do
+    for i,v in ipairs(imageHelper.renderImage(0, 0, assets["castle_splash"], myPix)) do
         self.bgGroup:insert(v)
     end
 
     -- adjust to real screens
+    print(" screen oriing " .. display.screenOriginX .. " " .. display.screenOriginY)
     self.bgGroup.x, self.bgGroup.y = conf.Conf.absXOffset, conf.Conf.absYOffset
 
     self.bgMoveLeft = true
@@ -52,9 +53,9 @@ function MainMenuScreen:render()
             self.bgGroup.x = self.bgGroup.x + 1
         end
 
-        if (self.bgGroup.x < display.contentWidth - 128 * display.contentHeight / 40) then
+        if (self.bgGroup.x < display.contentWidth - display.screenOriginX - 128 * myPix) then
             self.bgMoveLeft = false
-        elseif (self.bgGroup.x > 0) then
+        elseif (self.bgGroup.x > conf.Conf.absXOffset) then
             self.bgMoveLeft = true
         end
         end, 0)
