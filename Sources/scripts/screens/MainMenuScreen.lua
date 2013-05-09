@@ -170,6 +170,13 @@ function MainMenuScreen:showPlayMenu()
     versusMode.x, versusMode.y = display.contentWidth / 4 * 3, 260  --end of third quater of screen (center of button coords)
     self.playMenuGroup:insert(versusMode)
 
+    local backButton = display.newImageRect("images/menus_common/back_button.png", 60, 60)
+    backButton:setReferencePoint(display.TopLeftReferencePoint)
+    backButton.x, backButton.y = display.screenOriginX, display.screenOriginY
+    backButton:addEventListener("tap", function() self.game:goto("MAINMENU") end)
+    self.playMenuGroup:insert(backButton)
+
+
     --todo: add back button
 end
 
