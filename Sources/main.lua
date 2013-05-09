@@ -207,6 +207,7 @@ end
 local function mainMenu()
     gameOverScreen:dismiss()
     mainMenuScreen:render()
+    mainMenuScreen:showMainMenu()
 end
 
 local function tutorial()
@@ -219,16 +220,22 @@ local function startGameFromTutorial()
     tutorialScreen:dismiss()
 end
 
-local function startGameFromMainMenu()
+local function startGameFromPlayMenu()
     mainMenuScreen:dismiss()
     startGame()
 end
 
+local function playMenu()
+    mainMenuScreen:hideMainMenu()
+    mainMenuScreen:showPlayMenu()
+end
+
 local function init()
 
-    game:addState({ name = "MAINMENU", transitions = {P1 = startGameFromMainMenu, TUTORIAL = tutorial}})
+    game:addState({ name = "MAINMENU", transitions = {PLAYMENU = playMenu}})
 
-    game:addState({ name = "TUTORIAL", transitions = {P1 = startGameFromTutorial}})
+    game:addState({ name = "PLAYMENU", transitions = {P1 = startGameFromPlayMenu, TUTORIAL = tutorial} })
+    game:addState({ name = "TUTORIAL", transitions = {P1 = startGameFromTutorial} })
 
     game:addState({ name = "P1", transitions = {BULLET1 = eventPlayer1Fire} })
     game:addState({ name = "BULLET1", transitions = {MOVE_TO_P2 = eventBulletRemoved} })
@@ -240,6 +247,7 @@ local function init()
 
     game:setState("MAINMENU")
     mainMenuScreen:render()
+    mainMenuScreen:showMainMenu()
 end
 
 init()
