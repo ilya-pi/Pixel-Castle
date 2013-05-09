@@ -20,8 +20,6 @@ local function infoText(message, x, y, size, group)
     local text = display.newText(message, x, y, "TrebuchetMS-Bold", size)
     group:insert(textShadow)
     group:insert(text)
-    -- textShadow:setReferencePoint(display.CenterReferencePoint)
-    -- text:setReferencePoint(display.CenterReferencePoint)
     textShadow:setTextColor(255, 255, 255)
     text:setTextColor(37, 54, 34)
     textShadow.text = message
@@ -30,21 +28,36 @@ end
 
 function MainMenuScreen:render()
     self.displayGroup = display.newGroup()
+    self.bgGroup = display.newGroup()
+    self.mainMenuGroup = display.newGroup()
+
+    self.displayGroup:insert(self.bgGroup)
+    self.displayGroup:insert(self.mainMenuGroup)
+
 
     local assets = imageHelper.loadImageData("data/assets.json")
-
-    local myPix = (display.contentHeight - 2 * display.screenOriginY) / 40
-
-    self.bgGroup = display.newGroup()
-    -- print("xOffset " .. conf.Conf.absXOffset .. " " .. conf.Conf.absYOffset)
-    self.displayGroup:insert(self.bgGroup)
+    local myPix = (display.contentHeight - 2 * display.screenOriginY) / 40 --todo: read from imageHeight
     for i,v in ipairs(imageHelper.renderImage(0, 0, assets["castle_splash"], myPix)) do
         self.bgGroup:insert(v)
     end
-
     -- adjust to real screens
     print(" screen oriing " .. display.screenOriginX .. " " .. display.screenOriginY)
     self.bgGroup.x, self.bgGroup.y = display.screenOriginX, display.screenOriginY
+
+    self.bgGroupXright = display.contentWidth - display.screenOriginX - 128 --[[todo: read from imageHeight]] * myPix
+    self.bgGroupXleft = display.screenOriginX
+
+--[[
+    local loopPhase1
+    local loopPhase2
+    loopPhase1 = function()
+        transition.to( self.bgGroup, { time= transitionTime, x=self.bgGroupXright , onComplete=loopPhase2} )
+    end
+    loopPhase2 = function()
+        transition.to( self.bgGroup, { time= transitionTime, x=self.bgGroupXleft , onComplete=loopPhase1 } )
+    end
+    loopPhase1()
+]]
 
     self.bgMoveLeft = true
     Memmory.timerStash.bgMovementTimer = timer.performWithDelay(30, function()
@@ -59,12 +72,12 @@ function MainMenuScreen:render()
         elseif (self.bgGroup.x > display.screenOriginX) then
             self.bgMoveLeft = true
         end
-        end, 0)
+    end, 0)
 
     local overlay = display.newRect(display.screenOriginX, display.screenOriginY, display.contentWidth - 2 * display.screenOriginX, display.contentHeight - 2 * display.screenOriginY)
-    self.displayGroup:insert(overlay)
     local g = graphics.newGradient({ 236, 0, 140, 150 }, { 0, 114, 88, 175 }, "down")
-    overlay:setFillColor(g)    
+    overlay:setFillColor(g)
+    self.mainMenuGroup:insert(overlay)
 
     local play = widget.newButton{
         id = "playbtn",
@@ -86,7 +99,7 @@ function MainMenuScreen:render()
             end
     }
     play.x, play.y = 5 * display.contentWidth / 7 + 20, 260
-    self.displayGroup:insert(play)
+    self.mainMenuGroup:insert(play)
 
     local tutorial = widget.newButton{
         id = "tutorialbtn",
@@ -108,11 +121,10 @@ function MainMenuScreen:render()
         end
     }
     tutorial.x, tutorial.y = 5 * display.contentWidth / 7 - 140, 260
-    self.displayGroup:insert(tutorial)
-
+    self.mainMenuGroup:insert(tutorial)
 
     for i,v in ipairs(imageHelper.renderImage((4 * display.contentWidth / 7) / 5 , 10, assets["title"], 5)) do
-        self.displayGroup:insert(v)
+        self.mainMenuGroup:insert(v)
     end
 
 end
@@ -121,6 +133,8 @@ function MainMenuScreen: dismiss()
     timer.cancel(Memmory.timerStash.bgMovementTimer)
     self.bgGroup:removeSelf()
     self.bgGroup = nil
+    self.mainMenuGroup:removeSelf()
+    self.mainMenuGroup = nil
     self.displayGroup:removeSelf()
     self.displayGroup = nil
 end
