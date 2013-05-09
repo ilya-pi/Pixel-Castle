@@ -81,13 +81,14 @@ function GameOverScreen:render()
         width = 150, height = 40,
         emboss = false,
         color = 65,
-        default = "images/button.png",
-        over = "images/button.png",
+        defaultFile = "images/button.png",
+        overFile = "images/button.png",
         labelColor = { default = { 255 }, over = { 0 } },
         onEvent = function(event)
                 if  (self.game.state.name == "GAMEOVER") then    
                     self.game:goto("MAINMENU")
                 end
+                return true
             end
     }
     self.displayGroup:insert(mainMenuBtn)

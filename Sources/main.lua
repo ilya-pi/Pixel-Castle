@@ -147,7 +147,7 @@ local function cleanup()
 
     Memmory.clearPhysics()
 
-    -- cleanGroups(game.world, 0)    
+    -- cleanGroups(game.world, 0)       
     display.remove(game.world)
     game.world = nil    
 

@@ -79,20 +79,18 @@ function MainMenuScreen:render()
     overlay:setFillColor(g)
     self.mainMenuGroup:insert(overlay)
 
-    local play = widget.newButton{
+    local play = widget.newButton{                        
+        width = 140, 
+        height = 40,
+        defaultFile = "images/button.png",
+        overFile = "images/button_over.png",
         id = "playbtn",
         label = "Play",
         font = "TrebuchetMS-Bold",
         fontSize = 24,
-        width = 140, height = 40,
-        emboss = false,
-        color = 65,
-        default = "images/button.png",
-        over = "images/button.png",
         labelColor = { default = { 255 }, over = { 0 } },
         onEvent = function(event)
-            -- todo make transition
-                if  (self.game.state.name == "MAINMENU") then    
+                if  self.game.state.name == "MAINMENU" and event.phase == "ended" then    
                     self.game:goto("P1")
                     print("play")
                 end
@@ -107,14 +105,13 @@ function MainMenuScreen:render()
         font = "TrebuchetMS-Bold",
         fontSize = 24,
         width = 140, height = 40,
-        emboss = false,
         color = 65,
-        default = "images/button.png",
-        over = "images/button.png",
+        defaultFile = "images/button.png",
+        overFile = "images/button_over.png",
         labelColor = { default = { 255 }, over = { 0 } },
         onEvent = function(event)
         -- todo make transition
-            if self.game.state.name == "MAINMENU" and event.phase == "release" then
+            if self.game.state.name == "MAINMENU" and event.phase == "ended" then
                 self.game:goto("TUTORIAL")
             end
             return true
