@@ -3,6 +3,8 @@ module(..., package.seeall)
 -- local dataDumper = require("scripts.ext.DataDumper")
 
 GameModel = {
+	absoluteHeight = 570,
+	absoluteWidth = 360,
     delay = 100,
 	pixel = 10,
 	cameraGoBackDelay = 2500, -- delay between stop gragging the world map and a camera to go back to it's initial place
@@ -11,7 +13,7 @@ GameModel = {
 	groundYOffset = 3,
 	cannonYOffset = 5, -- in Pixel
 	cameraState = "CASTLE1_FOCUS", -- "CASTLE2_FOCUS", "CANNONBALL_FOCUS", "FOCUSING"
-	minCastleHealthPercet = 75,
+	minCastleHealthPercet = 99,
     state = "PLAYER1", -- "PLAYER2", "PLAYER1_LOST", "PLAYER2_LOST"
     stateNumber = 1,
     states = {}
@@ -40,7 +42,9 @@ function GameModel:goto(gotoState)
     self.state = self.states[gotoState]
 end
 
-
+function GameModel:enterFrame(event)
+    self.camera:moveCamera()
+end
 
 -- physics — physics object to attach to
 -- world - display group for the whole scene

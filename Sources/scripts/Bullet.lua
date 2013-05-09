@@ -3,7 +3,7 @@ module(..., package.seeall)
 Bullet = { pixels = {} }
 
 -- Constructor
--- Requires object with game, world parametres
+-- Requires object with game parametres
 function Bullet:new(o)
     o = o or {} -- create object if user does not provide one
     setmetatable(o, self)
@@ -48,10 +48,10 @@ function Bullet:fireBullet(x, y, dx, dy)
     table.insert(self.pixels, cbp2)
     table.insert(self.pixels, cbp3)
     table.insert(self.pixels, cbp4)
-    self.world:insert(cbp1)
-    self.world:insert(cbp2)
-    self.world:insert(cbp3)
-    self.world:insert(cbp4)
+    self.game.world:insert(cbp1)
+    self.game.world:insert(cbp2)
+    self.game.world:insert(cbp3)
+    self.game.world:insert(cbp4)
     local joint1 = physics.newJoint("weld", cbp1, cbp2, x + self.game.pixel, y + self.game.pixel)
     local joint2 = physics.newJoint("weld", cbp2, cbp3, x + self.game.pixel, y + self.game.pixel)
     local joint3 = physics.newJoint("weld", cbp3, cbp4, x + self.game.pixel, y + self.game.pixel)
