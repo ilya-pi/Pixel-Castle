@@ -5,6 +5,7 @@ physics = require("physics")
 physics.start()
 physics.setGravity(0, 9.8)
 
+local Memmory = require("scripts.util.Memmory")
 local imageHelper = require("scripts.util.Image")
 
 local game_module = require("scripts.GameModel")
@@ -104,6 +105,8 @@ local function eventPlayer2Active()
 end
 
 local function startGame()
+    Memmory.monitorMem()
+
     game.sky = display.newGroup()
     game.sky.distanceRatio = 0.6
     game.background = display.newGroup()
@@ -142,7 +145,12 @@ local function startGame()
             camera:moveCamera()
         end)
 
-    timer.performWithDelay(game.delay, gameLoop, 0)
+    Memmory.timerStash.gameLoopTimer = timer.performWithDelay(game.delay, gameLoop, 0)
+end
+
+local function cleanup()
+    Memmory.cancelAllTimers()
+    Memmory.cancelAllTransitions()
 end
 
 local function restartGame()

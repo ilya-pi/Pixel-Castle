@@ -1,5 +1,7 @@
 module(..., package.seeall)
 
+local Memmory = require("scripts.util.Memmory")
+
 Camera = {game = nil}
 
 -- Constructor
@@ -71,13 +73,13 @@ function Camera:touch(event)
 			self.game.background.y = self.game.background.y - self.yDelta * self.game.background.distanceRatio			
 
 			-- if we had a timer to go back we should cancel it
-			if (self.cameraBackTimer ~= nil) then
-				timer.cancel(self.cameraBackTimer)
-				self.cameraBackTimer = nil
+			if (Memmory.timerStash.cameraComebackTimer ~= nil) then
+				timer.cancel(Memmory.timerStash.cameraComebackTimer)
+				Memmory.timerStash.cameraComebackTimer = nil
 			end
 
 	    elseif event.phase == "ended" or event.phase == "cancelled" then
-	    	self.cameraBackTimer = timer.performWithDelay( self.game.cameraGoBackDelay, function (event)
+	    	Memmory.timerStash.cameraComebackTimer = timer.performWithDelay( self.game.cameraGoBackDelay, function (event)
 	    			if (self.game.state.name == "P1") then
 	    				self.game.cameraState = "CASTLE1_FOCUS"
 	    			elseif (self.game.state.name == "P2") then

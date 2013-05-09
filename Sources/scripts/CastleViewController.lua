@@ -78,7 +78,6 @@ function CastleViewController:health()
 	for i, v in ipairs(self.bricks) do
 		if (v ~= nil) then
 			if (v.state == "removed") then
-				print("found removed")
 				table.remove(self.bricks, i)
 			else
 				score = score + 1
