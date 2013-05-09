@@ -79,14 +79,40 @@ function MainMenuScreen:render()
     play.x, play.y = 5 * display.contentWidth / 7 + 20, 260
     self.displayGroup:insert(play)
 
+    local tutorial = widget.newButton{
+        id = "tutorialbtn",
+        label = "Tutorial",
+        font = "TrebuchetMS-Bold",
+        fontSize = 24,
+        width = 140, height = 40,
+        emboss = false,
+        color = 65,
+        default = "images/button.png",
+        over = "images/button.png",
+        labelColor = { default = { 255 }, over = { 0 } },
+        onEvent = function(event)
+        -- todo make transition
+            if  (self.game.state.name == "MAINMENU") then
+                self.game:goto("TUTORIAL")
+                print("tutorial")
+            end
+        end
+    }
+    tutorial.x, tutorial.y = 5 * display.contentWidth / 7 - 140, 260
+    self.displayGroup:insert(tutorial)
+
+
     for i,v in ipairs(imageHelper.renderImage((4 * display.contentWidth / 7) / 5 , 10, assets["title"], 5)) do
         self.displayGroup:insert(v)
     end
 
 end
 
-function MainMenuScreen:dismiss()
+function MainMenuScreen: dismiss()
     timer.cancel(self.bgMovementTimer)
-    self.bgGroup:removeSelf()
-    self.displayGroup:removeSelf()
+    if (self.bgGroup ~= nil) then
+        self.bgGroup:removeSelf()
+        self.displayGroup:removeSelf()
+    end
+
 end

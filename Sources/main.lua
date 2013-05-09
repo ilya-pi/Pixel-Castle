@@ -18,14 +18,13 @@ local wind_module = require("scripts.Wind")
 
 local gameover_module = require("scripts.screens.GameOverScreen")
 local mainmenu_module = require("scripts.screens.MainMenuScreen")
+local tutorial_module = require("scripts.screens.TutorialScreen")
 
 local game = game_module.GameModel:new()
 
 local mainMenuScreen = mainmenu_module.MainMenuScreen:new({game = game})
 local gameOverScreen = gameover_module.GameOverScreen:new({game = game})
-
-local splash = require("scripts.splash")
-local tutorial = require("scripts.tutorial")
+local tutorialScreen = tutorial_module.TutorialScreen:new({game = game})
 
 -- Main game loop
 local function gameLoop()
@@ -106,6 +105,7 @@ end
 
 local function startGame()
     mainMenuScreen:dismiss()
+    tutorialScreen:dismiss()
 
     game.sky = display.newGroup()
     game.sky.distanceRatio = 0.6
@@ -160,11 +160,18 @@ end
 local function mainMenu()
     gameOverScreen:dismiss()
     mainMenuScreen:render()
-end    
+end
+
+local function tutorial()
+    mainMenuScreen:dismiss()
+    tutorialScreen:render()
+end
 
 local function init()
 
-    game:addState({ name = "MAINMENU", transitions = {P1 = startGame}})
+    game:addState({ name = "MAINMENU", transitions = {P1 = startGame, TUTORIAL = tutorial}})
+
+    game:addState({ name = "TUTORIAL", transitions = {P1 = startGame}})
 
     game:addState({ name = "P1", transitions = {BULLET1 = eventPlayer1Fire} })
     game:addState({ name = "BULLET1", transitions = {MOVE_TO_P2 = eventBulletRemoved} })
