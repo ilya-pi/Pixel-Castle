@@ -27,6 +27,8 @@ end
 
 function TutorialScreen:dismiss()
     self.tutorialImage:removeSelf()
+    self.tutorialImage = nil
     self.tutorialGroup:removeSelf()
+    self.tutorialGroup = nil
 end
 

@@ -117,9 +117,8 @@ end
 
 function MainMenuScreen: dismiss()
     timer.cancel(self.bgMovementTimer)
-    if (self.bgGroup ~= nil) then
-        self.bgGroup:removeSelf()
-        self.displayGroup:removeSelf()
-    end
-
+    self.bgGroup:removeSelf()
+    self.bgGroup = nil
+    self.displayGroup:removeSelf()
+    self.displayGroup = nil
 end

@@ -104,9 +104,6 @@ local function eventPlayer2Active()
 end
 
 local function startGame()
-    mainMenuScreen:dismiss()
-    tutorialScreen:dismiss()
-
     game.sky = display.newGroup()
     game.sky.distanceRatio = 0.6
     game.background = display.newGroup()
@@ -167,11 +164,21 @@ local function tutorial()
     tutorialScreen:render()
 end
 
+local function startGameFromTutorial()
+    tutorialScreen:dismiss()
+    startGame()
+end
+
+local function startGameFromMainMenu()
+    mainMenuScreen:dismiss()
+    startGame()
+end
+
 local function init()
 
-    game:addState({ name = "MAINMENU", transitions = {P1 = startGame, TUTORIAL = tutorial}})
+    game:addState({ name = "MAINMENU", transitions = {P1 = startGameFromMainMenu, TUTORIAL = tutorial}})
 
-    game:addState({ name = "TUTORIAL", transitions = {P1 = startGame}})
+    game:addState({ name = "TUTORIAL", transitions = {P1 = startGameFromTutorial}})
 
     game:addState({ name = "P1", transitions = {BULLET1 = eventPlayer1Fire} })
     game:addState({ name = "BULLET1", transitions = {MOVE_TO_P2 = eventBulletRemoved} })
