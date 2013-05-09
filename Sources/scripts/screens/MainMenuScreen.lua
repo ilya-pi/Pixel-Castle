@@ -1,6 +1,5 @@
 module(..., package.seeall)
 
-local conf = require("scripts.util.Conf")
 local widget = require("widget")
 local imageHelper = require("scripts.util.Image")
 
@@ -43,7 +42,7 @@ function MainMenuScreen:render()
 
     -- adjust to real screens
     print(" screen oriing " .. display.screenOriginX .. " " .. display.screenOriginY)
-    self.bgGroup.x, self.bgGroup.y = conf.Conf.absXOffset, conf.Conf.absYOffset
+    self.bgGroup.x, self.bgGroup.y = display.screenOriginX, display.screenOriginY
 
     self.bgMoveLeft = true
     self.bgMovementTimer = timer.performWithDelay(30, function()
@@ -55,12 +54,12 @@ function MainMenuScreen:render()
 
         if (self.bgGroup.x < display.contentWidth - display.screenOriginX - 128 * myPix) then
             self.bgMoveLeft = false
-        elseif (self.bgGroup.x > conf.Conf.absXOffset) then
+        elseif (self.bgGroup.x > display.screenOriginX) then
             self.bgMoveLeft = true
         end
         end, 0)
 
-    local overlay = display.newRect(0, 0, display.contentWidth, display.contentHeight)
+    local overlay = display.newRect(display.screenOriginX, display.screenOriginY, display.contentWidth - 2 * display.screenOriginX, display.contentHeight - 2 * display.screenOriginY)
     self.displayGroup:insert(overlay)
     local g = graphics.newGradient({ 236, 0, 140, 150 }, { 0, 114, 88, 175 }, "down")
     overlay:setFillColor(g)    
