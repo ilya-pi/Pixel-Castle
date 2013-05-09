@@ -110,18 +110,17 @@ local function cleanup()
 
     Runtime:removeEventListener("enterFrame", game)
 
-    display.remove(game.sky)
-    display.remove(game.background)
-
-
-    -- display.remove(game.world)
-
     game.level_map = nil
     game.cameraState = nil
     game.camera = nil
 
     game.controls1 = nil
     game.controls2 = nil
+
+    display.remove(game.sky)
+    display.remove(game.background)
+    -- todo add physicsStash
+    -- display.remove(game.world)
 
     Memmory.monitorMem()
 end
@@ -143,7 +142,7 @@ local function startGame()
     --todo pre-step P1
     game.cameraState = "CASTLE1_FOCUS"
 
-    game.camera = camera_module.Camera:new({ game = game, world = game.world, sky = game.sky, background = game.background, listener = cameraListener })
+    game.camera = camera_module.Camera:new({ game = game, listener = cameraListener })
 
     local skyObj = sky_module.SkyViewController:new()
     skyObj:render(game.sky, game)
@@ -155,7 +154,7 @@ local function startGame()
     backgroundObj:render(game.background, game)
 
     local earth = earth_module.EarthViewController:new()
-    earth:render(physics, game.world, game)
+    earth:render(physics, game)
 
     game.controls1 = controls_module.Controls:new({ world = game.world, angle = 45, x = game.castle1:cannonX(), y = game.castle1:cannonY()})
     game.controls2 = controls_module.Controls:new({ world = game.world, angle = -45, x = game.castle2:cannonX(), y = game.castle2:cannonY()})

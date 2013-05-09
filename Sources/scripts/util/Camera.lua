@@ -58,10 +58,10 @@ function Camera:touch(event)
 	        self.beginY = event.y
 
 	        -- Check for world limits
-	        if (self.world.x - self.xDelta >= display.screenOriginX or self.world.x - self.xDelta <= display.contentWidth - display.screenOriginX - self.game.level_map.level.width * self.game.pixel) then
+	        if (self.game.world.x - self.xDelta >= display.screenOriginX or self.game.world.x - self.xDelta <= display.contentWidth - display.screenOriginX - self.game.level_map.level.width * self.game.pixel) then
 	        	self.xDelta = 0
 	        end
-	        if (self.world.y - self.yDelta >= display.screenOriginY or self.world.y - self.yDelta <= display.contentHeight - display.screenOriginY - self.game.level_map.level.height * self.game.pixel) then
+	        if (self.game.world.y - self.yDelta >= display.screenOriginY or self.game.world.y - self.yDelta <= display.contentHeight - display.screenOriginY - self.game.level_map.level.height * self.game.pixel) then
 	        	self.yDelta = 0
 	        end
 
@@ -100,8 +100,8 @@ function Camera:moveCamera()
 			local cannonX = self.game.castle1:cannonX()
 			local cannonY =  self.game.castle1:cannonY()
 			Memmory.transitionStash.cameraWorldTransition = transition.to(self.game.world, {time = 100, x = calculateX(cannonX, self.game), y = calculateY(cannonY, self.game), onComplete = self.listener})
-			Memmory.transitionStash.cameraSkyTransition = transition.to(self.game.sky, {time = 100, x = calculateX(cannonX, self.game) * self.sky.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
-			Memmory.transitionStash.cameraBgTransition = transition.to(self.game.background, {time = 100, x = calculateX(cannonX, self.game) * self.background.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
+			Memmory.transitionStash.cameraSkyTransition = transition.to(self.game.sky, {time = 100, x = calculateX(cannonX, self.game) * self.game.sky.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
+			Memmory.transitionStash.cameraBgTransition = transition.to(self.game.background, {time = 100, x = calculateX(cannonX, self.game) * self.game.background.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
 			self.game.cameraState = "FOCUSING"
 		end	
 	elseif (self.game.cameraState == "CASTLE2_FOCUS") then
@@ -109,8 +109,8 @@ function Camera:moveCamera()
 			local cannonX = self.game.castle2:cannonX()
 			local cannonY =  self.game.castle2:cannonY()
 			Memmory.transitionStash.cameraWorldTransition = transition.to(self.game.world, {time = 100, x = calculateX(cannonX, self.game), y = calculateY(cannonY, self.game), onComplete = self.listener})
-			Memmory.transitionStash.cameraSkyTransition = transition.to(self.game.sky, {time = 100, x = calculateX(cannonX, self.game) * self.sky.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
-			Memmory.transitionStash.cameraBgTransition = transition.to(self.game.background, {time = 100, x = calculateX(cannonX, self.game) * self.background.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
+			Memmory.transitionStash.cameraSkyTransition = transition.to(self.game.sky, {time = 100, x = calculateX(cannonX, self.game) * self.game.sky.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
+			Memmory.transitionStash.cameraBgTransition = transition.to(self.game.background, {time = 100, x = calculateX(cannonX, self.game) * self.game.background.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
 			self.game.cameraState = "FOCUSING"
 		end		
 	elseif (self.game.cameraState == "CANNONBALL_FOCUS") then
@@ -120,9 +120,9 @@ function Camera:moveCamera()
 --            print(self.game.bullet:getY())
 			self.game.world.x = calculateX(self.game.bullet:getX(), self.game)
 			self.game.world.y = calculateY(self.game.bullet:getY(), self.game)
-			self.game.sky.x = calculateX(self.game.bullet:getX(), self.game) * self.sky.distanceRatio
+			self.game.sky.x = calculateX(self.game.bullet:getX(), self.game) * self.game.sky.distanceRatio
 			self.game.sky.y = calculateY(self.game.bullet:getY(), self.game)
-			self.game.background.x = calculateX(self.game.bullet:getX(), self.game) * self.background.distanceRatio
+			self.game.background.x = calculateX(self.game.bullet:getX(), self.game) * self.game.background.distanceRatio
 			self.game.background.y = calculateY(self.game.bullet:getY(), self.game)
 		end
 	elseif (self.game.cameraState == "FOCUSING") then
