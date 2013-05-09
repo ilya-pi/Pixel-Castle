@@ -230,11 +230,16 @@ local function playMenu()
     mainMenuScreen:showPlayMenu()
 end
 
+local function mainMenuFromPlayMenu()
+    mainMenuScreen:hidePlayMenu()
+    mainMenuScreen:showMainMenu()
+end
+
 local function init()
 
     game:addState({ name = "MAINMENU", transitions = {PLAYMENU = playMenu}})
 
-    game:addState({ name = "PLAYMENU", transitions = {P1 = startGameFromPlayMenu, TUTORIAL = tutorial} })
+    game:addState({ name = "PLAYMENU", transitions = {P1 = startGameFromPlayMenu, TUTORIAL = tutorial, MAINMENU = mainMenuFromPlayMenu} })
     game:addState({ name = "TUTORIAL", transitions = {P1 = startGameFromTutorial} })
 
     game:addState({ name = "P1", transitions = {BULLET1 = eventPlayer1Fire} })
