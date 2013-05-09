@@ -1,7 +1,5 @@
 module(..., package.seeall);
 
-local customUI = require("scripts.util.CustomUI")
-
 TutorialScreen = {}
 
 -- Constructor
@@ -29,30 +27,21 @@ function TutorialScreen:render()
         imageHeight = display.contentHeight
     end
 
-    self.alphaRect = display.newRect(0, 0, imageWidth, imageHeight)
-    self.alphaRect.alpha = 0
-    self.alphaRect:setReferencePoint(display.CenterReferencePoint)
-    self.alphaRect:setFillColor(0, 0, 0, 255)
-    self.alphaRect.alpha, self.alphaRect.x, self.alphaRect.y = 0.6, display.contentWidth / 2, display.contentHeight / 2
-    self.alphaRect:addEventListener("touch", function()
+    self.tutorialImage = display.newImageRect("images/tutorial-screen.png", imageWidth, imageHeight)
+    self.tutorialImage.alpha = 0
+    self.tutorialImage:setReferencePoint(display.CenterReferencePoint)
+    self.tutorialImage.alpha, self.tutorialImage.x, self.tutorialImage.y = 1, display.contentWidth / 2, display.contentHeight / 2
+    self.tutorialImage:addEventListener("touch", function()
         if  self.game.state.name == "TUTORIAL" then
             self.game:goto("P1")
         end
     end)
-    self.tutorialGroup:insert(self.alphaRect)
-
-    self.controlAndHand = display.newImageRect("images/tutorial_hand.png", 120, 120)
-    self.controlAndHand:setReferencePoint(display.CenterReferencePoint)
-    self.controlAndHand.x = display.contentWidth / 2
-    self.controlAndHand.y = display.contentHeight / 2 + 50
-    self.tutorialGroup:insert(self.controlAndHand)
-
-    customUI.text("Drag to adjust the firing angle!", display.contentWidth / 2, display.contentHeight / 2 - 50, 28, self.tutorialGroup)
+    self.tutorialGroup:insert(self.tutorialImage)
 end
 
 function TutorialScreen:dismiss()
-    self.alphaRect:removeSelf()
-    self.alphaRect = nil
+    self.tutorialImage:removeSelf()
+    self.tutorialImage = nil
     self.tutorialGroup:removeSelf()
     self.tutorialGroup = nil
 end

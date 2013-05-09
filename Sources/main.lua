@@ -161,12 +161,12 @@ end
 
 local function tutorial()
     mainMenuScreen:dismiss()
+    startGame()
     tutorialScreen:render()
 end
 
 local function startGameFromTutorial()
     tutorialScreen:dismiss()
-    startGame()
 end
 
 local function startGameFromMainMenu()
