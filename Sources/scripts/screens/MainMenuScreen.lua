@@ -1,5 +1,6 @@
 module(..., package.seeall)
 
+local conf = require("scripts.util.Conf")
 local widget = require("widget")
 local imageHelper = require("scripts.util.Image")
 
@@ -32,10 +33,16 @@ function MainMenuScreen:render()
     local assets = imageHelper.loadImageData("data/assets.json")
 
     self.bgGroup = display.newGroup()
+
     self.displayGroup:insert(self.bgGroup)
-    for i,v in ipairs(imageHelper.renderImage(0, 0, assets["castle_splash"], display.contentHeight / 40)) do
+    -- for i,v in ipairs(imageHelper.renderImage(conf.Conf.absXOffset, conf.Conf.absYOffset, assets["castle_splash"], conf.Conf.absoluteHeight / 40)) do
+    print("xOff " .. conf.Conf.absXOffset .. " " .. conf.Conf.absYOffset)
+    for i,v in ipairs(imageHelper.renderImage(0, 0, assets["castle_splash"], conf.Conf.absoluteHeight / 40)) do
         self.bgGroup:insert(v)
     end
+
+    -- adjust to real screens
+    self.bgGroup.x, self.bgGroup.y = conf.Conf.absXOffset, conf.Conf.absYOffset
 
     self.bgMoveLeft = true
     self.bgMovementTimer = timer.performWithDelay(30, function()
@@ -92,10 +99,10 @@ function MainMenuScreen:render()
         labelColor = { default = { 255 }, over = { 0 } },
         onEvent = function(event)
         -- todo make transition
-            if  (self.game.state.name == "MAINMENU") then
+            if self.game.state.name == "MAINMENU" and event.phase == "release" then
                 self.game:goto("TUTORIAL")
-                print("tutorial")
             end
+            return true
         end
     }
     tutorial.x, tutorial.y = 5 * display.contentWidth / 7 - 140, 260
