@@ -3,13 +3,9 @@ module(..., package.seeall)
 -- local dataDumper = require("scripts.ext.DataDumper")
 
 GameModel = {
-	absoluteHeight = 570,
-	absoluteWidth = 360,
     delay = 100,
 	pixel = 10,
 	cameraGoBackDelay = 2500, -- delay between stop gragging the world map and a camera to go back to it's initial place
-	castleWidth = 10, -- in Pixel  todo castle width should be dynamic
-	castleHeight = 10, -- in Pixel todo castle height should be dynamic
 	groundYOffset = 3,
 	cannonYOffset = 5, -- in Pixel
 	cameraState = "CASTLE1_FOCUS", -- "CASTLE2_FOCUS", "CANNONBALL_FOCUS", "FOCUSING"

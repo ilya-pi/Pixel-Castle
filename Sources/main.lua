@@ -66,9 +66,6 @@ end
 
 local impulse = 11
 
-local fireButtonRelease = function(event)
-end
-
 local function cameraListener()
     print("move complete!")
 end
@@ -220,7 +217,7 @@ local function startGameFromTutorial()
     tutorialScreen:dismiss()
 end
 
-local function startGameFromPlayMenu()
+local function startStoryGameFromLevelSelect()
     mainMenuScreen:dismiss()
     startGame()
 end
@@ -235,11 +232,23 @@ local function mainMenuFromPlayMenu()
     mainMenuScreen:showMainMenu()
 end
 
+local function levelSelectFromPlayMenu()
+    mainMenuScreen:hidePlayMenu()
+    mainMenuScreen:showLevelSelect()
+end
+
+local function playMenuFromLevelSelect()
+    mainMenuScreen:hideLevelSelect()
+    mainMenuScreen:showPlayMenu()
+end
+
+
 local function init()
 
     game:addState({ name = "MAINMENU", transitions = {PLAYMENU = playMenu}})
 
-    game:addState({ name = "PLAYMENU", transitions = {P1 = startGameFromPlayMenu, TUTORIAL = tutorial, MAINMENU = mainMenuFromPlayMenu} })
+    game:addState({ name = "PLAYMENU", transitions = {LEVELSELECT = levelSelectFromPlayMenu, MAINMENU = mainMenuFromPlayMenu} })
+    game:addState({ name = "LEVELSELECT", transitions = {P1 = startStoryGameFromLevelSelect, TUTORIAL = tutorial, PLAYMENU = playMenuFromLevelSelect} })
     game:addState({ name = "TUTORIAL", transitions = {P1 = startGameFromTutorial} })
 
     game:addState({ name = "P1", transitions = {BULLET1 = eventPlayer1Fire} })

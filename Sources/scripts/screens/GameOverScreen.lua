@@ -82,12 +82,10 @@ function GameOverScreen:render()
         defaultFile = "images/button.png",
         overFile = "images/button.png",
         labelColor = { default = { 255 }, over = { 0 } },
-        onEvent = function(event)
-                if  self.game.state.name == "GAMEOVER" and event.phase == "ended" then
-                    self.game:goto("MAINMENU")
-                end
-                return true
-            end
+        onRelease = function(event)
+            self.game:goto("MAINMENU")
+            return true
+        end
     }
     self.displayGroup:insert(mainMenuBtn)
     mainMenuBtn.x, mainMenuBtn.y = 160, 280
@@ -101,11 +99,10 @@ function GameOverScreen:render()
         defaultFile = "images/button.png",
         overFile = "images/button.png",
         labelColor = { default = { 255 }, over = { 0 } },
-        onEvent = function(event)
-                if  self.game.state.name == "GAMEOVER" and event.phase == "ended" then
-                    self.game:goto("P1")
-                end
-            end
+        onRelease = function(event)
+            self.game:goto("P1")
+            return true
+        end
     }
     self.displayGroup:insert(playAgain)
     playAgain.x, playAgain.y = 320, 280

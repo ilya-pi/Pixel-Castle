@@ -4,6 +4,7 @@ local widget = require("widget")
 
 local Memmory = require("scripts.util.Memmory")
 local imageHelper = require("scripts.util.Image")
+local customUI = require("scripts.util.CustomUI")
 
 --[[
 local CustomUI = require("scripts.util.CustomUI")
@@ -101,11 +102,9 @@ function MainMenuScreen:showMainMenu()
         font = "TrebuchetMS-Bold",
         fontSize = 24,
         labelColor = { default = { 255 }, over = { 0 } },
-        onEvent = function(event)
-            if  self.game.state.name == "MAINMENU" and event.phase == "ended" then
-                self.game:goto("PLAYMENU")
-                print("play menu")
-            end
+        onRelease = function(event)
+            self.game:goto("PLAYMENU")
+            return true
         end
     }
     play.x, play.y = 5 * display.contentWidth / 7 + 20, 260
@@ -139,11 +138,10 @@ function MainMenuScreen:showPlayMenu()
         font = "TrebuchetMS-Bold",
         fontSize = 24,
         labelColor = { default = { 255 }, over = { 0 } },
-        onEvent = function(event)
-            if  self.game.state.name == "PLAYMENU" and event.phase == "ended" then
-                self.game:goto("TUTORIAL")
-                print("tutorial in story mode")
-            end
+        onRelease = function(event)
+            self.game:goto("LEVELSELECT")
+            print("tutorial in story mode")
+            return true
         end
     }
     --storyMode.x, storyMode.y = 5 * display.contentWidth / 7 + 20, 260
@@ -160,24 +158,100 @@ function MainMenuScreen:showPlayMenu()
         font = "TrebuchetMS-Bold",
         fontSize = 24,
         labelColor = { default = { 255 }, over = { 0 } },
-        onEvent = function(event)
-            if  self.game.state.name == "PLAYMENU" and event.phase == "ended" then
-                --self.game:goto("P1") //todo: go to versus mode
-                print("versus mode")
-            end
+        onRelease = function(event)
+            --self.game:goto("P1") //todo: go to versus mode
+            print("versus mode")
+            return true
         end
     }
     versusMode.x, versusMode.y = display.contentWidth / 4 * 3, 260  --end of third quater of screen (center of button coords)
     self.playMenuGroup:insert(versusMode)
 
-    local backButton = display.newImageRect("images/menus_common/back_button.png", 60, 60)
+    local backButton = widget.newButton{
+        width = 60,
+        height = 60,
+        defaultFile = "images/menus_common/back_button.png",
+        overFile = "images/menus_common/back_button_tapped.png",
+        onRelease = function(event)
+            self.game:goto("MAINMENU")
+            return true
+        end
+    }
     backButton:setReferencePoint(display.TopLeftReferencePoint)
     backButton.x, backButton.y = display.screenOriginX, display.screenOriginY
-    backButton:addEventListener("tap", function() self.game:goto("MAINMENU") end)
     self.playMenuGroup:insert(backButton)
+end
+
+function MainMenuScreen:showLevelSelect()
+    self.levelSelectGroup = display.newGroup()
+    self.levelsGroup = display.newGroup()
+    self.levelSelectGroup:insert(self.levelsGroup)
+
+    local textMarginTop = 50
+    local textSize = 28
+    local layerSelectMagicYnumber = 15 --it's only one configuration number everything else should be calculated automatically
+
+    local castleSize = 50
+    local rawsCount = 3
+    local columnsCount = 5
+
+    local levelsGroupViewportWidth = display.contentWidth - 2 * display.screenOriginX
+    local levelsGroupViewportHeight = display.contentHeight - 2 * display.screenOriginY - textMarginTop - textSize / 2
+    local castleXdistance = levelsGroupViewportWidth / (columnsCount + 1)
+    local castleYdistance = levelsGroupViewportHeight / (rawsCount + 1)
+
+    customUI.text("Level select", display.contentWidth / 2, textMarginTop + display.screenOriginY, textSize, self.levelSelectGroup)
+
+    for raw = 1, rawsCount do
+        for column = 1, columnsCount do
+            local castle = display.newImageRect("images/choose_level/level_select_castle.png", castleSize, castleSize)
+            castle.x, castle.y = ((column - 1) * castleXdistance), ((raw - 1) * castleYdistance)
+            if raw == 1 and column == 1 then
+                castle:addEventListener("touch",
+                    function(event)
+                        if event.phase == "ended" then
+                            self.game:goto("TUTORIAL")
+                        end
+                    end
+                )
+            else
+                castle:addEventListener("touch",
+                    function(event)
+                        if event.phase == "ended" then
+                            self.game:goto("P1")
+                        end
+                    end
+                )
+            end
+            self.levelsGroup:insert(castle)
+        end
+    end
+    self.levelsGroup:setReferencePoint(display.CenterReferencePoint)
+    self.levelsGroup.x = display.contentWidth / 2
+    self.levelsGroup.y = display.contentHeight / 2 + textMarginTop - layerSelectMagicYnumber
+
+    local backButton = widget.newButton{
+        width = 60,
+        height = 60,
+        defaultFile = "images/menus_common/back_button.png",
+        overFile = "images/menus_common/back_button_tapped.png",
+        onRelease = function(event)
+            self.game:goto("PLAYMENU")
+            return true
+        end
+    }
+    backButton:setReferencePoint(display.TopLeftReferencePoint)
+    backButton.x, backButton.y = display.screenOriginX, display.screenOriginY
 
 
-    --todo: add back button
+    self.levelSelectGroup:insert(backButton)
+end
+
+function MainMenuScreen:hideLevelSelect()
+    self.levelsGroup:removeSelf()
+    self.levelsGroup = nil
+    self.levelSelectGroup:removeSelf()
+    self.levelSelectGroup = nil
 end
 
 function MainMenuScreen:hidePlayMenu()
