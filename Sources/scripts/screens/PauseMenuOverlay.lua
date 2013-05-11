@@ -70,39 +70,28 @@ function PauseMenuOverlay:renderPauseScreen()
             return true
         end
     }
-    mainMenu.x, mainMenu.y = display.contentWidth / 4, 260  --end of first quater of screen (center of button coords)
+    mainMenu.x, mainMenu.y = display.contentWidth / 2, 260  --end of first quater of screen (center of button coords)
     self.pauseOverlayGroup:insert(mainMenu)
 
-    local backToGame = widget.newButton{
-        width = 210,
-        height = 40,
-        defaultFile = "images/button.png",
-        overFile = "images/button_over.png",
-        id = "return_to_game",
-        label = "Return to game",
-        font = "TrebuchetMS-Bold",
-        fontSize = 24,
-        labelColor = { default = { 255 }, over = { 0 } },
+    local playButton = widget.newButton{
+        width = 60,
+        height = 60,
+        defaultFile = "images/menus_common/play_button.png",
+        overFile = "images/menus_common/play_button_tapped.png",
         onRelease = function(event)
             self.game:goto(self.game.exState)
             return true
         end
     }
-    backToGame.x, backToGame.y = display.contentWidth / 4 * 3, 260  --end of third quater of screen (center of button coords)
-    self.pauseOverlayGroup:insert(backToGame)
+    playButton:setReferencePoint(display.TopRightReferencePoint)
+    playButton.x = display.contentWidth - display.screenOriginX
+    playButton.y = display.screenOriginY
+    self.playButton = playButton
+    self.pauseOverlayGroup:insert(self.playButton)
+
 end
 
 function PauseMenuOverlay:dismissPauseScreen()
     self.pauseOverlayGroup:removeSelf()
     self.pauseOverlayGroup = nil
 end
-
-
-
-function PauseMenuOverlay:dismissAll()
-    self.alphaRect:removeSelf()
-    self.alphaRect = nil
-    self.tutorialGroup:removeSelf()
-    self.tutorialGroup = nil
-end
-
