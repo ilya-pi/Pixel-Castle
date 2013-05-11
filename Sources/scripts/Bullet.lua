@@ -14,9 +14,21 @@ function Bullet:new(o)
 end
 
 local function onCollision(self, event)
-    if (event.other.myName == "brick") then
+    if event.other.myName == "brick" then
         self:removeSelf()
-        event.other:removeSelf()
+        event.other.myName = "n"
+        table.insert(Memmory.timerStash, timer.performWithDelay( 10, function() 
+                -- physics.removeBody(event.other)
+                event.other.bodyType = "dynamic"
+                event.other:setLinearVelocity( 100, 100 )
+                -- event.other:applyTorque( 100 )
+                local that = event.other
+                -- do we need memmory management here?
+                table.insert(Memmory.timerStash, timer.performWithDelay(3000, function()
+                        display.remove(event.other)
+                        -- that:removeSelf()
+                    end))
+            end))
         self.state = "removed"
         event.other.state = "removed"
     end

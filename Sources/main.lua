@@ -47,7 +47,7 @@ local function gameLoop()
             end
         end
     elseif (game.state.name == "MOVE_TO_P2") then
-        print("castel1 " .. game.castle1:health() .. " castle2 " .. game.castle2:health())
+        game.castle2:showBubble(game)
         if game.castle1:isDestroyed(game) or game.castle2:isDestroyed(game) then
                game:goto("GAMEOVER")
         else
@@ -57,6 +57,8 @@ local function gameLoop()
     elseif (game.state.name == "P2") then
         game.controls2:render()
     elseif (game.state.name == "MOVE_TO_P1") then
+        game.castle1:showBubble(game)
+
         if game.castle1:isDestroyed(game) or game.castle2:isDestroyed(game) then
                game:goto("GAMEOVER")
         else

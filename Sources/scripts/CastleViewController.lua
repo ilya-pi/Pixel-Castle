@@ -72,6 +72,18 @@ function CastleViewController:updateHealth(game)
 	end
 end
 
+function CastleViewController:showBubble(game)
+	local bubble
+	if (self.location == "left") then
+		bubble = display.newImageRect("images/speech_left.png", 80, 60)
+	else
+		bubble = display.newImageRect("images/speech_right.png", 80, 60)
+	end
+	game.world:insert(bubble)
+	bubble.x, bubble.y = self:cannonX(), self:cannonY()
+	table.insert(Memmory.transitionStash, transition.to(bubble, {time = 2500, alpha = 0, y = self:cannonY() - 100}, function() bubble:removeSelf() end))
+end
+
 function CastleViewController:health()
 	-- to let the castles die right away, return 5 health points
 	-- return 5
