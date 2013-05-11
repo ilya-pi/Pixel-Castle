@@ -137,6 +137,10 @@ local function cleanup()
     game.level_map = nil
     game.cameraState = nil
     game.camera = nil
+    if game.bullet ~= nil then
+        game.bullet:remove()
+        game.bullet = nil
+    end
 
     game.controls1 = nil
     game.controls2 = nil
@@ -200,6 +204,7 @@ local function restartGame()
 end    
 
 local function gameOver()
+    pauseMenuOverlay:dismissButton()
     gameOverScreen:render()
 end
 
@@ -256,10 +261,10 @@ local function pause()
 end
 
 local function unpause()
-    pauseMenuOverlay:renderButton()
     physics.start()
     timer.resume(Memmory.timerStash.gameLoopTimer)
     pauseMenuOverlay:dismissPauseScreen()    
+    pauseMenuOverlay:renderButton()
 end
 
 local function exitToMain()
