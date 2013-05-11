@@ -10,6 +10,7 @@ GameModel = {
 	cannonYOffset = 5, -- in Pixel
 	cameraState = "CASTLE1_FOCUS", -- "CASTLE2_FOCUS", "CANNONBALL_FOCUS", "FOCUSING"
 	minCastleHealthPercet = 99,
+	exState = nil, -- Prev state should be stored here
     state = "PLAYER1", -- "PLAYER2", "PLAYER1_LOST", "PLAYER2_LOST"
     stateNumber = 1,
     states = {}
@@ -34,7 +35,8 @@ end
 
 function GameModel:goto(gotoState)
     print(self.state.name .. ' -> ' .. gotoState)
-    self.state.transitions[gotoState]()
+    self.state.transitions[gotoState]()    
+    self.exState = self.state
     self.state = self.states[gotoState]
 end
 
