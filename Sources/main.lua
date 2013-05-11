@@ -154,8 +154,6 @@ local function cleanup()
 end
 
 local function startGame()
-    cleanup()
-
     game.sky = display.newGroup()
     game.background = display.newGroup()    
     game.world = display.newGroup()
@@ -197,6 +195,7 @@ end
 
 local function restartGame()
     gameOverScreen:dismiss()
+    cleanup()
     startGame()
 end    
 
@@ -204,8 +203,12 @@ local function gameOver()
     gameOverScreen:render()
 end
 
-local function mainMenu()
+local function gameOverToMainMenu()
     gameOverScreen:dismiss()
+    mainMenu()
+end
+
+local function mainMenu()
     mainMenuScreen:render()
     mainMenuScreen:showMainMenu()
 end
@@ -252,9 +255,16 @@ local function pause()
 end
 
 local function unpause()
-    pauseMenuOverlay:dismissPauseScreen()    
-    physics.start()
     timer.resume(Memmory.timerStash.gameLoopTimer)
+    physics.start()    
+    pauseMenuOverlay:dismissPauseScreen()    
+end
+
+local function exitToMain()
+    unpause()
+    cleanup()
+    mainMenuScreen:render()
+    mainMenuScreen:showMainMenu()
 end
 
 local function init()
@@ -273,9 +283,9 @@ local function init()
     game:addState({ name = "MOVE_TO_P1", transitions = { P1 = eventPlayer1Active, GAMEOVER = gameOver, PAUSEMENU = pause} })
 
     game:addState({ name = "PAUSEMENU", transitions = { P1 = unpause, BULLET1 = unpause, MOVE_TO_P1 = unpause, 
-        MOVE_TO_P2 = unpause, P2 = unpause, BULLET2 = unpause, MOVE_TO_P1 = unpause} })
+        MOVE_TO_P2 = unpause, P2 = unpause, BULLET2 = unpause, MOVE_TO_P1 = unpause, MAINMENU = exitToMain} })
 
-    game:addState({ name = "GAMEOVER", transitions = { P1 = restartGame, MAINMENU = mainMenu } })
+    game:addState({ name = "GAMEOVER", transitions = { P1 = restartGame, MAINMENU = gameOverToMainMenu } })
 
     game:setState("MAINMENU")
     mainMenuScreen:render()
