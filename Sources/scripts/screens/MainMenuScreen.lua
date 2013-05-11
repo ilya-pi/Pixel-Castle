@@ -159,7 +159,7 @@ function MainMenuScreen:showPlayMenu()
         fontSize = 24,
         labelColor = { default = { 255 }, over = { 0 } },
         onRelease = function(event)
-            --self.game:goto("P1") //todo: go to versus mode
+            self.game:goto("P1")
             print("versus mode")
             return true
         end

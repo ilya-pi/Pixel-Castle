@@ -21,6 +21,7 @@ local wind_module = require("scripts.Wind")
 
 local gameover_module = require("scripts.screens.GameOverScreen")
 local mainmenu_module = require("scripts.screens.MainMenuScreen")
+local pausemenu_module = require("scripts.screens.PauseMenuOverlay")
 local tutorial_module = require("scripts.screens.TutorialScreen")
 
 local game = game_module.GameModel:new()
@@ -28,6 +29,7 @@ local game = game_module.GameModel:new()
 local mainMenuScreen = mainmenu_module.MainMenuScreen:new({game = game})
 local gameOverScreen = gameover_module.GameOverScreen:new({game = game})
 local tutorialScreen = tutorial_module.TutorialScreen:new({game = game})
+local pauseMenuOverlay = pausemenu_module.PauseMenuOverlay:new({game = game})
 
 -- Main game loop
 local function gameLoop()
@@ -173,14 +175,15 @@ local function startGame()
     local skyObj = sky_module.SkyViewController:new()
     skyObj:render(game.sky, game)
 
-    game.wind = wind_module.Wind:new({ x = 1, y = 1, game = game.game })
-    game.wind:update()
-
     local backgroundObj = background_module.Background:new()
     backgroundObj:render(game.background, game)
 
     local earth = earth_module.EarthViewController:new()
     earth:render(physics, game)
+
+    game.wind = wind_module.Wind:new({ x = 1, y = 1, game = game.game })
+    game.wind:update()
+    pauseMenuOverlay:renderButton()    
 
     game.controls1 = controls_module.Controls:new({ world = game.world, angle = 45, x = game.castle1:cannonX(), y = game.castle1:cannonY()})
     game.controls2 = controls_module.Controls:new({ world = game.world, angle = -45, x = game.castle2:cannonX(), y = game.castle2:cannonY()})
@@ -242,21 +245,28 @@ local function playMenuFromLevelSelect()
     mainMenuScreen:showPlayMenu()
 end
 
+local function pause()
+    print("pause blya")
+    pauseMenuOverlay:renderPauseScreen()
+end
+
+local function unpause()
+end
 
 local function init()
 
     game:addState({ name = "MAINMENU", transitions = {PLAYMENU = playMenu}})
 
-    game:addState({ name = "PLAYMENU", transitions = {LEVELSELECT = levelSelectFromPlayMenu, MAINMENU = mainMenuFromPlayMenu} })
+    game:addState({ name = "PLAYMENU", transitions = {LEVELSELECT = levelSelectFromPlayMenu, MAINMENU = mainMenuFromPlayMenu, P1 = startStoryGameFromLevelSelect} })
     game:addState({ name = "LEVELSELECT", transitions = {P1 = startStoryGameFromLevelSelect, TUTORIAL = tutorial, PLAYMENU = playMenuFromLevelSelect} })
     game:addState({ name = "TUTORIAL", transitions = {P1 = startGameFromTutorial} })
 
-    game:addState({ name = "P1", transitions = {BULLET1 = eventPlayer1Fire} })
-    game:addState({ name = "BULLET1", transitions = {MOVE_TO_P2 = eventBulletRemoved} })
-    game:addState({ name = "MOVE_TO_P2", transitions = { P2 = eventPlayer2Active, GAMEOVER = gameOver} })
-    game:addState({ name = "P2", transitions = {BULLET2 = eventPlayer2Fire} })
-    game:addState({ name = "BULLET2", transitions = {MOVE_TO_P1 = eventBulletRemoved} })    
-    game:addState({ name = "MOVE_TO_P1", transitions = { P1 = eventPlayer1Active, GAMEOVER = gameOver } })
+    game:addState({ name = "P1", transitions = {BULLET1 = eventPlayer1Fire, PAUSEMENU = pause} })
+    game:addState({ name = "BULLET1", transitions = {MOVE_TO_P2 = eventBulletRemoved, PAUSEMENU = pause} })
+    game:addState({ name = "MOVE_TO_P2", transitions = { P2 = eventPlayer2Active, GAMEOVER = gameOver, PAUSEMENU = pause} })
+    game:addState({ name = "P2", transitions = {BULLET2 = eventPlayer2Fire, PAUSEMENU = pause} })
+    game:addState({ name = "BULLET2", transitions = {MOVE_TO_P1 = eventBulletRemoved, PAUSEMENU = pause} })    
+    game:addState({ name = "MOVE_TO_P1", transitions = { P1 = eventPlayer1Active, GAMEOVER = gameOver, PAUSEMENU = pause} })
     game:addState({ name = "GAMEOVER", transitions = { P1 = restartGame, MAINMENU = mainMenu } })
 
     game:setState("MAINMENU")
