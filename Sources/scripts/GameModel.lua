@@ -36,7 +36,7 @@ end
 function GameModel:goto(gotoState)
     print(self.state.name .. ' -> ' .. gotoState)
     self.state.transitions[gotoState]()    
-    self.exState = self.state
+    self.exState = self.state.name
     self.state = self.states[gotoState]
 end
 
