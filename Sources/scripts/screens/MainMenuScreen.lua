@@ -278,9 +278,22 @@ function MainMenuScreen:dismiss()
         self.mainMenuGroup:removeSelf()
         self.mainMenuGroup = nil
     end
+    if self.levelsGroup ~= nil then
+        self.levelsGroup:removeSelf()
+        self.levelsGroup = nil
+    end
+    if self.levelSelectGroup ~= nil then
+        self.levelSelectGroup:removeSelf()
+        self.levelSelectGroup = nil
+    end
+    if self.playMenuGroup ~= nil then
+        self.playMenuGroup:removeSelf()
+        self.playMenuGroup = nil
+    end
 
     if self.displayGroup ~= nil then
         self.displayGroup:removeSelf()
         self.displayGroup = nil
     end
+
 end
