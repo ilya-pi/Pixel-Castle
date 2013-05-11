@@ -50,6 +50,9 @@ function PauseMenuOverlay:renderPauseScreen()
     self.alphaRect.x, self.alphaRect.y = display.contentWidth / 2, display.contentHeight / 2
     self.pauseOverlayGroup:insert(self.alphaRect)
 
+    self.alphaRect:addEventListener("touch", function(event) return true end)
+    self.alphaRect:addEventListener("tap", function(event) return true end)
+
     customUI.text("PAUSE", display.contentWidth / 2, display.contentHeight / 2 - 50, 28, self.pauseOverlayGroup)
 
     local mainMenu = widget.newButton{
