@@ -48,10 +48,16 @@ public class PNGParser {
             if (listOfFiles != null) {
                 Map<String, ImageData> imagesForJson = new HashMap<String, ImageData>();
                 for (File file : listOfFiles) { //todo filter out non extension files
-                    System.out.println("processing file = " + file.getName());
-                    String name = FilenameUtils.removeExtension(file.getName());
-                    ImageData imageData = parseImage(file, name);
-                    imagesForJson.put(name, imageData);
+                    if (file.getName().endsWith(extension)) {
+                        System.out.println("processing file = " + file.getName());
+                        String name = FilenameUtils.removeExtension(file.getName());
+                        ImageData imageData = parseImage(file, name);
+                        imagesForJson.put(name, imageData);
+                    } else {
+                        System.out.println("!!!!!!!!!!!!!!!!!!");
+                        System.out.println("sorted out file: " + file.getName());
+                        System.out.println("!!!!!!!!!!!!!!!!!!");
+                    }
                 }
                 String jsonString = gson.toJson(imagesForJson);
                 FileUtils.writeStringToFile(new File(outputFolder + "/" + imageFolder + ".json"), jsonString);
