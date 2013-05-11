@@ -20,8 +20,7 @@ end
 function CastleViewController:render(physics, world, game, x, y) --todo remove redundant params
     local worldHeight = game.level_map.level.height * game.pixel / game.pixel
 
-    local castles = imageHelper.loadImageData("data/castles.json") --todo move to static initialization
-    local castle = castles[self.castleName]
+    local castle = game.level_map[self.castleName]
 
     self.leftX = x * game.pixel
     self.rightX = (x + castle.width) * game.pixel

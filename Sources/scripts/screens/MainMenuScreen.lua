@@ -53,18 +53,6 @@ function MainMenuScreen:render()
     self.bgGroupXright = display.contentWidth - display.screenOriginX - 128 --[[todo: read from imageHeight]] * myPix
     self.bgGroupXleft = display.screenOriginX
 
---[[
-    local loopPhase1
-    local loopPhase2
-    loopPhase1 = function()
-        transition.to( self.bgGroup, { time= transitionTime, x=self.bgGroupXright , onComplete=loopPhase2} )
-    end
-    loopPhase2 = function()
-        transition.to( self.bgGroup, { time= transitionTime, x=self.bgGroupXleft , onComplete=loopPhase1 } )
-    end
-    loopPhase1()
-]]
-
     self.bgMoveLeft = true
     Memmory.timerStash.bgMovementTimer = timer.performWithDelay(30, function()
         if self.bgMoveLeft then
@@ -204,17 +192,15 @@ function MainMenuScreen:showLevelSelect()
 
     for raw = 1, rawsCount do
         for column = 1, columnsCount do
+            local levelNumber = (raw - 1) * columnsCount + column
             local castle = display.newImageRect("images/choose_level/level_select_castle.png", castleSize, castleSize)
             castle.x, castle.y = ((column - 1) * castleXdistance), ((raw - 1) * castleYdistance)
-            if raw == 1 and column == 1 then
+            if levelNumber == 1 then
                 castle:addEventListener("touch",
                     function(event)
                         if event.phase == "ended" then
-                            if self.game.state.name == "LEVELSELECT" then
-                                self.game:goto("TUTORIAL")
-                            else
-                                print("Tried going to TUTORIAL two times")
-                            end
+                            self.game.selectedLevel = levelNumber
+                            self.game:goto("TUTORIAL")
                         end
                     end
                 )
@@ -222,11 +208,8 @@ function MainMenuScreen:showLevelSelect()
                 castle:addEventListener("touch",
                     function(event)
                         if event.phase == "ended" then
-                            if self.game.state.name == "LEVELSELECT" then
-                                self.game:goto("P1")
-                            else
-                                print("Tried going to P1 two times")
-                            end
+                            self.game.selectedLevel = levelNumber
+                            self.game:goto("P1")
                         end
                     end
                 )

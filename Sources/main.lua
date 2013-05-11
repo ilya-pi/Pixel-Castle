@@ -24,6 +24,8 @@ local mainmenu_module = require("scripts.screens.MainMenuScreen")
 local pausemenu_module = require("scripts.screens.PauseMenuOverlay")
 local tutorial_module = require("scripts.screens.TutorialScreen")
 
+local levelConfig = require("scripts.levels.levelConfig")
+
 local game = game_module.GameModel:new()
 
 local mainMenuScreen = mainmenu_module.MainMenuScreen:new({game = game})
@@ -170,7 +172,8 @@ local function startGame()
     game.world.distanceRatio = 1.0
 
     -- Loading game resources
-    game.level_map = imageHelper.loadImageData("data/level1.json");
+    local levelName = levelConfig.levels[game.selectedLevel].level
+    game.level_map = imageHelper.loadImageData("data/" .. levelName);
 
     --todo pre-step P1
     game.cameraState = "CASTLE1_FOCUS"
@@ -192,8 +195,22 @@ local function startGame()
 
     game.controls1 = controls_module.Controls:new({ world = game.world, angle = 45, x = game.castle1:cannonX(), y = game.castle1:cannonY()})
     game.controls2 = controls_module.Controls:new({ world = game.world, angle = -45, x = game.castle2:cannonX(), y = game.castle2:cannonY()})
-    game.controls1.fireButton:addEventListener("tap", function() game:goto("BULLET1") end)
-    game.controls2.fireButton:addEventListener("tap", function() game:goto("BULLET2") end)
+    game.controls1.fireButton:addEventListener("touch",
+        function(event)
+            if event.phase == "ended" then
+                game:goto("BULLET1")
+            end
+            return true
+        end
+    )
+    game.controls2.fireButton:addEventListener("touch",
+        function(event)
+            if event.phase == "ended" then
+                game:goto("BULLET2")
+            end
+            return true
+        end
+    )
 
     Runtime:addEventListener("enterFrame", game)
 
@@ -279,6 +296,7 @@ local function exitToMain()
 end
 
 local function init()
+    game.selectedLevel = 1
 
     game:addState({ name = "MAINMENU", transitions = {PLAYMENU = playMenu}})
 

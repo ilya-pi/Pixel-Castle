@@ -34,11 +34,14 @@ function TutorialScreen:render()
     self.alphaRect:setReferencePoint(display.CenterReferencePoint)
     self.alphaRect:setFillColor(0, 0, 0, 255)
     self.alphaRect.alpha, self.alphaRect.x, self.alphaRect.y = 0.6, display.contentWidth / 2, display.contentHeight / 2
-    self.alphaRect:addEventListener("touch", function()
-        if  self.game.state.name == "TUTORIAL" then
-            self.game:goto("P1")
+    self.alphaRect:addEventListener("touch",
+        function(event)
+            if event.phase == "ended" then
+                self.game:goto("P1")
+            end
+            return true
         end
-    end)
+    )
     self.tutorialGroup:insert(self.alphaRect)
 
     self.controlAndHand = display.newImageRect("images/tutorial_hand.png", 120, 120)
