@@ -70,10 +70,13 @@ function Bullet:fireBullet(x, y, dx, dy)
     local joint2 = physics.newJoint("weld", cbp2, cbp3, x + self.game.pixel, y + self.game.pixel)
     local joint3 = physics.newJoint("weld", cbp3, cbp4, x + self.game.pixel, y + self.game.pixel)
     local joint4 = physics.newJoint("weld", cbp4, cbp1, x + self.game.pixel, y + self.game.pixel)
-    cbp1:applyForce(dx * 750, -dy * 750, x, y)
-    cbp2:applyForce(dx * 750, -dy * 750, x + self.game.pixel, y + self.game.pixel)
-    cbp3:applyForce(dx * 750, -dy * 750, x + self.game.pixel, y + self.game.pixel)
-    cbp4:applyForce(dx * 750, -dy * 750, x + self.game.pixel, y + self.game.pixel)
+    --local force = 250
+    local force = 750
+    --local force = 1250
+    cbp1:applyForce(dx * force, -dy * force, x, y)
+    cbp2:applyForce(dx * force, -dy * force, x + self.game.pixel, y + self.game.pixel)
+    cbp3:applyForce(dx * force, -dy * force, x + self.game.pixel, y + self.game.pixel)
+    cbp4:applyForce(dx * force, -dy * force, x + self.game.pixel, y + self.game.pixel)
 end
 
 function Bullet:getX()
@@ -122,7 +125,7 @@ function Bullet:isAlive()
             break
         end
     end
-    if ((not atleastOnePixel) or self:getX() > self.game.level_map.level.width * self.game.pixel or self:getX() < 0 or self:getY() > self.game.level_map.level.height * self.game.pixel) then
+    if ((not atleastOnePixel) or self:getX() > self.game.levelWidth * self.game.pixel or self:getX() < 0 or self:getY() > self.game.levelHeight * self.game.pixel) then
         return false
     else
         return true

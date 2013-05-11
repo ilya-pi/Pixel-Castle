@@ -212,6 +212,11 @@ local function startGame()
         end
     )
 
+
+    game.levelWidth = game.level_map.level.width
+    game.levelHeight = game.level_map.level.height
+    game.level_map = nil
+
     Runtime:addEventListener("enterFrame", game)
 
     Memmory.timerStash.gameLoopTimer = timer.performWithDelay(game.delay, gameLoop, 0)

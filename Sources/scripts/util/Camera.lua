@@ -26,8 +26,8 @@ end
 local function calculateX(desiredX, game)
 	if (desiredX + display.screenOriginX < display.contentWidth / 2) then
 		return display.screenOriginX
-	elseif (desiredX - display.screenOriginX > game.level_map.level.width * game.pixel - display.contentWidth / 2) then
-		return - display.screenOriginX - (game.level_map.level.width * game.pixel - display.contentWidth)
+	elseif (desiredX - display.screenOriginX > game.levelWidth * game.pixel - display.contentWidth / 2) then
+		return - display.screenOriginX - (game.levelWidth * game.pixel - display.contentWidth)
 	else
 		return - desiredX + display.contentWidth / 2
 	end
@@ -36,8 +36,8 @@ end
 local function calculateY(desiredY, game)
 	if (desiredY + display.screenOriginY < display.contentHeight / 4) then
 		return display.screenOriginY
-	elseif (desiredY - display.screenOriginY > game.level_map.level.height * game.pixel - 3 * display.contentHeight / 4) then
-		return  - display.screenOriginY - (game.level_map.level.height * game.pixel - display.contentHeight)
+	elseif (desiredY - display.screenOriginY > game.levelHeight * game.pixel - 3 * display.contentHeight / 4) then
+		return  - display.screenOriginY - (game.levelHeight * game.pixel - display.contentHeight)
     else
 		return - desiredY + display.contentHeight / 4
 	end	
@@ -58,19 +58,21 @@ function Camera:touch(event)
 	        self.beginY = event.y
 
 	        -- Check for world limits
-	        if (self.game.world.x - self.xDelta >= display.screenOriginX or self.game.world.x - self.xDelta <= display.contentWidth - display.screenOriginX - self.game.level_map.level.width * self.game.pixel) then
+	        if (self.game.world.x - self.xDelta >= display.screenOriginX or self.game.world.x - self.xDelta <= display.contentWidth - display.screenOriginX - game.levelWidth * self.game.pixel) then
 	        	self.xDelta = 0
 	        end
-	        if (self.game.world.y - self.yDelta >= display.screenOriginY or self.game.world.y - self.yDelta <= display.contentHeight - display.screenOriginY - self.game.level_map.level.height * self.game.pixel) then
+	        if (self.game.world.y - self.yDelta >= display.screenOriginY or self.game.world.y - self.yDelta <= display.contentHeight - display.screenOriginY - game.levelHeight * self.game.pixel) then
 	        	self.yDelta = 0
 	        end
 
 			self.game.world.x = self.game.world.x - self.xDelta		
 			self.game.world.y = self.game.world.y - self.yDelta
+--[[
 			self.game.sky.x = self.game.sky.x - self.xDelta * self.game.sky.distanceRatio
 			self.game.sky.y = self.game.sky.y - self.yDelta * self.game.sky.distanceRatio
 			self.game.background.x = self.game.background.x - self.xDelta * self.game.background.distanceRatio
 			self.game.background.y = self.game.background.y - self.yDelta * self.game.background.distanceRatio			
+]]
 
 			-- if we had a timer to go back we should cancel it
 			if (Memmory.timerStash.cameraComebackTimer ~= nil) then
