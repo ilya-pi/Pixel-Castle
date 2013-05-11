@@ -43,21 +43,22 @@ function PauseMenuOverlay:renderPauseScreen()
     local displayHeight = display.contentHeight + 2 * display.screenOriginY
 
     self.alphaRect = display.newRect(0, 0, displayWidth, displayHeight)
-    self.alphaRect.alpha = 0
+    --self.alphaRect.alpha = 0
     self.alphaRect:setReferencePoint(display.CenterReferencePoint)
-    self.alphaRect:setFillColor(0, 0, 0, 255)
-    self.alphaRect.alpha, self.alphaRect.x, self.alphaRect.y = 0.6, display.contentWidth / 2, display.contentHeight / 2
+    local g = graphics.newGradient({ 236, 0, 140, 150 }, { 0, 114, 88, 175 }, "down")
+    self.alphaRect:setFillColor(g)
+    self.alphaRect.x, self.alphaRect.y = display.contentWidth / 2, display.contentHeight / 2
     self.pauseOverlayGroup:insert(self.alphaRect)
 
-    customUI.text("Drag to adjust the firing angle!", display.contentWidth / 2, display.contentHeight / 2 - 50, 28, self.pauseOverlayGroup)
+    customUI.text("PAUSE", display.contentWidth / 2, display.contentHeight / 2 - 50, 28, self.pauseOverlayGroup)
 
     local mainMenu = widget.newButton{
-        width = 170,
+        width = 210,
         height = 40,
         defaultFile = "images/button.png",
         overFile = "images/button_over.png",
         id = "back_to_main_menu_btn",
-        label = "Back to main menu",
+        label = "Main menu",
         font = "TrebuchetMS-Bold",
         fontSize = 24,
         labelColor = { default = { 255 }, over = { 0 } },
@@ -70,7 +71,7 @@ function PauseMenuOverlay:renderPauseScreen()
     self.pauseOverlayGroup:insert(mainMenu)
 
     local backToGame = widget.newButton{
-        width = 170,
+        width = 210,
         height = 40,
         defaultFile = "images/button.png",
         overFile = "images/button_over.png",
