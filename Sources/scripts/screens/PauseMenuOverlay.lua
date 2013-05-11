@@ -40,7 +40,7 @@ function PauseMenuOverlay:renderPauseScreen()
     self.pauseOverlayGroup = display.newGroup()
 
     local displayWidth = display.contentWidth - 2 * display.screenOriginX
-    local displayHeight = display.contentHeight + 2 * display.screenOriginY
+    local displayHeight = display.contentHeight - 2 * display.screenOriginY
 
     self.alphaRect = display.newRect(0, 0, displayWidth, displayHeight)
     --self.alphaRect.alpha = 0
