@@ -249,14 +249,16 @@ local function playMenuFromLevelSelect()
 end
 
 local function pause()
+    pauseMenuOverlay:dismissButton()
     pauseMenuOverlay:renderPauseScreen()
     physics.pause()
     timer.pause(Memmory.timerStash.gameLoopTimer)
 end
 
 local function unpause()
+    pauseMenuOverlay:renderButton()
+    physics.start()
     timer.resume(Memmory.timerStash.gameLoopTimer)
-    physics.start()    
     pauseMenuOverlay:dismissPauseScreen()    
 end
 
