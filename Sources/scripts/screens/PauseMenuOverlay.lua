@@ -90,7 +90,8 @@ function PauseMenuOverlay:renderPauseScreen()
 end
 
 function PauseMenuOverlay:dismissPauseScreen()
-
+    self.pauseOverlayGroup:removeSelf()
+    self.pauseOverlayGroup = nil
 end
 
 
