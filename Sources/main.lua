@@ -253,7 +253,7 @@ end
 
 local function unpause()
     pauseMenuOverlay:dismissPauseScreen()    
-    physics.resume()
+    physics.start()
     timer.resume(Memmory.timerStash.gameLoopTimer)
 end
 
@@ -271,8 +271,10 @@ local function init()
     game:addState({ name = "P2", transitions = {BULLET2 = eventPlayer2Fire, PAUSEMENU = pause} })
     game:addState({ name = "BULLET2", transitions = {MOVE_TO_P1 = eventBulletRemoved, PAUSEMENU = pause} })    
     game:addState({ name = "MOVE_TO_P1", transitions = { P1 = eventPlayer1Active, GAMEOVER = gameOver, PAUSEMENU = pause} })
-    game:addState({ name = "PAUSE", transitions = { P1 = unpause, BULLET1 = unpause, MOVE_TO_P1 = unpause, 
+
+    game:addState({ name = "PAUSEMENU", transitions = { P1 = unpause, BULLET1 = unpause, MOVE_TO_P1 = unpause, 
         MOVE_TO_P2 = unpause, P2 = unpause, BULLET2 = unpause, MOVE_TO_P1 = unpause} })
+
     game:addState({ name = "GAMEOVER", transitions = { P1 = restartGame, MAINMENU = mainMenu } })
 
     game:setState("MAINMENU")
