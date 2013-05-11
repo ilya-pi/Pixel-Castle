@@ -53,15 +53,15 @@ function PauseMenuOverlay:renderPauseScreen()
     self.alphaRect:addEventListener("touch", function(event) return true end)
     self.alphaRect:addEventListener("tap", function(event) return true end)
 
-    customUI.text("PAUSE", display.contentWidth / 2, display.contentHeight / 2 - 50, 28, self.pauseOverlayGroup)
+    customUI.text("PAUSED", display.contentWidth / 2, display.contentHeight / 2 - 50, 28, self.pauseOverlayGroup)
 
     local mainMenu = widget.newButton{
-        width = 210,
+        width = 240,
         height = 40,
         defaultFile = "images/button.png",
         overFile = "images/button_over.png",
         id = "back_to_main_menu_btn",
-        label = "Main menu",
+        label = "Exit to Main Menu",
         font = "TrebuchetMS-Bold",
         fontSize = 24,
         labelColor = { default = { 255 }, over = { 0 } },

@@ -132,6 +132,7 @@ local function cleanup()
     Memmory.cancelAllTimers()
     Memmory.cancelAllTransitions()
 
+    print("removed focking eventerFrame")
     Runtime:removeEventListener("enterFrame", game)
 
     game.level_map = nil
@@ -208,14 +209,15 @@ local function gameOver()
     gameOverScreen:render()
 end
 
-local function gameOverToMainMenu()
-    gameOverScreen:dismiss()
-    mainMenu()
-end
-
 local function mainMenu()
     mainMenuScreen:render()
     mainMenuScreen:showMainMenu()
+end
+
+local function gameOverToMainMenu()
+    gameOverScreen:dismiss()
+    cleanup()
+    mainMenu()
 end
 
 local function tutorial()

@@ -210,7 +210,11 @@ function MainMenuScreen:showLevelSelect()
                 castle:addEventListener("touch",
                     function(event)
                         if event.phase == "ended" then
-                            self.game:goto("TUTORIAL")
+                            if self.game.state.name == "LEVELSELECT" then
+                                self.game:goto("TUTORIAL")
+                            else
+                                print("Tried going to TUTORIAL two times")
+                            end
                         end
                     end
                 )
@@ -218,7 +222,11 @@ function MainMenuScreen:showLevelSelect()
                 castle:addEventListener("touch",
                     function(event)
                         if event.phase == "ended" then
-                            self.game:goto("P1")
+                            if self.game.state.name == "LEVELSELECT" then
+                                self.game:goto("P1")
+                            else
+                                print("Tried going to P1 two times")
+                            end
                         end
                     end
                 )
