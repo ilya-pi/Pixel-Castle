@@ -58,6 +58,11 @@
                                         <include name="*.json"/>
                                     </fileset>
                                 </copy>
+                                <copy todir="${project.basedir}/../Sources/images/levels">
+                                    <fileset dir="${basedir}/src/main/resources">
+                                        <include name="**/*.png"/>
+                                    </fileset>
+                                </copy>
                             </target>
                         </configuration>
                         <goals>

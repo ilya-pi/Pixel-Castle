@@ -15,7 +15,14 @@ end
 -- physics — physics object to attach to
 -- world - display group for the whole scene
 function SkyViewController:render(group, game)
-    local sky = display.newRect(display.screenOriginX, display.screenOriginY, game.level_map.level.width * game.pixel, game.level_map.level.height * game.pixel)
+    local sky = display.newImageRect("images/levels/" .. game.level_map.levelName .. "/sky.png", game.level_map.levelWidth * game.pixel, game.level_map.levelHeight * game.pixel)
+    sky:setReferencePoint(display.TopLeftReferencePoint)
+    sky.x = 0
+    sky.y = 0
+    group:insert(sky)
+
+--[[
+    local sky = display.newRect(display.screenOriginX, display.screenOriginY, game.level_map.levelWidth * game.pixel, game.level_map.levelHeight * game.pixel)
     sky:setFillColor(207, 229, 130)
     sky:setStrokeColor(207, 229, 130)
     group:insert(sky)
@@ -23,4 +30,5 @@ function SkyViewController:render(group, game)
     for i,v in ipairs(pixels) do
         group:insert(v)
     end
+]]
 end
