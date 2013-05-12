@@ -16,6 +16,10 @@ function renderImage(xPosition, yPosition, image, pixel)
                 local left = (xPosition + x) * pixel
                 local top = (yPosition + y) * pixel
                 local pixel = display.newRect(left, top, pixel, pixel)
+--[[
+                pixel.x = left
+                pixel.y = top
+]]
                 pixel.strokeWidth = 0
                 pixel:setFillColor(r, g, b, a)
                 pixel:setStrokeColor(r, g, b, a)

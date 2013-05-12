@@ -18,15 +18,17 @@ end
 -- physics — physics object to attach to
 -- world - display group for the whole scene
 function CastleViewController:render(physics, world, game, x, y) --todo remove redundant params
-    local worldHeight = game.level_map.level.height * game.pixel / game.pixel
+    local worldHeight = game.level_map.levelHeight * game.pixel / game.pixel
 
     local castle = game.level_map[self.castleName]
 
     self.leftX = x * game.pixel
     self.rightX = (x + castle.width) * game.pixel
-    local topYPixels = worldHeight - y - castle.height + 1
+    local topYPixels = y - castle.height + 1
     self.topY = topYPixels * game.pixel
 
+    print("!!!!!!!!!! rendering castle with x=" .. x .. " y=" .. topYPixels )
+    --local pixels = imageHelper.renderImage(x, topYPixels, castle, game.pixel)  --todo: explain magic numbers
     local pixels = imageHelper.renderImage(x, topYPixels, castle, game.pixel)  --todo: explain magic numbers
     for i,v in ipairs(pixels) do
         self.bricks[i] = v

@@ -14,10 +14,11 @@ function Camera:new (o)
 
 	-- camera pad to detect dragging worl by finger
 	-- todo ilya pimenov : refactor constants
-	o.cameraPad = display.newRect(0, 0, o.game.level_map.level.width * o.game.pixel, o.game.level_map.level.height * o.game.pixel)
+	o.cameraPad = display.newRect(0, 0, o.game.level_map.levelWidth * o.game.pixel, o.game.level_map.levelHeight * o.game.pixel)
 	o.cameraPad:setFillColor(0, 0, 0, 0)
 	o.game.world:insert(o.cameraPad)
-	o.listener = o.cameraPad:addEventListener("touch", o)
+
+    o.listener = o.cameraPad:addEventListener("touch", o)
 
 	o.name = "camera"
 	return o
@@ -58,21 +59,19 @@ function Camera:touch(event)
 	        self.beginY = event.y
 
 	        -- Check for world limits
-	        if (self.game.world.x - self.xDelta >= display.screenOriginX or self.game.world.x - self.xDelta <= display.contentWidth - display.screenOriginX - game.levelWidth * self.game.pixel) then
+	        if (self.game.world.x - self.xDelta >= display.screenOriginX or self.game.world.x - self.xDelta <= display.contentWidth - display.screenOriginX - self.game.levelWidth * self.game.pixel) then
 	        	self.xDelta = 0
 	        end
-	        if (self.game.world.y - self.yDelta >= display.screenOriginY or self.game.world.y - self.yDelta <= display.contentHeight - display.screenOriginY - game.levelHeight * self.game.pixel) then
+	        if (self.game.world.y - self.yDelta >= display.screenOriginY or self.game.world.y - self.yDelta <= display.contentHeight - display.screenOriginY - self.game.levelHeight * self.game.pixel) then
 	        	self.yDelta = 0
 	        end
 
 			self.game.world.x = self.game.world.x - self.xDelta		
 			self.game.world.y = self.game.world.y - self.yDelta
---[[
 			self.game.sky.x = self.game.sky.x - self.xDelta * self.game.sky.distanceRatio
 			self.game.sky.y = self.game.sky.y - self.yDelta * self.game.sky.distanceRatio
 			self.game.background.x = self.game.background.x - self.xDelta * self.game.background.distanceRatio
 			self.game.background.y = self.game.background.y - self.yDelta * self.game.background.distanceRatio			
-]]
 
 			-- if we had a timer to go back we should cancel it
 			if (Memmory.timerStash.cameraComebackTimer ~= nil) then
@@ -96,14 +95,29 @@ function Camera:touch(event)
 end
 
 -- Camera follows bolder automatically
-function Camera:moveCamera()		
-	if (self.game.cameraState == "CASTLE1_FOCUS") then		
+function Camera:moveCamera()
+    --todo: a lot of possible optimisations here for ex. do not call calculateX,Y three times per call
+	if (self.game.cameraState == "CASTLE1_FOCUS") then
 		if (self.game.castle1 ~= nil) then
 			local cannonX = self.game.castle1:cannonX()
 			local cannonY =  self.game.castle1:cannonY()
 			Memmory.transitionStash.cameraWorldTransition = transition.to(self.game.world, {time = 100, x = calculateX(cannonX, self.game), y = calculateY(cannonY, self.game), onComplete = self.listener})
-			Memmory.transitionStash.cameraSkyTransition = transition.to(self.game.sky, {time = 100, x = calculateX(cannonX, self.game) * self.game.sky.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
-			Memmory.transitionStash.cameraBgTransition = transition.to(self.game.background, {time = 100, x = calculateX(cannonX, self.game) * self.game.background.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
+			Memmory.transitionStash.cameraSkyTransition = transition.to(self.game.sky,
+                {
+                    time = 100,
+                    x = (calculateX(cannonX, self.game) - display.screenOriginX) * self.game.sky.distanceRatio + display.screenOriginX,
+                    y = calculateY(cannonY, self.game),
+                    onComplete = self.listener
+                }
+            )
+			Memmory.transitionStash.cameraBgTransition = transition.to(self.game.background,
+                {
+                    time = 100,
+                    x = (calculateX(cannonX, self.game) - display.screenOriginX) * self.game.background.distanceRatio + display.screenOriginX,
+                    y = calculateY(cannonY, self.game),
+                    onComplete = self.listener
+                }
+            )
 			self.game.cameraState = "FOCUSING"
 		end	
 	elseif (self.game.cameraState == "CASTLE2_FOCUS") then
@@ -111,17 +125,33 @@ function Camera:moveCamera()
 			local cannonX = self.game.castle2:cannonX()
 			local cannonY =  self.game.castle2:cannonY()
 			Memmory.transitionStash.cameraWorldTransition = transition.to(self.game.world, {time = 100, x = calculateX(cannonX, self.game), y = calculateY(cannonY, self.game), onComplete = self.listener})
-			Memmory.transitionStash.cameraSkyTransition = transition.to(self.game.sky, {time = 100, x = calculateX(cannonX, self.game) * self.game.sky.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
-			Memmory.transitionStash.cameraBgTransition = transition.to(self.game.background, {time = 100, x = calculateX(cannonX, self.game) * self.game.background.distanceRatio, y = calculateY(cannonY, self.game), onComplete = self.listener})
+			Memmory.transitionStash.cameraSkyTransition = transition.to(self.game.sky,
+                {
+                    time = 100,
+                    x = (calculateX(cannonX, self.game) - display.screenOriginX) * self.game.sky.distanceRatio + display.screenOriginX,
+                    y = calculateY(cannonY, self.game), --todo: make parallax work for Y axis. I'm not sure if it's suitable for this particular piece of code
+                    onComplete = self.listener
+                }
+            )
+			Memmory.transitionStash.cameraBgTransition = transition.to(self.game.background,
+                {
+                    time = 100,
+                    x = (calculateX(cannonX, self.game) - display.screenOriginX) * self.game.background.distanceRatio + display.screenOriginX,
+                    y = calculateY(cannonY, self.game), --todo: make parallax work for Y axis. I'm not sure if it's suitable for this particular piece of code
+                    onComplete = self.listener
+                }
+            )
 			self.game.cameraState = "FOCUSING"
 		end		
 	elseif (self.game.cameraState == "CANNONBALL_FOCUS") then
 		if (self.game.bullet ~= nil and self.game.bullet:isAlive()) then
 			self.game.world.x = calculateX(self.game.bullet:getX(), self.game)
 			self.game.world.y = calculateY(self.game.bullet:getY(), self.game)
-			self.game.sky.x = calculateX(self.game.bullet:getX(), self.game) * self.game.sky.distanceRatio
+			self.game.sky.x = (calculateX(self.game.bullet:getX(), self.game) - display.screenOriginX) * self.game.sky.distanceRatio + display.screenOriginX
+			--self.game.sky.y = (calculateY(self.game.bullet:getY(), self.game) - display.screenOriginY) * self.game.sky.distanceRatio + display.screenOriginY --todo: make parallax work for Y axis
 			self.game.sky.y = calculateY(self.game.bullet:getY(), self.game)
-			self.game.background.x = calculateX(self.game.bullet:getX(), self.game) * self.game.background.distanceRatio
+			self.game.background.x = (calculateX(self.game.bullet:getX(), self.game) - display.screenOriginX) * self.game.background.distanceRatio + display.screenOriginX
+			--self.game.background.y = (calculateY(self.game.bullet:getY(), self.game) - display.screenOriginY) * self.game.background.distanceRatio + display.screenOriginY --todo: make parallax work for Y axis
 			self.game.background.y = calculateY(self.game.bullet:getY(), self.game)
 		end
 	elseif (self.game.cameraState == "FOCUSING") then

@@ -5,6 +5,8 @@ display.setStatusBar(display.HiddenStatusBar)
 physics = require("physics")
 physics.start()
 physics.setGravity(0, 9.8)
+display.setDefault("magTextureFilter", "nearest")
+display.setDefault("minTextureFilter", "nearest")
 -- physics.setDrawMode( "hybrid" )
 
 local Memmory = require("scripts.util.Memmory")
@@ -213,8 +215,9 @@ local function startGame()
     )
 
 
-    game.levelWidth = game.level_map.level.width
-    game.levelHeight = game.level_map.level.height
+    game.levelWidth = game.level_map.levelWidth
+    game.levelHeight = game.level_map.levelHeight
+    print("level dimentions " ..  game.levelWidth .. " " .. game.levelHeight )
     game.level_map = nil
 
     Runtime:addEventListener("enterFrame", game)
