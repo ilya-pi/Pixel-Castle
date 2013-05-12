@@ -106,6 +106,13 @@ function GameOverScreen:render()
     }
     self.displayGroup:insert(playAgain)
     playAgain.x, playAgain.y = 320, 280
+--[[ todo: Ilya Pimenov: render here images of castles instead of creating castles from json. See code below. You should use game here.
+
+    local sky = display.newImageRect("images/levels/" .. game.level_map.levelName .. "/sky.png", game.level_map.levelWidth * game.pixel, game.level_map.levelHeight * game.pixel)
+    sky:setReferencePoint(display.TopLeftReferencePoint)
+    sky.x = 0
+    sky.y = 0
+]]
 
     local castles = imageHelper.loadImageData("data/castles.json") --todo move to static initialization
 
