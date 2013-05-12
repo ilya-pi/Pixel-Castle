@@ -4,6 +4,7 @@ module(..., package.seeall)
 
 GameModel = {
     delay = 100,
+	-- pixel = 10,
 	pixel = 10,
 	cameraGoBackDelay = 2500, -- delay between stop gragging the world map and a camera to go back to it's initial place
 	groundYOffset = 3,
