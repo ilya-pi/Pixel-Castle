@@ -218,6 +218,7 @@ local function startGame()
     game.levelWidth = game.level_map.levelWidth
     game.levelHeight = game.level_map.levelHeight
     print("level dimentions " ..  game.levelWidth .. " " .. game.levelHeight )
+    game.levelName = game.level_map.levelName
     game.level_map = nil
 
     Runtime:addEventListener("enterFrame", game)

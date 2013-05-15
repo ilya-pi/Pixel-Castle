@@ -30,6 +30,9 @@ end
 
 function GameOverScreen:render()
     self.displayGroup = display.newGroup()
+
+    local width = display.contentWidth + 2 * display.screenOriginX
+    local height = display.contentHeight + 2 * display.screenOriginY
     
     local overlay = display.newRect(display.screenOriginX, display.screenOriginY, display.contentWidth - 2 * display.screenOriginX, display.contentHeight - 2 * display.screenOriginY)
     self.displayGroup:insert(overlay)
@@ -70,8 +73,8 @@ function GameOverScreen:render()
         playerText.text = "Player 2"
     end
 
-    infoText( self.game.castle1:healthPercent() .. " %", display.contentWidth / 6, display.contentHeight / 2 + 42, 24, self.displayGroup)
-    infoText( self.game.castle2:healthPercent() .. " %", 5 * display.contentWidth / 6, display.contentHeight / 2 + 42, 24, self.displayGroup)
+    infoText( self.game.castle1:healthPercent() .. " %", width / 6, height / 2 + 65, 24, self.displayGroup)
+    infoText( self.game.castle2:healthPercent() .. " %", 5 * display.contentWidth / 6, height / 2 + 65, 24, self.displayGroup)
 
     local mainMenuBtn = widget.newButton{
         id = "menubtn",
@@ -106,22 +109,18 @@ function GameOverScreen:render()
     }
     self.displayGroup:insert(playAgain)
     playAgain.x, playAgain.y = 320, 280
---[[ todo: Ilya Pimenov: render here images of castles instead of creating castles from json. See code below. You should use game here.
 
-    local sky = display.newImageRect("images/levels/" .. game.level_map.levelName .. "/sky.png", game.level_map.levelWidth * game.pixel, game.level_map.levelHeight * game.pixel)
-    sky:setReferencePoint(display.TopLeftReferencePoint)
-    sky.x = 0
-    sky.y = 0
-]]
+    local castle1 = display.newImageRect("images/levels/" .. self.game.levelName .. "/castle1.png", 100, 100)
+    self.displayGroup:insert(castle1)
+    castle1:setReferencePoint(display.CenterReferencePoint)
+    castle1.x = width / 6
+    castle1.y = height / 2
 
-    local castles = imageHelper.loadImageData("data/castles.json") --todo move to static initialization
-
-    for i,v in ipairs(imageHelper.renderImage((display.contentWidth / 6) / 5 - 10, 18, castles["castle1"], 5)) do
-        self.displayGroup:insert(v)
-    end
-    for i,v in ipairs(imageHelper.renderImage((5 * display.contentWidth / 6) / 5 - 8, 18, castles["castle2"], 5)) do
-        self.displayGroup:insert(v)
-    end
+    local castle2 = display.newImageRect("images/levels/" .. self.game.levelName .. "/castle2.png", 100, 100)
+    self.displayGroup:insert(castle2)
+    castle2:setReferencePoint(display.CenterReferencePoint)
+    castle2.x = 5 * width / 6
+    castle2.y = height / 2
 end
 
 function GameOverScreen:dismiss()
