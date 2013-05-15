@@ -70,10 +70,9 @@ function Bullet:fireBullet(x, y, dx, dy)
     local joint2 = physics.newJoint("weld", cbp2, cbp3, x + self.game.pixel, y + self.game.pixel)
     local joint3 = physics.newJoint("weld", cbp3, cbp4, x + self.game.pixel, y + self.game.pixel)
     local joint4 = physics.newJoint("weld", cbp4, cbp1, x + self.game.pixel, y + self.game.pixel)
-    -- local force = 450
-    -- local force = 750
-    -- local force = 1000
-    local force = 2250
+    --local force = 450
+    --local force = 750
+    local force = 1650
     cbp1:applyForce(dx * force, -dy * force, x, y)
     cbp2:applyForce(dx * force, -dy * force, x + self.game.pixel, y + self.game.pixel)
     cbp3:applyForce(dx * force, -dy * force, x + self.game.pixel, y + self.game.pixel)

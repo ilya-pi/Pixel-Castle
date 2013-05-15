@@ -22,6 +22,7 @@ function MainMenuScreen:new (o)
     setmetatable(o, self)
     self.__index = self
     self.assets = imageHelper.loadImageData("data/assets.json")
+    self.textMarginTop = 50 --todo: Ilya Pimenov after your last commit this variable disapeared so I'm not sure where it should be
     return o
 end
 
@@ -193,7 +194,8 @@ function MainMenuScreen:showLevelSelect()
     self.levelsGroup = display.newGroup()
     self.levelSelectGroup:insert(self.levelsGroup)
 
-    -- local textMarginTop = 50
+    local levelNumberTextSize = 16
+    local levelNumberTextPaddingTop = 2
     local textSize = 28
     local layerSelectMagicYnumber = 15 --it's only one configuration number everything else should be calculated automatically
 
@@ -202,7 +204,7 @@ function MainMenuScreen:showLevelSelect()
     local columnsCount = 5
 
     local levelsGroupViewportWidth = display.contentWidth - 2 * display.screenOriginX
-    local levelsGroupViewportHeight = display.contentHeight - 2 * display.screenOriginY - textMarginTop - textSize / 2
+    local levelsGroupViewportHeight = display.contentHeight - 2 * display.screenOriginY - self.textMarginTop - textSize / 2
     local castleXdistance = levelsGroupViewportWidth / (columnsCount + 1)
     local castleYdistance = levelsGroupViewportHeight / (rawsCount + 1)
 
@@ -211,33 +213,63 @@ function MainMenuScreen:showLevelSelect()
     for raw = 1, rawsCount do
         for column = 1, columnsCount do
             local levelNumber = (raw - 1) * columnsCount + column
-            local castle = display.newImageRect("images/choose_level/level_select_castle.png", castleSize, castleSize)
-            castle.x, castle.y = ((column - 1) * castleXdistance), ((raw - 1) * castleYdistance)
+            local castleX, castleY = ((column - 1) * castleXdistance), ((raw - 1) * castleYdistance)
+            --local castle = display.newImageRect("images/choose_level/level_select_castle.png", castleSize, castleSize)
+
+            local defaultFile
+            local overFile
+            local onRelease
+
+            --todo: Rodrigo: make 3 types of castles: with star, ordinary, with lock
+
             if levelNumber == 1 then
-                castle:addEventListener("touch",
-                    function(event)
-                        if event.phase == "ended" then
-                            self.game.selectedLevel = levelNumber
-                            self.game:goto("TUTORIAL")
-                        end
+                --todo: accomplished level
+                customUI.text(levelNumber, castleX, castleY + levelNumberTextPaddingTop, levelNumberTextSize, self.levelsGroup)
+                defaultFile = "images/choose_level/level_select_castle_accomplished.png"
+                overFile = "images/choose_level/level_select_castle_accomplished_pushed.png"
+                onRelease = function(event)
+                    if event.phase == "ended" then
+                        self.game.selectedLevel = levelNumber
+                        self.game:goto("TUTORIAL")
                     end
-                )
+                end
+            elseif levelNumber == 2 then
+                --todo current level
+                customUI.text(levelNumber, castleX, castleY + levelNumberTextPaddingTop, levelNumberTextSize, self.levelsGroup)
+                defaultFile = "images/choose_level/level_select_castle_current.png"
+                overFile = "images/choose_level/level_select_castle_current_pushed.png"
+                onRelease = function(event)
+                    if event.phase == "ended" then
+                        self.game.selectedLevel = levelNumber
+                        self.game:goto("P1")
+                    end
+                end
             else
-                castle:addEventListener("touch",
-                    function(event)
-                        if event.phase == "ended" then
-                            self.game.selectedLevel = levelNumber
-                            self.game:goto("P1")
-                        end
-                    end
-                )
+                --todo locked level
+                defaultFile = "images/choose_level/level_select_castle_locked.png"
+                overFile = "images/choose_level/level_select_castle_locked_pushed.png"
+                onRelease = function(event)
+                    return true
+                end
             end
-            self.levelsGroup:insert(castle)
+
+            local castle = widget.newButton{
+                width = castleSize,
+                height = castleSize,
+                defaultFile = defaultFile,
+                overFile = overFile,
+                onRelease = onRelease
+            }
+            castle:setReferencePoint(display.CenterReferencePoint)
+            castle.x, castle.y = castleX, castleY
+
+            self.levelsGroup:insert(1, castle)
+
         end
     end
     self.levelsGroup:setReferencePoint(display.CenterReferencePoint)
     self.levelsGroup.x = display.contentWidth / 2
-    self.levelsGroup.y = display.contentHeight / 2 + textMarginTop - layerSelectMagicYnumber
+    self.levelsGroup.y = display.contentHeight / 2 + self.textMarginTop - layerSelectMagicYnumber
 
     local backButton = widget.newButton{
         width = 60,
