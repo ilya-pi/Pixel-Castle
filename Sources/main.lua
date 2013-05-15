@@ -242,6 +242,16 @@ local function mainMenu()
     mainMenuScreen:showMainMenu()
 end
 
+local function optionsMenu()
+    mainMenuScreen:hideMainMenu()
+    mainMenuScreen:showOptionsMenu()
+end
+
+local function mainMenuFromOptions()
+    mainMenuScreen:hideOptionsMenu()
+    mainMenuScreen:showMainMenu()
+end
+
 local function gameOverToMainMenu()
     gameOverScreen:dismiss()
     cleanup()
@@ -307,7 +317,8 @@ end
 local function init()
     game.selectedLevel = 1
 
-    game:addState({ name = "MAINMENU", transitions = {PLAYMENU = playMenu}})
+    game:addState({ name = "MAINMENU", transitions = {PLAYMENU = playMenu, OPTIONS = optionsMenu}})
+    game:addState({ name = "OPTIONS", transitions = {MAINMENU = mainMenuFromOptions}})
 
     game:addState({ name = "PLAYMENU", transitions = {LEVELSELECT = levelSelectFromPlayMenu, MAINMENU = mainMenuFromPlayMenu, P1 = startStoryGameFromLevelSelect} })
     game:addState({ name = "LEVELSELECT", transitions = {P1 = startStoryGameFromLevelSelect, TUTORIAL = tutorial, PLAYMENU = playMenuFromLevelSelect} })

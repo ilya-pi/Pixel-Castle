@@ -95,8 +95,26 @@ function MainMenuScreen:showMainMenu()
             return true
         end
     }
-    play.x, play.y = 5 * display.contentWidth / 7 + 20, 260
+    play.x, play.y = 5 * display.contentWidth / 7 + 20, 210
     self.mainMenuGroup:insert(play)
+
+    local options = widget.newButton{
+        width = 140,
+        height = 40,
+        defaultFile = "images/button.png",
+        overFile = "images/button_over.png",
+        id = "optionsbtn",
+        label = "Options",
+        font = "TrebuchetMS-Bold",
+        fontSize = 24,
+        labelColor = { default = { 255 }, over = { 0 } },
+        onRelease = function(event)
+            self.game:goto("OPTIONS")
+            return true
+        end
+    }
+    options.x, options.y = 5 * display.contentWidth / 7 + 20, 260
+    self.mainMenuGroup:insert(options)
 
     for i,v in ipairs(imageHelper.renderImage((4 * display.contentWidth / 7) / 5 , 10, self.assets["title"], 5)) do
         self.mainMenuGroup:insert(v)
@@ -175,7 +193,7 @@ function MainMenuScreen:showLevelSelect()
     self.levelsGroup = display.newGroup()
     self.levelSelectGroup:insert(self.levelsGroup)
 
-    local textMarginTop = 50
+    -- local textMarginTop = 50
     local textSize = 28
     local layerSelectMagicYnumber = 15 --it's only one configuration number everything else should be calculated automatically
 
@@ -188,7 +206,7 @@ function MainMenuScreen:showLevelSelect()
     local castleXdistance = levelsGroupViewportWidth / (columnsCount + 1)
     local castleYdistance = levelsGroupViewportHeight / (rawsCount + 1)
 
-    customUI.text("Level select", display.contentWidth / 2, textMarginTop + display.screenOriginY, textSize, self.levelSelectGroup)
+    customUI.text("Level select", display.contentWidth / 2, self.textMarginTop + display.screenOriginY, textSize, self.levelSelectGroup)
 
     for raw = 1, rawsCount do
         for column = 1, columnsCount do
@@ -248,6 +266,55 @@ end
 function MainMenuScreen:hidePlayMenu()
     self.playMenuGroup:removeSelf()
     self.playMenuGroup = nil
+end
+
+function MainMenuScreen:showOptionsMenu()
+    self.optionsMenuGroup = display.newGroup()
+    self.displayGroup:insert(self.optionsMenuGroup)
+
+    local bg = display.newImageRect("images/button.png", 2 * display.contentWidth / 3, display.contentHeight / 2)
+    self.optionsMenuGroup:insert(bg)
+    bg:setReferencePoint(display.CenterReferencePoint)
+    bg.x, bg.y = display.contentWidth / 2, display.contentHeight / 2
+
+    local credits = widget.newButton{
+        width = 170,
+        height = 40,
+        defaultFile = "images/button.png",
+        overFile = "images/button_over.png",
+        id = "credits_id",
+        label = "Credits",
+        font = "TrebuchetMS-Bold",
+        fontSize = 24,
+        labelColor = { default = { 255 }, over = { 0 } },
+        onRelease = function(event)
+            print("credits clicked")
+            return true
+        end
+    }
+    credits.x, credits.y = display.contentWidth / 2, 3 * display.contentHeight / 4 + 30
+    self.optionsMenuGroup:insert(credits)
+
+    customUI.text("Options", display.contentWidth / 2, 50 + display.screenOriginY, 30, self.optionsMenuGroup)
+
+    local backButton = widget.newButton{
+        width = 60,
+        height = 60,
+        defaultFile = "images/menus_common/back_button.png",
+        overFile = "images/menus_common/back_button_tapped.png",
+        onRelease = function(event)
+            self.game:goto("MAINMENU")
+            return true
+        end
+    }
+    backButton:setReferencePoint(display.TopLeftReferencePoint)
+    backButton.x, backButton.y = display.screenOriginX, display.screenOriginY
+    self.optionsMenuGroup:insert(backButton)
+end
+
+function MainMenuScreen:hideOptionsMenu()
+    self.optionsMenuGroup:removeSelf()
+    self.optionsMenuGroup = nil
 end
 
 function MainMenuScreen:dismiss()
