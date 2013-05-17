@@ -39,32 +39,26 @@ end
 
 function MainMenuScreen:render()
     self.displayGroup = display.newGroup()
-    self.bgGroup = display.newGroup()
-    self.displayGroup:insert(self.bgGroup)
 
+    local bgHeight = display.contentHeight - 2 * display.screenOriginY
+    local bgWidth = bgHeight * 128 / 40
 
-    local myPix = (display.contentHeight - 2 * display.screenOriginY) / 40 --todo: read from imageHeight
-    for i,v in ipairs(imageHelper.renderImage(0, 0, self.assets["castle_splash"], myPix)) do
-        self.bgGroup:insert(v)
-    end
-    -- adjust to real screens
-    print(" screen oriing " .. display.screenOriginX .. " " .. display.screenOriginY)
-    self.bgGroup.x, self.bgGroup.y = display.screenOriginX, display.screenOriginY
-
-    self.bgGroupXright = display.contentWidth - display.screenOriginX - 128 --[[todo: read from imageHeight]] * myPix
-    self.bgGroupXleft = display.screenOriginX
+    self.bg = display.newImageRect("images/castle_splash.png", bgWidth, bgHeight)
+    self.displayGroup:insert(self.bg)
+    self.bg:setReferencePoint(display.TopLeftReferencePoint)
+    self.bg.x, self.bg.y = display.screenOriginX, display.screenOriginY
 
     self.bgMoveLeft = true
     Memmory.timerStash.bgMovementTimer = timer.performWithDelay(30, function()
         if self.bgMoveLeft then
-            self.bgGroup.x = self.bgGroup.x - 1
+            self.bg.x = self.bg.x - 1
         else
-            self.bgGroup.x = self.bgGroup.x + 1
+            self.bg.x = self.bg.x + 1
         end
 
-        if (self.bgGroup.x < display.contentWidth - display.screenOriginX - 128 * myPix) then
+        if (self.bg.x < display.contentWidth - display.screenOriginX - bgWidth) then
             self.bgMoveLeft = false
-        elseif (self.bgGroup.x > display.screenOriginX) then
+        elseif (self.bg.x > display.screenOriginX) then
             self.bgMoveLeft = true
         end
     end, 0)
@@ -73,7 +67,6 @@ function MainMenuScreen:render()
     local g = graphics.newGradient({ 236, 0, 140, 150 }, { 0, 114, 88, 175 }, "down")
     overlay:setFillColor(g)
     self.displayGroup:insert(overlay)
-
 
 end
 
@@ -351,9 +344,9 @@ end
 
 function MainMenuScreen:dismiss()
     timer.cancel(Memmory.timerStash.bgMovementTimer)
-    if self.bgGroupe ~= nil then
-        self.bgGroup:removeSelf()
-        self.bgGroup = nil
+    if self.bg ~= nil then
+        self.bg:removeSelf()
+        self.bg = nil
     end
 
     if self.mainMenuGroup ~= nil then
