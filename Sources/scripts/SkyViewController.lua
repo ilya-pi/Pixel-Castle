@@ -20,15 +20,4 @@ function SkyViewController:render(group, game)
     sky.x = 0
     sky.y = 0
     group:insert(sky)
-
---[[
-    local sky = display.newRect(display.screenOriginX, display.screenOriginY, game.level_map.levelWidth * game.pixel, game.level_map.levelHeight * game.pixel)
-    sky:setFillColor(207, 229, 130)
-    sky:setStrokeColor(207, 229, 130)
-    group:insert(sky)
-    local pixels = imageHelper.renderImage(0, 0, game.level_map.sky, game.pixel)
-    for i,v in ipairs(pixels) do
-        group:insert(v)
-    end
-]]
 end

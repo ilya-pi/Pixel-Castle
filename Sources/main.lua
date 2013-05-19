@@ -28,6 +28,7 @@ local pausemenu_module = require("scripts.screens.PauseMenuOverlay")
 local tutorial_module = require("scripts.screens.TutorialScreen")
 
 local levelConfig = require("scripts.levels.levelConfig")
+local dbWrapper = require("scripts.db.DbWrapper")
 
 local game = game_module.GameModel:new()
 
@@ -186,8 +187,8 @@ local function startGame()
     game.world.distanceRatio = 1.0
 
     -- Loading game resources
-    local levelName = levelConfig.levels[game.selectedLevel].level
-    game.level_map = imageHelper.loadImageData("data/" .. levelName);
+    local levelFileName = levelConfig.screens[1].levels[game.selectedLevel].file
+    game.level_map = imageHelper.loadImageData("data/" .. levelFileName);
 
     --todo pre-step P1
     game.cameraState = "CASTLE1_FOCUS"
@@ -225,7 +226,6 @@ local function startGame()
             return true
         end
     )
-
 
     game.levelWidth = game.level_map.levelWidth
     game.levelHeight = game.level_map.levelHeight
@@ -332,6 +332,8 @@ end
 
 local function init()
     game.selectedLevel = 1
+
+    game.db = dbWrapper.DbWrapper:new()
 
     game:addState({ name = "MAINMENU", transitions = {PLAYMENU = playMenu, OPTIONS = optionsMenu}})
     game:addState({ name = "OPTIONS", transitions = {MAINMENU = mainMenuFromOptions}})
