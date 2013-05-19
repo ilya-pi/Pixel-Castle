@@ -1,6 +1,7 @@
 -- hide status bar
 display.setStatusBar(display.HiddenStatusBar)
 
+local widget = require("widget")
 
 physics = require("physics")
 physics.start()
@@ -169,6 +170,17 @@ local function startGame()
     game.background = display.newGroup()    
     game.world = display.newGroup()
 
+    local loading = display.newGroup()
+    local overlay = display.newRect(display.screenOriginX, display.screenOriginY, display.contentWidth - 2 * display.screenOriginX, display.contentHeight - 2 * display.screenOriginY)
+    local g = graphics.newGradient({ 236, 0, 140, 150 }, { 0, 114, 88, 175 }, "down")
+    overlay:setFillColor(g)
+    loading:insert(overlay)
+    local spinner = widget.newSpinner{left = display.contentWidth / 2, top = 150, width = 100, height = 100}
+    spinner:start()
+    loading:insert(spinner)
+
+    timer.performWithDelay(5000, function()
+
     game.background.distanceRatio = 0.8
     game.sky.distanceRatio = 0.6
     game.world.distanceRatio = 1.0
@@ -224,6 +236,10 @@ local function startGame()
     Runtime:addEventListener("enterFrame", game)
 
     Memmory.timerStash.gameLoopTimer = timer.performWithDelay(game.delay, gameLoop, 0)
+
+    -- loading:removeSelf()
+
+    end)
 end
 
 local function restartGame()
