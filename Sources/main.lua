@@ -171,16 +171,15 @@ local function startGame()
     game.background = display.newGroup()    
     game.world = display.newGroup()
 
+    -- add loading screen
     local loading = display.newGroup()
     local overlay = display.newRect(display.screenOriginX, display.screenOriginY, display.contentWidth - 2 * display.screenOriginX, display.contentHeight - 2 * display.screenOriginY)
     local g = graphics.newGradient({ 236, 0, 140, 150 }, { 0, 114, 88, 175 }, "down")
     overlay:setFillColor(g)
     loading:insert(overlay)
-    local spinner = widget.newSpinner{left = display.contentWidth / 2, top = 150, width = 100, height = 100}
+    local spinner = widget.newSpinner{left = display.contentWidth / 2 - 50, top = display.contentHeight / 2 - 50, width = 100, height = 100}
     spinner:start()
     loading:insert(spinner)
-
-    timer.performWithDelay(5000, function()
 
     game.background.distanceRatio = 0.8
     game.sky.distanceRatio = 0.6
@@ -237,9 +236,8 @@ local function startGame()
 
     Memmory.timerStash.gameLoopTimer = timer.performWithDelay(game.delay, gameLoop, 0)
 
-    -- loading:removeSelf()
-
-    end)
+    -- remove loading screen
+    loading:removeSelf()
 end
 
 local function restartGame()
