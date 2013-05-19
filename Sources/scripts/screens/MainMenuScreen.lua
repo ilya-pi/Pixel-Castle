@@ -22,7 +22,7 @@ function MainMenuScreen:new (o)
     setmetatable(o, self)
     self.__index = self
     self.assets = imageHelper.loadImageData("data/assets.json")
-    self.textMarginTop = 50 --todo: Ilya Pimenov after your last commit this variable disapeared so I'm not sure where it should be
+    self.textMarginTop = 50 --todo: Ilya Pimenov after your last commit this variable disappeared so I'm not sure where it should be
     return o
 end
 
@@ -110,6 +110,7 @@ function MainMenuScreen:showMainMenu()
     options.x, options.y = 5 * display.contentWidth / 7 + 20, 260
     self.mainMenuGroup:insert(options)
 
+    --todo: Ilya Pimenov: replace the following code to image as well.
     for i,v in ipairs(imageHelper.renderImage((4 * display.contentWidth / 7) / 5 , 10, self.assets["title"], 5)) do
         self.mainMenuGroup:insert(v)
     end
@@ -203,6 +204,8 @@ function MainMenuScreen:showLevelSelect()
 
     customUI.text("Level select", display.contentWidth / 2, self.textMarginTop + display.screenOriginY, textSize, self.levelSelectGroup)
 
+    local levels = self.game.db:getLevels(1) --todo: think about different screens
+
     for raw = 1, rawsCount do
         for column = 1, columnsCount do
             local levelNumber = (raw - 1) * columnsCount + column
@@ -213,9 +216,13 @@ function MainMenuScreen:showLevelSelect()
             local overFile
             local onRelease
 
-            --todo: Rodrigo: make 3 types of castles: with star, ordinary, with lock
-
+            --status - "locked", "new", "done"
+            local goto = "P1" --todo: move to db
             if levelNumber == 1 then
+                goto = "TUTORIAL"
+            end
+
+            if levels[levelNumber].status == "done" then
                 --todo: accomplished level
                 customUI.text(levelNumber, castleX, castleY + levelNumberTextPaddingTop, levelNumberTextSize, self.levelsGroup)
                 defaultFile = "images/choose_level/level_select_castle_accomplished.png"
@@ -223,10 +230,10 @@ function MainMenuScreen:showLevelSelect()
                 onRelease = function(event)
                     if event.phase == "ended" then
                         self.game.selectedLevel = levelNumber
-                        self.game:goto("TUTORIAL")
+                        self.game:goto(goto)
                     end
                 end
-            elseif levelNumber == 2 then
+            elseif levels[levelNumber].status == "new" then
                 --todo current level
                 customUI.text(levelNumber, castleX, castleY + levelNumberTextPaddingTop, levelNumberTextSize, self.levelsGroup)
                 defaultFile = "images/choose_level/level_select_castle_current.png"
@@ -234,10 +241,10 @@ function MainMenuScreen:showLevelSelect()
                 onRelease = function(event)
                     if event.phase == "ended" then
                         self.game.selectedLevel = levelNumber
-                        self.game:goto("P1")
+                        self.game:goto(goto)
                     end
                 end
-            else
+            elseif levels[levelNumber].status == "locked" then
                 --todo locked level
                 defaultFile = "images/choose_level/level_select_castle_locked.png"
                 overFile = "images/choose_level/level_select_castle_locked_pushed.png"

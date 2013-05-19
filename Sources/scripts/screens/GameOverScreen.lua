@@ -66,6 +66,7 @@ function GameOverScreen:render()
         messageText.text = "Wins!"
         playerTextShadow.text = "Player 1"
         playerText.text = "Player 1"
+        self.game.db:levelComplete(self.game.selectedLevel, 1) --todo: think about screen
     else
         messageTextShadow.text = "Wins!"
         messageText.text = "Wins!"

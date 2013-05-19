@@ -1,49 +1,54 @@
 module(..., package.seeall)
 
-levels = {
+screens = {
     {
-        level = "level1.json",
-    },
-    {
-        level = "level2.json",
-    },
-    {
-        level = "level3.json",
-    },
-    {
-        level = "level3.json",
-    },
-    {
-        level = "level3.json",
-    },
-    {
-        level = "level3.json",
-    },
-    {
-        level = "level3.json",
-    },
-    {
-        level = "level3.json",
-    },
-    {
-        level = "level3.json",
-    },
-    {
-        level = "level3.json",
-    },
-    {
-        level = "level3.json",
-    },
-    {
-        level = "level3.json",
-    },
-    {
-        level = "level3.json",
-    },
-    {
-        level = "level3.json",
-    },
-    {
-        level = "level3.json",
+        screenNumber = 1,
+        levels = {
+            {
+                file = "level1.json"
+            },
+            {
+                file = "level2.json"
+            },
+            {
+                file = "level3.json"
+            },
+            {
+                file = "level3.json"
+            },
+            {
+                file = "level3.json"
+            },
+            {
+                file = "level3.json"
+            },
+            {
+                file = "level3.json"
+            },
+            {
+                file = "level3.json"
+            },
+            {
+                file = "level3.json"
+            },
+            {
+                file = "level3.json"
+            },
+            {
+                file = "level3.json"
+            },
+            {
+                file = "level3.json"
+            },
+            {
+                file = "level3.json"
+            },
+            {
+                file = "level3.json"
+            },
+            {
+                file = "level3.json"
+            },
+        }
     }
 }
