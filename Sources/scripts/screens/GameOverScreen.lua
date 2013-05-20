@@ -74,9 +74,6 @@ function GameOverScreen:render()
         playerText.text = "Player 2"
     end
 
-    infoText( (100 - self.game.castle1:healthPercent()) .. "% destroyed", width / 6, height / 2 + 65, 21, self.displayGroup)
-    infoText( (100 - self.game.castle2:healthPercent()) .. "% destroyed", 5 * display.contentWidth / 6, height / 2 + 65, 21, self.displayGroup)
-
     local mainMenuBtn = widget.newButton{
         id = "menubtn",
         label = "Main menu",
@@ -133,6 +130,9 @@ function GameOverScreen:render()
     castle2:setReferencePoint(display.CenterReferencePoint)
     castle2.x = 5 * width / 6
     castle2.y = height / 2
+
+    infoText( (100 - self.game.castle1:healthPercent()) .. "% destroyed", width / 6, height / 2 + 65, 21, self.displayGroup)
+    infoText( (100 - self.game.castle2:healthPercent()) .. "% destroyed", 5 * display.contentWidth / 6, height / 2 + 65, 21, self.displayGroup)    
 end
 
 function GameOverScreen:dismiss()

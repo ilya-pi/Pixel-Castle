@@ -67,7 +67,7 @@ local sliderSheetOptions = {
 }
 local sliderSheet = graphics.newImageSheet( "images/slider_sheet.png", sliderSheetOptions )
 
-function slider(left, top, width, id, handler)
+function slider(left, top, width, id, initial, handler)
     return widget.newSlider{
         top = top,
         left = left,
@@ -83,6 +83,7 @@ function slider(left, top, width, id, handler)
         handleFrameWidth = 36,
         handleFrameHeight = 43, 
         listener = handler,
-        sheet = sliderSheet
+        sheet = sliderSheet,
+        value = initial
     }
 end

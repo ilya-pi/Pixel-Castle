@@ -322,6 +322,7 @@ function MainMenuScreen:showOptionsMenu()
 
     customUI.text("SFX volume", display.contentWidth / 6 + 20, display.contentHeight * (1 / 4 + 1/6) + 5, 21, self.optionsMenuGroup, display.TopLeftReferencePoint)
     self.optionsMenuGroup:insert(customUI.slider(display.contentWidth - display.contentWidth / 6 - 166, display.contentHeight * (1 / 4 + 1/6), 150, "sfxVolumeSlider",
+        self.game.sfxVolume,
         function(event)
             local slider = event.target
             local value = event.value
@@ -330,6 +331,7 @@ function MainMenuScreen:showOptionsMenu()
 
     customUI.text("BGM volume", display.contentWidth / 6 + 20, display.contentHeight / 4, 21, self.optionsMenuGroup, display.TopLeftReferencePoint)
     self.optionsMenuGroup:insert(customUI.slider(display.contentWidth - display.contentWidth / 6 - 166, display.contentHeight / 4 + 5, 150, "bgmVolumeSlider",
+        self.game.bgmVolume,
         function(event)
             local slider = event.target
             local value = event.value
