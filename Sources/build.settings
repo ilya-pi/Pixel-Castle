@@ -3,7 +3,11 @@ settings =
     android =
     {
         versionCode = "1",
-        installLocation="preferExternal"
+        installLocation="preferExternal",
+        usesPermissions =
+        {
+            "android.permission.VIBRATE",
+        }
     },
 
     androidPermissions =

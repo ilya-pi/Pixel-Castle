@@ -17,6 +17,9 @@ local function onCollision(self, event)
     if event.other.myName == "brick" then
         self:removeSelf()
         event.other.myName = "n"
+        -- if game.vibrateOn then
+        system.vibrate()
+        -- end
         table.insert(Memmory.timerStash, timer.performWithDelay( 10, function() 
                 -- physics.removeBody(event.other)
                 event.other.bodyType = "dynamic"
