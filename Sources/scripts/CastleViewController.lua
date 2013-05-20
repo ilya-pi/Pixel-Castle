@@ -3,6 +3,7 @@ module(..., package.seeall)
 local Memmory = require("scripts.util.Memmory")
 local imageHelper = require("scripts.util.Image")
 local customUI = require("scripts.util.CustomUI")
+local eventTrack = require("scripts.util.EventTrack")
 
 CastleViewController = {}
 
@@ -10,6 +11,7 @@ CastleViewController = {}
 function CastleViewController:new (o) --todo save (physics, world, game, x, y) at this point since tower is static
 	o = o or {}   -- create object if user does not provide one
 	o.bricks = {}
+	o.events = eventTrack.EventTrack:new()
 	setmetatable(o, self)
 	self.__index = self
 	return o
@@ -26,9 +28,6 @@ function CastleViewController:render(physics, world, game, x, y) --todo remove r
     self.rightX = (x + castle.width) * game.pixel
     local topYPixels = y - castle.height + 1
     self.topY = topYPixels * game.pixel
-
-    print("!!!!!!!!!! rendering castle with x=" .. x .. " y=" .. topYPixels )
-    --local pixels = imageHelper.renderImage(x, topYPixels, castle, game.pixel)  --todo: explain magic numbers
     local pixels = imageHelper.renderImage(x, topYPixels, castle, game.pixel)  --todo: explain magic numbers
     for i,v in ipairs(pixels) do
         self.bricks[i] = v
@@ -73,16 +72,25 @@ function CastleViewController:updateHealth(game)
 	end
 end
 
-function CastleViewController:showBubble(game)
+function CastleViewController:showBubble(game, message)
+	local bubbleGroup = display.newGroup()
 	local bubble
 	if (self.location == "left") then
 		bubble = display.newImageRect("images/speech_left.png", 80, 60)
 	else
 		bubble = display.newImageRect("images/speech_right.png", 80, 60)
 	end
-	game.world:insert(bubble)
-	bubble.x, bubble.y = self:cannonX(), self:cannonY()
-	table.insert(Memmory.transitionStash, transition.to(bubble, {time = 2500, alpha = 0, y = self:cannonY() - 100}, function() bubble:removeSelf() end))
+	bubbleGroup:insert(bubble)
+
+	local text = display.newText(message, -100, -100, "TrebuchetMS-Bold", 18)
+    text:setReferencePoint(display.CenterReferencePoint)
+    text:setTextColor(0, 0, 0)
+    text.x, text.y = 0, -7
+    bubbleGroup:insert(text)
+
+	game.world:insert(bubbleGroup)
+	bubbleGroup.x, bubbleGroup.y = self:cannonX(), self:cannonY()
+	table.insert(Memmory.transitionStash, transition.to(bubbleGroup, {time = 3500, alpha = 0, y = self:cannonY() - 100}, function() bubbleGroup:removeSelf() end))
 end
 
 function CastleViewController:health()
@@ -92,6 +100,7 @@ function CastleViewController:health()
 	for i, v in ipairs(self.bricks) do
 		if (v ~= nil) then
 			if (v.state == "removed") then
+				self.events:keep({action = "hit"})
 				table.remove(self.bricks, i)
 			else
 				score = score + 1
