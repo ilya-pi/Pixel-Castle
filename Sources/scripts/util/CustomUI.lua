@@ -2,11 +2,11 @@ module(..., package.seeall)
 
 local widget = require("widget")
 
-function text(message, x, y, size, group)
+function text(message, x, y, size, group, referencePoint)
     local text = display.newText(message, x + 2, y + 2, "TrebuchetMS-Bold", size)
     local textShadow = display.newText(message, x, y, "TrebuchetMS-Bold", size)
-    text:setReferencePoint(display.CenterReferencePoint)
-    textShadow:setReferencePoint(display.CenterReferencePoint)
+    text:setReferencePoint((referencePoint ~= nil) and referencePoint or display.CenterReferencePoint)
+    textShadow:setReferencePoint((referencePoint ~= nil) and referencePoint or display.CenterReferencePoint)
     text.x, text.y = x + 2, y + 2
     textShadow.x, textShadow.y = x, y
     group:insert(text)
@@ -47,4 +47,41 @@ function checkbox(left, top, id, handler)
         frameOff = 3,
         onPress = handler,
     }    
+end
+
+local sliderSheetOptions = {
+    frames = { 
+    {
+        x = 0, y = 0,
+        width = 36, height = 43},
+    {
+        x = 37, y = 0,
+        width = 36, height = 43},
+    {
+        x = 73, y = 0,
+        width = 35, height = 43},
+    },
+    sheetContentWidth = 108,
+    sheetContentHeight = 43
+}
+local sliderSheet = graphics.newImageSheet( "images/slider_sheet.png", sliderSheetOptions )
+
+function slider(left, top, width, id, handler)
+    return widget.newSlider{
+        top = top,
+        left = left,
+        id = id,
+        width = width,        
+        leftFrame = 1,
+        middleFrame = 3,
+        rightFrame = 3,
+        fillFrame = 1,
+        frameWidth = 10,
+        frameHeight = 43,
+        handleFrame = 2,
+        handleFrameWidth = 36,
+        handleFrameHeight = 43, 
+        listener = handler,
+        sheet = sliderSheet
+    }
 end
