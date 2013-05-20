@@ -13,7 +13,11 @@ GameModel = {
 	exState = nil, -- Prev state should be stored here
     state = "PLAYER1", -- "PLAYER2", "PLAYER1_LOST", "PLAYER2_LOST"
     stateNumber = 1,
-    states = {}
+    states = {},
+    -- options
+    vibration = false,
+    sfxVolume = 50,
+    bgmVolume = 50
 }
 
 -- Constructor

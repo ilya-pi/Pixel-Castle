@@ -34,7 +34,7 @@ local toggleSheetOptions = {
 }
 local toggleSheet = graphics.newImageSheet( "images/toggle_sheet.png", toggleSheetOptions )
 
-function checkbox(left, top, id, handler)
+function checkbox(left, top, id, initial, handler)
     return widget.newSwitch{
         left = left,
         top = top,
@@ -45,6 +45,7 @@ function checkbox(left, top, id, handler)
         height = 31,
         frameOn = 1,
         frameOff = 3,
+        initialSwitchState = initial,
         onPress = handler,
     }    
 end

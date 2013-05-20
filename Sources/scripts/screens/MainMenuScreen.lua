@@ -309,15 +309,15 @@ function MainMenuScreen:showOptionsMenu()
     bg:setReferencePoint(display.CenterReferencePoint)
     bg.x, bg.y = display.contentWidth / 2, display.contentHeight / 2
 
-    --
-
-
     customUI.text("Vibration", display.contentWidth / 6 + 20, display.contentHeight * (1 / 4 + 1/3), 21, self.optionsMenuGroup, display.TopLeftReferencePoint)
     self.optionsMenuGroup:insert(customUI.checkbox(display.contentWidth - display.contentWidth / 6 - 116, display.contentHeight * (1 / 4 + 1/3), "vibrationToggle",
+        game.vibration,
         function(event)
             local switch = event.target
-            print("switched ", switch.isOn)
-            --todo add configuration adjustment and persist it
+            self.game.vibration = switch.isOn
+            if switch.isOn then
+                system.vibrate()
+            end
         end))
 
     customUI.text("SFX volume", display.contentWidth / 6 + 20, display.contentHeight * (1 / 4 + 1/6) + 5, 21, self.optionsMenuGroup, display.TopLeftReferencePoint)
@@ -325,8 +325,7 @@ function MainMenuScreen:showOptionsMenu()
         function(event)
             local slider = event.target
             local value = event.value
-            print( "Slider at " .. value .. "%" )
-            --todo add configuration adjustment and persist it
+            self.game.sfxVolume = value
         end))
 
     customUI.text("BGM volume", display.contentWidth / 6 + 20, display.contentHeight / 4, 21, self.optionsMenuGroup, display.TopLeftReferencePoint)
@@ -334,8 +333,7 @@ function MainMenuScreen:showOptionsMenu()
         function(event)
             local slider = event.target
             local value = event.value
-            print( "Slider at " .. value .. "%" )
-            --todo add configuration adjustment and persist it
+            self.game.bgmVolume = value
         end))
 
     local credits = widget.newButton{

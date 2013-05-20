@@ -30,7 +30,7 @@ local tutorial_module = require("scripts.screens.TutorialScreen")
 local levelConfig = require("scripts.levels.levelConfig")
 local dbWrapper = require("scripts.db.DbWrapper")
 
-local game = game_module.GameModel:new()
+game = game_module.GameModel:new()
 
 local mainMenuScreen = mainmenu_module.MainMenuScreen:new({game = game})
 local gameOverScreen = gameover_module.GameOverScreen:new({game = game})
