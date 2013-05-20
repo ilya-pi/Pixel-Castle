@@ -20,9 +20,16 @@ end
 -- physics — physics object to attach to
 -- world - display group for the whole scene
 function CastleViewController:render(physics, world, game, x, y) --todo remove redundant params
-    local worldHeight = game.level_map.levelHeight * game.pixel / game.pixel
+    local worldHeight = game.level_map.levelHeight
 
     local castle = game.level_map[self.castleName]
+
+    -- todo write together!!!
+    -- local castleImg = display.newImageRect("images/levels/" .. game.level_map.levelName .. "/" .. self.castleName .. ".png", castle.width * game.pixel, castle.height * game.pixel)
+    -- castleImg:setReferencePoint(display.LeftTopReferencePoint)
+    -- castleImg.x, castleImg.y = (x + castle.width / 2 - 1) * game.pixel, (y - castle.height / 2 + 1) * game.pixel
+    -- world:insert(castleImg)    
+    --
 
     self.leftX = x * game.pixel
     self.rightX = (x + castle.width) * game.pixel
