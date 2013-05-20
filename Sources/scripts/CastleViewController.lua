@@ -82,7 +82,7 @@ function CastleViewController:showBubble(game, message)
 	end
 	bubbleGroup:insert(bubble)
 
-	local text = display.newText(message, -100, -100, "TrebuchetMS-Bold", 18)
+	local text = display.newText(message, -100, -100, "TrebuchetMS-Bold", 14)
     text:setReferencePoint(display.CenterReferencePoint)
     text:setTextColor(0, 0, 0)
     text.x, text.y = 0, -7

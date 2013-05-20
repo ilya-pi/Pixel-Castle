@@ -74,8 +74,8 @@ function GameOverScreen:render()
         playerText.text = "Player 2"
     end
 
-    infoText( self.game.castle1:healthPercent() .. " %", width / 6, height / 2 + 65, 24, self.displayGroup)
-    infoText( self.game.castle2:healthPercent() .. " %", 5 * display.contentWidth / 6, height / 2 + 65, 24, self.displayGroup)
+    infoText( (100 - self.game.castle1:healthPercent()) .. "% destroyed", width / 6, height / 2 + 65, 21, self.displayGroup)
+    infoText( (100 - self.game.castle2:healthPercent()) .. "% destroyed", 5 * display.contentWidth / 6, height / 2 + 65, 21, self.displayGroup)
 
     local mainMenuBtn = widget.newButton{
         id = "menubtn",
@@ -110,6 +110,17 @@ function GameOverScreen:render()
     }
     self.displayGroup:insert(playAgain)
     playAgain.x, playAgain.y = 320, 280
+
+    local star1 = display.newImageRect("images/winner.png", 380, 380)
+    self.displayGroup:insert(star1)
+    star1:setReferencePoint(display.CenterReferencePoint)
+    if self.game.castle1:isDestroyed(self.game) and self.game.castle2:isDestroyed(self.game) then
+        star1.x, star1.y = width / 2, height / 2
+    elseif self.game.castle2:isDestroyed(self.game) then
+        star1.x, star1.y = width / 6, height / 2
+    else
+        star1.x, star1.y = 5 * width / 6, height / 2
+    end
 
     local castle1 = display.newImageRect("images/levels/" .. self.game.levelName .. "/castle1.png", 100, 100)
     self.displayGroup:insert(castle1)
