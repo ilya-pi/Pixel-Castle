@@ -54,9 +54,13 @@ function TutorialScreen:render()
 end
 
 function TutorialScreen:dismiss()
-    self.alphaRect:removeSelf()
-    self.alphaRect = nil
-    self.tutorialGroup:removeSelf()
-    self.tutorialGroup = nil
+    transition.to( self.alphaRect, { time=400, alpha=0, onComplete=function()
+        self.alphaRect:removeSelf()
+        self.alphaRect = nil
+    end } )
+    transition.to( self.tutorialGroup, { time=400, alpha=0, onComplete=function()
+        self.tutorialGroup:removeSelf()
+        self.tutorialGroup = nil
+    end } )
 end
 
