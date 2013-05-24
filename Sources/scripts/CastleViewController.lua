@@ -25,29 +25,29 @@ function CastleViewController:render(physics, world, game, x, y) --todo remove r
     local castle = game.level_map[self.castleName]
 
     -- todo write together!!!
-    -- local castleImg = display.newImageRect("images/levels/" .. game.level_map.levelName .. "/" .. self.castleName .. ".png", castle.width * game.pixel, castle.height * game.pixel)
-    -- castleImg:setReferencePoint(display.LeftTopReferencePoint)
-    -- castleImg.x, castleImg.y = (x + castle.width / 2 - 1) * game.pixel, (y - castle.height / 2 + 1) * game.pixel
-    -- world:insert(castleImg)    
-    --
+    local castleImg = display.newImageRect("images/levels/" .. game.level_map.levelName .. "/" .. self.castleName .. ".png", castle.width * game.pixel, castle.height * game.pixel)
+    castleImg:setReferencePoint(display.LeftTopReferencePoint)
+    castleImg.x, castleImg.y = (x + castle.width / 2 - 1) * game.pixel, (y - castle.height / 2 + 1) * game.pixel
+    world:insert(castleImg)    
+    
 
     self.leftX = x * game.pixel
     self.rightX = (x + castle.width) * game.pixel
     local topYPixels = y - castle.height + 1
     self.topY = topYPixels * game.pixel
-    local pixels = imageHelper.renderImage(x, topYPixels, castle, game.pixel)  --todo: explain magic numbers
-    for i,v in ipairs(pixels) do
-        self.bricks[i] = v
-        world:insert(v)
-        v.myName = "brick"
-        Memmory.trackPhys(v); physics.addBody(v, "static")
-    end
-    self.totalHealth = self:health()
-    self.width = castle.width * game.pixel
+    -- local pixels = imageHelper.renderImage(x, topYPixels, castle, game.pixel)  --todo: explain magic numbers
+    -- for i,v in ipairs(pixels) do
+    --     self.bricks[i] = v
+    --     world:insert(v)
+    --     v.myName = "brick"
+    --     Memmory.trackPhys(v); physics.addBody(v, "static")
+    -- end
+    -- self.totalHealth = self:health()
+    -- self.width = castle.width * game.pixel
 
-    self.healthBar = display.newRect(self.leftX, self.topY - 15, self.width, 3)
-    world:insert(self.healthBar)
-   	self.healthBar:setFillColor(0, 255, 0, 150)
+    -- self.healthBar = display.newRect(self.leftX, self.topY - 15, self.width, 3)
+    -- world:insert(self.healthBar)
+   	-- self.healthBar:setFillColor(0, 255, 0, 150)
 
     print("Rendered castle with " .. x .. ", " .. y)
 end
