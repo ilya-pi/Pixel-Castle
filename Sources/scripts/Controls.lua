@@ -60,14 +60,12 @@ function Controls:new(o)
     o.angleLine.y = 0
     o.angleLine.rotation = o.angle
     o.group:insert(o.angleLine)
-    o.group.x = -1000
-    o.group.y = -1000
-
-    o.world:insert(o.group)
+    game.world:insert(o.group)
     return o
 end
 
 function Controls:touch(event)
+    print("controls touch")
     if event.phase == "began" then
         self.lastAngle = self.angle
         self.beginX = event.x

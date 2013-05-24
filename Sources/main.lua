@@ -8,6 +8,9 @@ physics.start()
 physics.setGravity(0, 9.8)
 display.setDefault("magTextureFilter", "nearest")
 display.setDefault("minTextureFilter", "nearest")
+
+screenHeight = display.contentHeight - 2 * display.screenOriginY
+screenWidth = display.contentWidth - 2 * display.screenOriginX
 -- physics.setDrawMode( "hybrid" )
 
 local Memmory = require("scripts.util.Memmory")
@@ -176,8 +179,14 @@ end
 
 local function startGame()
     game.sky = display.newGroup()
-    game.background = display.newGroup()    
+    game.sky.x = 0
+    game.sky.y = 0
+    game.background = display.newGroup()
+    game.background.x = 0
+    game.background.y = 0
     game.world = display.newGroup()
+    game.world.x = 0
+    game.world.y = 0
 
     -- add loading screen
     local loading = display.newGroup()
@@ -198,9 +207,6 @@ local function startGame()
     game.level_map = imageHelper.loadImageData("data/" .. levelFileName);
 
     --todo pre-step P1
-    game.cameraState = "CASTLE1_FOCUS"
-
-    game.camera = camera_module.Camera:new({ game = game, listener = cameraListener })
 
     local skyObj = sky_module.SkyViewController:new()
     skyObj:render(game.sky, game)
@@ -213,10 +219,23 @@ local function startGame()
 
     game.wind = wind_module.Wind:new({ x = 1, y = 1, game = game.game })
     game.wind:update()
-    pauseMenuOverlay:renderButton()    
+    pauseMenuOverlay:renderButton()
 
-    game.controls1 = controls_module.Controls:new({ world = game.world, angle = 45, x = game.castle1:cannonX(), y = game.castle1:cannonY()})
-    game.controls2 = controls_module.Controls:new({ world = game.world, angle = -45, x = game.castle2:cannonX(), y = game.castle2:cannonY()})
+    game.levelWidth = game.level_map.levelWidth
+    game.levelHeight = game.level_map.levelHeight
+    print("level dimentions " ..  game.levelWidth .. " " .. game.levelHeight )
+    game.levelName = game.level_map.levelName
+    game.level_map = nil
+
+    game.cameraState = "CASTLE1_FOCUS"
+    game.camera = camera_module.Camera:new({ listener = cameraListener })
+
+    game.controls1 = controls_module.Controls:new({ angle = 45, x = game.castle1:cannonX(), y = game.castle1:cannonY()})
+    game.controls2 = controls_module.Controls:new({ angle = -45, x = game.castle2:cannonX(), y = game.castle2:cannonY()})
+--[[
+    print("rendered conrols 1" .. game.castle1:cannonX() .. " " .. game.castle1:cannonY())
+    print("rendered conrols 2" .. game.castle2:cannonX() .. " " .. game.castle2:cannonY())
+]]
     game.controls1.fireButton:addEventListener("touch",
         function(event)
             if event.phase == "ended" then
@@ -233,12 +252,6 @@ local function startGame()
             return true
         end
     )
-
-    game.levelWidth = game.level_map.levelWidth
-    game.levelHeight = game.level_map.levelHeight
-    print("level dimentions " ..  game.levelWidth .. " " .. game.levelHeight )
-    game.levelName = game.level_map.levelName
-    game.level_map = nil
 
     Runtime:addEventListener("enterFrame", game)
 

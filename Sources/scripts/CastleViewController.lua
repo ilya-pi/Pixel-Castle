@@ -33,21 +33,47 @@ function CastleViewController:render(physics, world, game, x, y) --todo remove r
 
     self.leftX = x * game.pixel
     self.rightX = (x + castle.width) * game.pixel
-    local topYPixels = y - castle.height + 1
-    self.topY = topYPixels * game.pixel
-    -- local pixels = imageHelper.renderImage(x, topYPixels, castle, game.pixel)  --todo: explain magic numbers
-    -- for i,v in ipairs(pixels) do
-    --     self.bricks[i] = v
-    --     world:insert(v)
-    --     v.myName = "brick"
-    --     Memmory.trackPhys(v); physics.addBody(v, "static")
-    -- end
-    -- self.totalHealth = self:health()
-    -- self.width = castle.width * game.pixel
+    self.topY = (y - castle.height + 1) * game.pixel
 
-    -- self.healthBar = display.newRect(self.leftX, self.topY - 15, self.width, 3)
-    -- world:insert(self.healthBar)
-   	-- self.healthBar:setFillColor(0, 255, 0, 150)
+    local pixels = imageHelper.renderImage(0, 0, castle, game.pixel)  --todo: explain magic numbers
+    local castleGroup = display.newGroup()
+    for i,v in ipairs(pixels) do
+        self.bricks[i] = v
+        castleGroup:insert(v)
+        v.myName = "brick"
+        Memmory.trackPhys(v); physics.addBody(v, "static")
+    end
+    castleGroup:setReferencePoint(display.BottomLeftReferencePoint)
+    world:insert(castleGroup)
+    castleGroup.x = x * game.pixel
+    castleGroup.y =  (y + 1) * game.pixel
+
+--[[
+    local testRect = display.newRect(0, 0, 1, 1)
+    testRect:setFillColor(255, 0, 0)
+    testRect:setReferencePoint(display.CenterReferencePoint)
+    world:insert(testRect)
+    testRect.x = self.leftX
+    testRect.y = self.topY
+
+    local testRect2 = display.newRect(0, 0, 1, 1)
+    testRect2:setFillColor(255, 0, 0)
+    testRect2:setReferencePoint(display.CenterReferencePoint)
+    world:insert(testRect2)
+    testRect2.x = self.rightX
+    testRect2.y = self.topY
+]]
+
+
+    self.totalHealth = self:health()
+    self.width = castle.width * game.pixel
+
+    self.healthBar = display.newRect(0, 0, self.width, 3)
+    self.healthBar:setReferencePoint(display.BottomLeftReferencePoint)
+    self.healthBar.x = self.leftX
+    self.healthBar.y = self.topY - 15
+    world:insert(self.healthBar)
+   	self.healthBar:setFillColor(0, 255, 0, 150)
 
     print("Rendered castle with " .. x .. ", " .. y)
 end
@@ -123,12 +149,12 @@ end
 
 function CastleViewController:cannonX()
     if (self.location == "left") then
-	    return self.rightX
+	    return self.rightX + 1
     else
-        return self.leftX
+        return self.leftX - 1
     end
 end
 
 function CastleViewController:cannonY()
-    return self.topY
+    return self.topY - 1
 end
