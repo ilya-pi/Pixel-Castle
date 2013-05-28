@@ -4,6 +4,9 @@ display.setStatusBar(display.HiddenStatusBar)
 local widget = require("widget")
 
 physics = require("physics")
+--todo: play with the following properties to increase performance
+--physics.setPositionIterations( 16 )
+--physics.setVelocityIterations( 6 )
 physics.start()
 physics.setGravity(0, 9.8)
 display.setDefault("magTextureFilter", "nearest")
@@ -11,7 +14,7 @@ display.setDefault("minTextureFilter", "nearest")
 
 screenHeight = display.contentHeight - 2 * display.screenOriginY
 screenWidth = display.contentWidth - 2 * display.screenOriginX
--- physics.setDrawMode( "hybrid" )
+--physics.setDrawMode( "hybrid" )
 
 local Memmory = require("scripts.util.Memmory")
 local imageHelper = require("scripts.util.Image")
@@ -209,13 +212,13 @@ local function startGame()
     --todo pre-step P1
 
     local skyObj = sky_module.SkyViewController:new()
-    skyObj:render(game.sky, game)
+    skyObj:render(game.sky)
 
     local backgroundObj = background_module.Background:new()
-    backgroundObj:render(game.background, game)
+    backgroundObj:render(game.background)
 
     local earth = earth_module.EarthViewController:new()
-    earth:render(physics, game)
+    earth:render(physics)
 
     game.wind = wind_module.Wind:new({ x = 1, y = 1, game = game.game })
     game.wind:update()

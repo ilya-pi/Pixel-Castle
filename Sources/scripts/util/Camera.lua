@@ -1,8 +1,12 @@
 module(..., package.seeall)
 
+
+--todo: bunch of optimizations needed, to avoid creating local variables in loop for ex
 local Memmory = require("scripts.util.Memmory")
 local calculatedX
 local calculatedY
+local focusOnCastleTime = 200
+local initialRatio = 0.7
 
 Camera = {}
 
@@ -26,48 +30,57 @@ function Camera:new (o)
     o.listener = o.cameraPad:addEventListener("touch", o)
 	o.name = "camera"
 
-    o.xLeftLimit = display.screenOriginX
-    o.xRightLimit = - (game.levelWidth * game.pixel - (display.contentWidth - display.screenOriginX))
-    o.yBottomLimit = -(game.levelHeight * game.pixel - (display.contentHeight - display.screenOriginY))
-    o.yTopLimit = display.screenOriginY
+    o.ratio = initialRatio
 
-    --game.sky:setReferencePoint(display.TopLeftReferencePoint)
+    o.minRatio = screenWidth / (game.levelWidth * game.pixel)
+
     game.sky.x = display.screenOriginX
-    game.sky.y = - (game.levelHeight * game.pixel - screenHeight) + display.screenOriginY
+    game.sky.y = -(game.levelHeight * game.pixel - screenHeight) + display.screenOriginY
+    game.sky.xScale = o.ratio
+    game.sky.yScale = o.ratio
 
-    --game.background:setReferencePoint(display.TopLeftReferencePoint)
     game.background.x = display.screenOriginX
-    game.background.y = - (game.levelHeight * game.pixel - screenHeight) + display.screenOriginY
+    game.background.y = -(game.levelHeight * game.pixel - screenHeight) + display.screenOriginY
+    game.sky.xScale = o.ratio
+    game.sky.yScale = o.ratio
 
-    --game.world:setReferencePoint(display.TopLeftReferencePoint)
     game.world.x = display.screenOriginX
-    game.world.y = - (game.levelHeight * game.pixel - screenHeight) + display.screenOriginY
+    game.world.y = -(game.levelHeight * game.pixel - screenHeight) + display.screenOriginY
+    game.sky.xScale = o.ratio
+    game.sky.yScale = o.ratio
 
     return o
 end
 
 
-
-
-local function calculateTouchX(desiredX)
-    --print("desired " .. desiredX .. "; left " .. display.screenOriginX .. "; right " .. -(game.levelWidth * game.pixel - screenWidth) + display.screenOriginX)
-    if (desiredX >= display.screenOriginX) then
-        return display.screenOriginX
-    elseif (desiredX <= -(game.levelWidth * game.pixel - screenWidth) + display.screenOriginX) then --todo: move calculations into initialization because it's a constant for every level
-        return -(game.levelWidth * game.pixel - screenWidth) + display.screenOriginX
+local function calculateTouchX(desiredX, ratio)
+    --print("x " .. game.world.x .. " xReference " .. game.world.xReference .. " xOrigin " .. game.world.xOrigin .. " desired " .. desiredX .. " origin " .. display.screenOriginX)
+    if (desiredX >= display.screenOriginX) then --left border
+        return display.screenOriginX, display.screenOriginX, display.screenOriginX
     else
-        return desiredX
+        local rightBorder = -(game.levelWidth * game.pixel * ratio - screenWidth) + display.screenOriginX
+        if (desiredX <= rightBorder) then --right border
+            return rightBorder ,
+            ((rightBorder - display.screenOriginX) * game.background.distanceRatio + display.screenOriginX),
+            ((rightBorder - display.screenOriginX) * game.sky.distanceRatio + display.screenOriginX)
+        end
+        --final x calculation the same for rightBorder and for usual case
     end
+    return desiredX ,
+    ((desiredX - display.screenOriginX) * game.background.distanceRatio + display.screenOriginX),
+    ((desiredX - display.screenOriginX) * game.sky.distanceRatio + display.screenOriginX)
 end
 
-local function calculateTouchY(desiredY)
+local function calculateTouchY(desiredY, ratio)
     if (desiredY >= display.screenOriginY) then
-        return display.screenOriginY
-    elseif (desiredY <= -(game.levelHeight * game.pixel - screenHeight - display.screenOriginY)) then --todo: move calculations into initialization because it's a constant for every level
-        return -(game.levelHeight * game.pixel - screenHeight - display.screenOriginY)
+        return display.screenOriginY, display.screenOriginY, display.screenOriginY
     else
-        return desiredY
+        local topBorder = -(game.levelHeight * game.pixel * ratio - screenHeight - display.screenOriginY)
+        if (desiredY <= topBorder) then
+            return topBorder, topBorder, topBorder
+        end
     end
+    return desiredY, desiredY, desiredY
 end
 
 function Camera:touch(event)
@@ -84,15 +97,15 @@ function Camera:touch(event)
 	        self.yDelta = self.beginY - event.y
 	        self.beginY = event.y
 
-            self.calculatedX = calculateTouchX(game.world.x - self.xDelta)
-            self.calculatedY = calculateTouchY(game.world.y - self.yDelta)
+            local worldX, backgroundX, skyX = calculateTouchX(game.world.x - self.xDelta, self.ratio)
+            local worldY, backgroundY, skyY = calculateTouchY(game.world.y - self.yDelta, self.ratio)
 
-			game.world.x = self.calculatedX
-			game.world.y = self.calculatedY
-			game.sky.x = (self.calculatedX - display.screenOriginX) * game.sky.distanceRatio + display.screenOriginX
-			game.sky.y = self.calculatedY
-			game.background.x = (self.calculatedX - display.screenOriginX) * game.background.distanceRatio + display.screenOriginX
-			game.background.y = self.calculatedY
+			game.world.x = worldX
+			game.world.y = worldY
+			game.sky.x = skyX
+			game.sky.y = skyY
+			game.background.x = backgroundX
+			game.background.y = backgroundY
 
 			-- if we had a timer to go back we should cancel it
 			if (Memmory.timerStash.cameraComebackTimer ~= nil) then
@@ -120,59 +133,91 @@ function Camera:moveCamera()
     --todo: a lot of possible optimisations here for ex. do not call calculateX,Y three times per call
     --todo: get castle as a parameter
 	if (game.cameraState == "CASTLE1_FOCUS") then
-        game.world.xScale = 1
-        game.world.yScale = 1
-        game.sky.xScale = 1
-        game.sky.yScale = 1
-        game.background.xScale = 1
-        game.background.yScale = 1
+        self.ratio = initialRatio
+--[[
+        game.world.xScale = self.ratio
+        game.world.yScale = self.ratio
+        game.sky.xScale = self.ratio
+        game.sky.yScale = self.ratio
+        game.background.xScale = self.ratio
+        game.background.yScale = self.ratio
+]]
 
         if (game.castle1 ~= nil) then
-			local cannonX = -game.castle1:cannonX()
-			local cannonY =  -game.castle1:cannonY()
-			Memmory.transitionStash.cameraWorldTransition = transition.to(game.world, {time = 100, x = calculateTouchX(cannonX + 100), y = calculateTouchY(cannonY), onComplete = self.listener})
+			local cannonX = -game.castle1:cannonX() * self.ratio
+			local cannonY =  -game.castle1:cannonY() * self.ratio
+			Memmory.transitionStash.cameraWorldTransition = transition.to(game.world,
+                {
+                    time = focusOnCastleTime,
+                    x = calculateTouchX(cannonX + 100, self.ratio),
+                    y = calculateTouchY(cannonY, self.ratio),
+                    xScale = initialRatio,
+                    yScale = initialRatio,
+                    onComplete = self.listener
+                }
+            )
 			Memmory.transitionStash.cameraSkyTransition = transition.to(game.sky,
                 {
-                    time = 100,
-                    x = (calculateTouchX(cannonX + 100) - display.screenOriginX) * game.sky.distanceRatio + display.screenOriginX,
-                    y = calculateTouchY(cannonY),
+                    time = focusOnCastleTime,
+                    x = (calculateTouchX(cannonX + 100, self.ratio) - display.screenOriginX) * game.sky.distanceRatio + display.screenOriginX,
+                    y = calculateTouchY(cannonY, self.ratio),
+                    xScale = initialRatio,
+                    yScale = initialRatio,
                     onComplete = self.listener
                 }
             )
 			Memmory.transitionStash.cameraBgTransition = transition.to(game.background,
                 {
-                    time = 100,
-                    x = (calculateTouchX(cannonX + 100) - display.screenOriginX) * game.background.distanceRatio + display.screenOriginX,
-                    y = calculateTouchY(cannonY),
+                    time = focusOnCastleTime,
+                    x = (calculateTouchX(cannonX + 100, self.ratio) - display.screenOriginX) * game.background.distanceRatio + display.screenOriginX,
+                    y = calculateTouchY(cannonY, self.ratio),
+                    xScale = initialRatio,
+                    yScale = initialRatio,
                     onComplete = self.listener
                 }
             )
 			game.cameraState = "FOCUSING"
 		end	
 	elseif (game.cameraState == "CASTLE2_FOCUS") then
-        game.world.xScale = 1
-        game.world.yScale = 1
-        game.sky.xScale = 1
-        game.sky.yScale = 1
-        game.background.xScale = 1
-        game.background.yScale = 1
+        self.ratio = initialRatio
+--[[
+        game.world.xScale = self.ratio
+        game.world.yScale = self.ratio
+        game.sky.xScale = self.ratio
+        game.sky.yScale = self.ratio
+        game.background.xScale = self.ratio
+        game.background.yScale = self.ratio
+]]
 		if (game.castle2 ~= nil) then
 			local cannonX = -game.castle2:cannonX()
 			local cannonY =  -game.castle2:cannonY()
-			Memmory.transitionStash.cameraWorldTransition = transition.to(game.world, {time = 100, x = calculateTouchX(cannonX), y = calculateTouchY(cannonY), onComplete = self.listener})
+			Memmory.transitionStash.cameraWorldTransition = transition.to(game.world,
+                {
+                    time = focusOnCastleTime,
+                    x = calculateTouchX(cannonX, self.ratio),
+                    y = calculateTouchY(cannonY, self.ratio),
+                    xScale = initialRatio,
+                    yScale = initialRatio,
+                    onComplete = self.listener
+                }
+            )
 			Memmory.transitionStash.cameraSkyTransition = transition.to(game.sky,
                 {
-                    time = 100,
-                    x = (calculateTouchX(cannonX) - display.screenOriginX) * game.sky.distanceRatio + display.screenOriginX,
-                    y = calculateTouchY(cannonY),
+                    time = focusOnCastleTime,
+                    x = (calculateTouchX(cannonX, self.ratio) - display.screenOriginX) * game.sky.distanceRatio + display.screenOriginX,
+                    y = calculateTouchY(cannonY, self.ratio),
+                    xScale = initialRatio,
+                    yScale = initialRatio,
                     onComplete = self.listener
                 }
             )
 			Memmory.transitionStash.cameraBgTransition = transition.to(game.background,
                 {
-                    time = 100,
-                    x = (calculateTouchX(cannonX) - display.screenOriginX) * game.background.distanceRatio + display.screenOriginX,
-                    y = calculateTouchY(cannonY),
+                    time = focusOnCastleTime,
+                    x = (calculateTouchX(cannonX, self.ratio) - display.screenOriginX) * game.background.distanceRatio + display.screenOriginX,
+                    y = calculateTouchY(cannonY, self.ratio),
+                    xScale = initialRatio,
+                    yScale = initialRatio,
                     onComplete = self.listener
                 }
             )
@@ -180,36 +225,38 @@ function Camera:moveCamera()
 		end		
 	elseif (game.cameraState == "CANNONBALL_FOCUS") then
 		if (game.bullet ~= nil and game.bullet:isAlive()) then
-            if game.state.name == "BULLET1" then
-                calculatedX = calculateTouchX(-(game.bullet:getX() - 100))  --todo: Sergey Belyakov get rid of jumps when shooting
-            else
-                calculatedX = calculateTouchX(-(game.bullet:getX() - screenWidth + 100)) --todo: Sergey Belyakov get rid of jumps when shooting
-            end
-            calculatedY = calculateTouchY(-game.bullet:getY() + 30)
-
-
             local viewPortHeight = game.levelHeight * game.pixel - game.bullet:getY() - display.screenOriginY
             if viewPortHeight < display.contentHeight - display.screenOriginY then
                 viewPortHeight = display.contentHeight - display.screenOriginY
             end
-            --print(viewPortHeight)
+            self.ratio = screenHeight / viewPortHeight
+            if self.ratio < self.minRatio then self.ratio = self.minRatio end
 
-            local ratio = screenHeight / viewPortHeight
+            local bulletMargin
+            if game.state.name == "BULLET1" then
+                bulletMargin = -display.screenOriginX - 100
+            else
+                bulletMargin = -screenWidth - display.screenOriginX + 100
+            end
 
-			game.world.x = calculatedX * ratio
-			game.world.y = calculatedY * ratio
-            game.world.xScale = ratio
-            game.world.yScale = ratio
+            local worldX, backgroundX, skyX = calculateTouchX(-game.bullet:getX() * self.ratio - bulletMargin, self.ratio)  --todo: Sergey Belyakov get rid of jumps when shooting
+            local worldY, backgroundY, skyY = calculateTouchY((-game.bullet:getY() + 30) * self.ratio, self.ratio)
+            --            print("VP " .. viewPortHeight .. "; bullet x=" .. -game.bullet:getX() .. ", y=" .. -game.bullet:getY() .. "; bottom " .. -(game.levelHeight * game.pixel * self.ratio - screenHeight - display.screenOriginY))
 
-            game.sky.x = ((calculatedX - display.screenOriginX) * game.sky.distanceRatio + display.screenOriginX) * ratio
-			game.sky.y = calculatedY * ratio
-            game.sky.xScale = ratio
-            game.sky.yScale = ratio
+			game.world.x = worldX
+			game.world.y = worldY
+            game.world.xScale = self.ratio --todo: does the scale factor affects physics!?
+            game.world.yScale = self.ratio --todo: does the scale factor affects physics!?
 
-            game.background.x = ((calculatedX - display.screenOriginX) * game.background.distanceRatio + display.screenOriginX) * ratio
-			game.background.y = calculatedY * ratio
-            game.background.xScale = ratio
-            game.background.yScale = ratio
+            game.sky.x = skyX
+			game.sky.y = skyY
+            game.sky.xScale = self.ratio
+            game.sky.yScale = self.ratio
+
+            game.background.x = backgroundX
+			game.background.y = backgroundY
+            game.background.xScale = self.ratio
+            game.background.yScale = self.ratio
 
         end
 	elseif (game.cameraState == "FOCUSING") then

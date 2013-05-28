@@ -14,6 +14,7 @@ function Bullet:new(o)
 end
 
 local function onCollision(self, event)
+    print("collision")
     if event.other.myName == "brick" then
         self:removeSelf()
         event.other.myName = "n"
@@ -26,7 +27,7 @@ local function onCollision(self, event)
                 event.other:setLinearVelocity( 100, 100 )
                 -- event.other:applyTorque( 100 )
                 local that = event.other
-                -- do we need memmory management here?
+                --todo: do we need memmory management here?
                 table.insert(Memmory.timerStash, timer.performWithDelay(3000, function()
                         display.remove(event.other)
                         -- that:removeSelf()
@@ -85,7 +86,7 @@ end
 function Bullet:getX()
     self.xCount = 0
     self.xSum = 0
-    for i, v in ipairs(self.pixels) do
+    for i, v in ipairs(self.pixels) do --todo: room for optimization: do not use "ipairs"
         if (v ~= nil and v.state ~= "removed") then
             self.xCount = self.xCount + 1
             self.xSum = self.xSum + v.x
@@ -101,7 +102,7 @@ end
 function Bullet:getY()
     self.yCount = 0
     self.ySum = 0
-    for i, v in ipairs(self.pixels) do
+    for i, v in ipairs(self.pixels) do  --todo: room for optimization: do not use "ipairs"
         if (v ~= nil and v.state ~= "removed") then
             self.yCount = self.yCount + 1
             self.ySum = self.ySum + v.y

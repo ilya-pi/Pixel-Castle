@@ -17,7 +17,7 @@ end
 
 -- physics — physics object to attach to
 -- world - display group for the whole scene
-function EarthViewController:render(physics, game)
+function EarthViewController:render(physics)
     local grass = display.newImageRect("images/levels/" .. game.level_map.levelName .. "/level.png", game.level_map.levelWidth * game.pixel, game.level_map.levelHeight * game.pixel)
     grass:setReferencePoint(display.TopLeftReferencePoint)
     game.world:insert(grass)

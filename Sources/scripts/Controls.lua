@@ -65,7 +65,6 @@ function Controls:new(o)
 end
 
 function Controls:touch(event)
-    print("controls touch")
     if event.phase == "began" then
         self.lastAngle = self.angle
         self.beginX = event.x

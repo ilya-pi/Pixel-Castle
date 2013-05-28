@@ -35,7 +35,7 @@ function CastleViewController:render(physics, world, game, x, y) --todo remove r
     self.rightX = (x + castle.width) * game.pixel
     self.topY = (y - castle.height + 1) * game.pixel
 
-    local pixels = imageHelper.renderImage(0, 0, castle, game.pixel)  --todo: explain magic numbers
+    local pixels = imageHelper.renderImage(0, 0, castle, game.pixel)
     local castleGroup = display.newGroup()
     for i,v in ipairs(pixels) do
         self.bricks[i] = v
@@ -44,7 +44,7 @@ function CastleViewController:render(physics, world, game, x, y) --todo remove r
         Memmory.trackPhys(v); physics.addBody(v, "static")
     end
     castleGroup:setReferencePoint(display.BottomLeftReferencePoint)
-    world:insert(castleGroup)
+    world:insert(castleGroup) --todo: Sergey Belyakov: memory management clean castle group on exit
     castleGroup.x = x * game.pixel
     castleGroup.y =  (y + 1) * game.pixel
 

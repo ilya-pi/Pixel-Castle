@@ -12,7 +12,7 @@ function Background:new(o)
     return o
 end
 
-function Background:render(group, game)
+function Background:render(group)
     local background = display.newImageRect("images/levels/" .. game.level_map.levelName .. "/background.png", game.level_map.levelWidth * game.pixel, game.level_map.levelHeight * game.pixel)
     background:setReferencePoint(display.TopLeftReferencePoint)
     group:insert(background)
