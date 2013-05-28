@@ -6,7 +6,7 @@ local Memmory = require("scripts.util.Memmory")
 local calculatedX
 local calculatedY
 local focusOnCastleTime = 200
-local initialRatio = 0.7
+local initialRatio = 1
 
 Camera = {}
 
@@ -31,7 +31,6 @@ function Camera:new (o)
 	o.name = "camera"
 
     o.ratio = initialRatio
-
     o.minRatio = screenWidth / (game.levelWidth * game.pixel)
 
     game.sky.x = display.screenOriginX
@@ -134,14 +133,6 @@ function Camera:moveCamera()
     --todo: get castle as a parameter
 	if (game.cameraState == "CASTLE1_FOCUS") then
         self.ratio = initialRatio
---[[
-        game.world.xScale = self.ratio
-        game.world.yScale = self.ratio
-        game.sky.xScale = self.ratio
-        game.sky.yScale = self.ratio
-        game.background.xScale = self.ratio
-        game.background.yScale = self.ratio
-]]
 
         if (game.castle1 ~= nil) then
 			local cannonX = -game.castle1:cannonX() * self.ratio
@@ -180,14 +171,6 @@ function Camera:moveCamera()
 		end	
 	elseif (game.cameraState == "CASTLE2_FOCUS") then
         self.ratio = initialRatio
---[[
-        game.world.xScale = self.ratio
-        game.world.yScale = self.ratio
-        game.sky.xScale = self.ratio
-        game.sky.yScale = self.ratio
-        game.background.xScale = self.ratio
-        game.background.yScale = self.ratio
-]]
 		if (game.castle2 ~= nil) then
 			local cannonX = -game.castle2:cannonX()
 			local cannonY =  -game.castle2:cannonY()
@@ -240,13 +223,13 @@ function Camera:moveCamera()
             end
 
             local worldX, backgroundX, skyX = calculateTouchX(-game.bullet:getX() * self.ratio - bulletMargin, self.ratio)  --todo: Sergey Belyakov get rid of jumps when shooting
-            local worldY, backgroundY, skyY = calculateTouchY((-game.bullet:getY() + 30) * self.ratio, self.ratio)
+            local worldY, backgroundY, skyY = calculateTouchY((-game.bullet:getY() + display.screenOriginX + 50) * self.ratio, self.ratio)
             --            print("VP " .. viewPortHeight .. "; bullet x=" .. -game.bullet:getX() .. ", y=" .. -game.bullet:getY() .. "; bottom " .. -(game.levelHeight * game.pixel * self.ratio - screenHeight - display.screenOriginY))
 
 			game.world.x = worldX
 			game.world.y = worldY
-            game.world.xScale = self.ratio --todo: does the scale factor affects physics!?
-            game.world.yScale = self.ratio --todo: does the scale factor affects physics!?
+            game.world.xScale = self.ratio --todo: does the scale factor affects on physics!?
+            game.world.yScale = self.ratio --todo: does the scale factor affects on physics!?
 
             game.sky.x = skyX
 			game.sky.y = skyY

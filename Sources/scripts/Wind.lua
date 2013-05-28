@@ -20,6 +20,7 @@ function Wind:new (o)
     o.pixels = {}
 
     o.group = display.newGroup()
+    o.group.alpha = 0.8
 
     o.wind_hud = display.newImage("images/wind/wind_hud.png")
     o.wind_hud:scale(scaleFactor, scaleFactor)
