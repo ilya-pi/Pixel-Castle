@@ -16,10 +16,35 @@ function renderImage(xPosition, yPosition, image, pixel)
                 local left = (xPosition + x) * pixel
                 local top = (yPosition + y) * pixel
                 local pixel = display.newRect(left, top, pixel, pixel)
---[[
-                pixel.x = left
-                pixel.y = top
-]]
+                pixel.strokeWidth = 0
+                pixel:setFillColor(r, g, b, a)
+                pixel:setStrokeColor(r, g, b, a)
+                table.insert(pixels, pixel)
+            end
+        end
+    end
+    return pixels
+end
+
+function renderPart(xPosition, yPosition, image, pixel, partSize, xPart, yPart)
+    local pixels = {}
+    local primitiveColorsCount = 4
+
+    local startX = (xPart - 1) * partSize
+    local startY = (yPart - 1) * partSize
+
+    for y = startY, startY + partSize - 1 do
+        for x = startX, startX + partSize - 1 do
+            local rPosition = y * image.width * primitiveColorsCount + x * primitiveColorsCount + 1
+            local r = image.pixels[rPosition]
+            local g = image.pixels[rPosition + 1]
+            local b = image.pixels[rPosition + 2]
+            local a = image.pixels[rPosition + 3]
+            if (a ~= 0) then
+                print("found pixel")
+                local left = (xPosition + x) * pixel
+                local top = (yPosition + y) * pixel
+                local pixel = display.newRect(left, top, pixel, pixel)
                 pixel.strokeWidth = 0
                 pixel:setFillColor(r, g, b, a)
                 pixel:setStrokeColor(r, g, b, a)

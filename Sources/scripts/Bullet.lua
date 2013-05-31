@@ -14,15 +14,16 @@ function Bullet:new(o)
 end
 
 local function onCollision(self, event)
-    print("collision")
     if event.other.myName == "brick" then
         self:removeSelf()
         event.other.myName = "n"
         if game.vibration then
             system.vibrate()
         end
-        table.insert(Memmory.timerStash, timer.performWithDelay( 10, function() 
-                -- physics.removeBody(event.other)
+        table.insert(Memmory.timerStash, timer.performWithDelay( 10, function()
+                physics.removeBody(event.other)
+                event.other:removeSelf()
+--[[
                 event.other.bodyType = "dynamic"
                 event.other:setLinearVelocity( 100, 100 )
                 -- event.other:applyTorque( 100 )
@@ -32,6 +33,7 @@ local function onCollision(self, event)
                         display.remove(event.other)
                         -- that:removeSelf()
                     end))
+]]
             end))
         self.state = "removed"
         event.other.state = "removed"
