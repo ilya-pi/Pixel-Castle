@@ -10,7 +10,8 @@ local spriteWidthPixels = 3
 
 CastleViewController = {}
 
---todo: refactor this shit. We shouldn't save castle inside every piece.
+--todo: refactor this shit. We shouldn't save castle inside every piece for ex.
+--todo: fix memory management here for listeners, timers, physics
 local function onLocalPreCollision(self, event)
     print(" ".. self.myName .. " " .. event.other.myName)
     event.contact.isEnabled = false

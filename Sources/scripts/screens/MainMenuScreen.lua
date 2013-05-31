@@ -125,6 +125,7 @@ function MainMenuScreen:showPlayMenu()
     self.playMenuGroup = display.newGroup()
     self.displayGroup:insert(self.playMenuGroup)
 
+    --todo: Ilya Pimenov: replace the following code to image as well.
     for i,v in ipairs(imageHelper.renderImage((4 * display.contentWidth / 7) / 5 , 10, self.assets["title"], 5)) do
         self.playMenuGroup:insert(v)
     end
