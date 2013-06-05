@@ -16,6 +16,10 @@ local function onLocalPreCollision(self, event)
     print(" ".. self.myName .. " " .. event.other.myName)
     event.contact.isEnabled = false
     self:removeEventListener("preCollision", onLocalPreCollision)
+
+    --important for Memmory.cleanupPhysics method
+    self.state = "removed"
+    
     physics.removeBody(self)
     if event.other.myName == "cannonball" then
         print("substituting image with pixels")

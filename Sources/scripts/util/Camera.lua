@@ -113,13 +113,13 @@ function Camera:touch(event)
 			end
 
 	    elseif event.phase == "ended" or event.phase == "cancelled" then
-	    	Memmory.timerStash.cameraComebackTimer = timer.performWithDelay( game.cameraGoBackDelay, function (event)
-	    			if (game.state.name == "P1") then
-	    				game.cameraState = "CASTLE1_FOCUS"
-	    			elseif (game.state.name == "P2") then
-	    				game.cameraState = "CASTLE2_FOCUS"
-	    			end
-	    		end);
+	    	-- Memmory.timerStash.cameraComebackTimer = timer.performWithDelay( game.cameraGoBackDelay, function (event)
+	    	-- 		if (game.state.name == "P1") then
+	    	-- 			game.cameraState = "CASTLE1_FOCUS"
+	    	-- 		elseif (game.state.name == "P2") then
+	    	-- 			game.cameraState = "CASTLE2_FOCUS"
+	    	-- 		end
+	    	-- 	end);
 	    	display.getCurrentStage():setFocus( nil )
 			self.isFocus = nil
 	    end
