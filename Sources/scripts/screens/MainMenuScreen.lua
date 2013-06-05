@@ -189,8 +189,11 @@ function MainMenuScreen:showLevelSelect()
     local layerSelectMagicYnumber = 15 --it's only one configuration number everything else should be calculated automatically
 
     local castleSize = 50
-    local rawsCount = 3
-    local columnsCount = 5
+    local rawsCount = 2
+    local columnsCount = 3
+
+    -- local rawsCount = 3
+    -- local columnsCount = 5
 
     local levelsGroupViewportWidth = display.contentWidth - 2 * display.screenOriginX
     local levelsGroupViewportHeight = display.contentHeight - 2 * display.screenOriginY - self.textMarginTop - textSize / 2

@@ -17,6 +17,9 @@ local function onCollision(self, event)
     if (event.other.myName == "brick") then
         self:removeSelf()
         event.other:removeSelf()
+        if game.vibration then
+            system.vibrate()
+        end        
         self.state = "removed"
         event.other.state = "removed"
     end
