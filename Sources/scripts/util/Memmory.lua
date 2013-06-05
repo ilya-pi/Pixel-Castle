@@ -49,7 +49,7 @@ function clearPhysics()
         if v ~= nil and v.state ~= "removed" then
             physics.removeBody( v )
             v:removeSelf()
-            v = nil; k = nil
+            v = nil; k = nil        
         end
     end
 
