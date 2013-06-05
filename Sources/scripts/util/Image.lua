@@ -2,6 +2,31 @@ module(..., package.seeall)
 
 dkjson = require("scripts.util.dkjson")
 
+-- Renders image with an appropriate referencce point and tint if present in the game
+function ourImage(path, width, height, group)
+    local result = display.newImageRect(path, width, height)
+    result:setReferencePoint(display.TopLeftReferencePoint)
+    if game.tint then
+        result:setFillColor(game.tintColor.r, game.tintColor.g, game.tintColor.b)
+    end
+    group:insert(result)
+    result.x = 0
+    result.y = 0
+    return result
+end
+
+function ourImageSheet(sheet, frame, width, height, group)
+    local result = display.newImageRect(sheet, frame, width, height)
+    result:setReferencePoint(display.TopLeftReferencePoint)
+    if game.tint then
+        result:setFillColor(game.tintColor.r, game.tintColor.g, game.tintColor.b)
+    end
+    group:insert(result)
+    result.x = 0
+    result.y = 0
+    return result
+end
+
 function renderImage(xPosition, yPosition, image, pixel)
     local pixels = {}
     local primitiveColorsCount = 4

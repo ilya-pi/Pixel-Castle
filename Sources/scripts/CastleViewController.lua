@@ -19,7 +19,7 @@ local function onLocalPreCollision(self, event)
 
     --important for Memmory.cleanupPhysics method
     self.state = "removed"
-    
+
     physics.removeBody(self)
     if event.other.myName == "cannonball" then
         print("substituting image with pixels")
@@ -74,8 +74,8 @@ function CastleViewController:render(physics, world, game, x, y) --todo remove r
     for row = 0, rowsNumber - 1 do
         for column = 0, columnsNumber - 1 do
             local pieceNumber = row * columnsNumber + column + 1
-            local castlePiece = display.newImageRect( imageSheet, pieceNumber, spriteWidth, spriteWidth )
-            castlePiece:setReferencePoint( display.TopLeftReferencePoint )
+
+            local castlePiece = imageHelper.ourImageSheet(imageSheet, pieceNumber, spriteWidth, spriteWidth, world)
             local left = self.leftX + column * spriteWidth
             local top = self.topY + row * spriteWidth
             castlePiece.x, castlePiece.y = left, top
@@ -85,7 +85,7 @@ function CastleViewController:render(physics, world, game, x, y) --todo remove r
             castlePiece.xPixels = x
             castlePiece.yPixels = y - castle.height + 1
             castlePiece.castle = castle
-            world:insert(castlePiece)
+            -- world:insert(castlePiece)
             Memmory.trackPhys(castlePiece); physics.addBody(castlePiece, "static")
             castlePiece.preCollision = onLocalPreCollision
             castlePiece:addEventListener("preCollision", castlePiece)

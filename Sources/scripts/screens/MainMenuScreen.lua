@@ -43,9 +43,7 @@ function MainMenuScreen:render()
     local bgHeight = display.contentHeight - 2 * display.screenOriginY
     local bgWidth = bgHeight * 128 / 40
 
-    self.bg = display.newImageRect("images/castle_splash.png", bgWidth, bgHeight)
-    self.displayGroup:insert(self.bg)
-    self.bg:setReferencePoint(display.TopLeftReferencePoint)
+    self.bg = imageHelper.ourImage("images/castle_splash.png", bgWidth, bgHeight, self.displayGroup)
     self.bg.x, self.bg.y = display.screenOriginX, display.screenOriginY
 
     self.bgMoveLeft = true
@@ -110,10 +108,8 @@ function MainMenuScreen:showMainMenu()
     options.x, options.y = 5 * display.contentWidth / 7 + 20, 260
     self.mainMenuGroup:insert(options)
 
-    --todo: Ilya Pimenov: replace the following code to image as well.
-    for i,v in ipairs(imageHelper.renderImage((4 * display.contentWidth / 7) / 5 , 10, self.assets["title"], 5)) do
-        self.mainMenuGroup:insert(v)
-    end
+    local logo = imageHelper.ourImage("images/title.png", 175, 80, self.mainMenuGroup)
+    logo.x, logo.y = 4 * display.contentWidth / 7, display.contentHeight / 6
 end
 
 function MainMenuScreen:hideMainMenu()
@@ -125,10 +121,8 @@ function MainMenuScreen:showPlayMenu()
     self.playMenuGroup = display.newGroup()
     self.displayGroup:insert(self.playMenuGroup)
 
-    --todo: Ilya Pimenov: replace the following code to image as well.
-    for i,v in ipairs(imageHelper.renderImage((4 * display.contentWidth / 7) / 5 , 10, self.assets["title"], 5)) do
-        self.playMenuGroup:insert(v)
-    end
+    local logo = imageHelper.ourImage("images/title.png", 175, 80, self.playMenuGroup)
+    logo.x, logo.y = 4 * display.contentWidth / 7, display.contentHeight / 6
 
     local storyMode = widget.newButton{
         width = 170,

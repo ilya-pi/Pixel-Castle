@@ -15,10 +15,8 @@ end
 -- physics — physics object to attach to
 -- world - display group for the whole scene
 function SkyViewController:render(group)
-    local sky = display.newImageRect("images/levels/" .. game.level_map.levelName .. "/sky.png", game.level_map.levelWidth * game.pixel, game.level_map.levelHeight * game.pixel)
-    sky:setReferencePoint(display.TopLeftReferencePoint)
-    group:insert(sky)
-    sky.x = 0
-    sky.y = 0
-
+	imageHelper.ourImage("images/levels/" .. game.level_map.levelName .. "/sky.png", 
+		game.level_map.levelWidth * game.pixel, 
+		game.level_map.levelHeight * game.pixel,
+		group)
 end
