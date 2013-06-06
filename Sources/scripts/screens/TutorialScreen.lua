@@ -44,13 +44,14 @@ function TutorialScreen:render()
     )
     self.tutorialGroup:insert(self.alphaRect)
 
-    self.controlAndHand = display.newImageRect("images/tutorial_hand.png", 120, 120)
-    self.controlAndHand:setReferencePoint(display.CenterReferencePoint)
-    self.controlAndHand.x = display.contentWidth / 2
-    self.controlAndHand.y = display.contentHeight / 2 + 50
-    self.tutorialGroup:insert(self.controlAndHand)
+    -- self.controlAndHand = display.newImageRect("images/tutorial_hand.png", 120, 120)
+    -- self.controlAndHand:setReferencePoint(display.CenterReferencePoint)
+    -- self.controlAndHand.x = display.contentWidth / 2
+    -- self.controlAndHand.y = display.contentHeight / 2 + 50
+    -- self.tutorialGroup:insert(self.controlAndHand)
 
-    customUI.text("Drag to adjust the firing angle!", display.contentWidth / 2, display.contentHeight / 2 - 50, 28, self.tutorialGroup)
+    -- customUI.text("Drag to adjust the firing angle!", display.contentWidth / 2, display.contentHeight / 2 - 50, 28, self.tutorialGroup)
+    customUI.danceText("Hi!", display.contentWidth / 2, display.contentHeight / 2 - 50, 28, self.tutorialGroup)
 end
 
 function TutorialScreen:dismiss()

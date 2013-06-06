@@ -232,7 +232,6 @@ local function startGame()
     game.levelName = game.level_map.levelName
     game.level_map = nil
 
-    game.cameraState = "CASTLE1_FOCUS"
     game.camera = camera_module.Camera:new({ listener = cameraListener })
 
     game.controls1 = controls_module.Controls:new({ angle = 45, x = game.castle1:cannonX(), y = game.castle1:cannonY()})
@@ -305,10 +304,12 @@ local function tutorial()
 end
 
 local function startGameFromTutorial()
+    game.cameraState = "CASTLE1_FOCUS"
     tutorialScreen:dismiss()
 end
 
 local function startStoryGameFromLevelSelect()
+    game.cameraState = "CASTLE1_FOCUS"
     mainMenuScreen:dismiss()
     startGame()
 end

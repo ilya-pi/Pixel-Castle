@@ -1,6 +1,21 @@
 module(..., package.seeall)
 
 local widget = require("widget")
+-- local Memmory = require("scripts.util.Memmory")
+
+function dance(text)
+    local tick = 100
+    transition.to(text,{
+                    time = tick,
+                    x = text.x - 10,
+                    -- y = text.y - 10,
+                    onComplete = function()
+                        transition.to(text,{time = tick, x = text.x + 20, onComplete = function()
+                            transition.to(text,{time = tick, x = text.x - 10})
+                        end})
+                    end
+                })
+end
 
 function text(message, x, y, size, group, referencePoint)
     local text = display.newText(message, x + 2, y + 2, "TrebuchetMS-Bold", size)
@@ -15,6 +30,23 @@ function text(message, x, y, size, group, referencePoint)
     textShadow:setTextColor(255, 255, 255)
     text.text = message
     textShadow.text = message
+end
+
+function danceText(message, x, y, size, group, referencePoint)
+    local text = display.newText(message, x + 2, y + 2, "TrebuchetMS-Bold", size)
+    local textShadow = display.newText(message, x, y, "TrebuchetMS-Bold", size)
+    text:setReferencePoint((referencePoint ~= nil) and referencePoint or display.CenterReferencePoint)
+    textShadow:setReferencePoint((referencePoint ~= nil) and referencePoint or display.CenterReferencePoint)
+    text.x, text.y = x + 2, y + 2
+    textShadow.x, textShadow.y = x, y
+    group:insert(text)
+    group:insert(textShadow)
+    text:setTextColor(37, 54, 34)
+    textShadow:setTextColor(255, 255, 255)
+    text.text = message
+    textShadow.text = message
+    dance(text)
+    dance(textShadow)
 end
 
 local toggleSheetOptions = {
