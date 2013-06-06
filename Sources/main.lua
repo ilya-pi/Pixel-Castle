@@ -46,7 +46,7 @@ local pauseMenuOverlay = pausemenu_module.PauseMenuOverlay:new({game = game})
 -- Main game loop
 local function gameLoop()
 
-    if (game.state.name == "P1") then
+    if game.state.name == "P1" then
         game.controls1:render()
     elseif (game.state.name == "BULLET1" or game.state.name == "BULLET2") then
         if (game.bullet ~= nil and not game.bullet:isAlive()) then
@@ -71,6 +71,8 @@ local function gameLoop()
             game:goto("P2")
         end
     elseif (game.state.name == "P2") then
+        -- todo implement proper AI here
+        game:goto("BULLET2")
         game.controls2:render()
     elseif (game.state.name == "MOVE_TO_P1") then
         if game.castle1.events:missed() then
