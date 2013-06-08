@@ -51,7 +51,7 @@ function renderImage(xPosition, yPosition, image, pixel)
     return pixels
 end
 
-function renderPart(xPosition, yPosition, image, pixel, partSize, xPart, yPart)
+--[[function renderPart(xPosition, yPosition, image, pixel, partSize, xPart, yPart)
     local pixels = {}
     local primitiveColorsCount = 4
 
@@ -78,7 +78,7 @@ function renderPart(xPosition, yPosition, image, pixel, partSize, xPart, yPart)
         end
     end
     return pixels
-end
+end]]
 
 function pixel(x, y, image)
     local pixels = {}

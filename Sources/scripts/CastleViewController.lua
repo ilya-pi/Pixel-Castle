@@ -7,33 +7,52 @@ local eventTrack = require("scripts.util.EventTrack")
 
 local spriteWidthPixels = 3
 
-
-CastleViewController = {}
-
---todo: refactor this shit. We shouldn't save castle inside every piece for ex.
---todo: fix memory management here for listeners, timers, physics
-local function onLocalPreCollision(self, event)
-    print(" ".. self.myName .. " " .. event.other.myName)
-    event.contact.isEnabled = false
-    self:removeEventListener("preCollision", onLocalPreCollision)
-
-    --important for Memmory.cleanupPhysics method
-    self.state = "removed"
-
-    physics.removeBody(self)
-    if event.other.myName == "cannonball" then
-        print("substituting image with pixels")
-        local sPixels = imageHelper.renderPart(self.xPixels, self.yPixels, self.castle, game.pixel, spriteWidthPixels, self.xPart, self.yPart)
-        for i,v in ipairs(sPixels) do
-            --self.bricks[i] = v
-            self.parent:insert(5, v)
-            v.myName = "brick"
-
-            Memmory.trackPhys(v); timer.performWithDelay( 10, function() physics.addBody(v, "static") end)
+local function printTable(table)
+    for y=1,table.height do
+        local row = ""
+        for x=1,table.width do
+            --row = row .. table[x][y].value .. " "
+            --row = row .. table[x][y].xPiece .. "," .. table[x][y].yPiece .. " "
+            row = row .. x .. "," .. y .. " "
         end
-        self:removeSelf()
+        print(row)
     end
 end
+
+local function substitutePiece(xPiece, yPiece, pieces, pixels)
+    --print("substitutePiece " .. xPiece .. " " .. yPiece)
+    local piece = pieces[xPiece][yPiece]
+    if piece ~= nil then
+        local startX = (xPiece - 1) * spriteWidthPixels + 1
+        local startY = (yPiece - 1) * spriteWidthPixels + 1
+
+        --print("start: " .. startX + spriteWidthPixels .. "," .. startY + spriteWidthPixels)
+
+        for y = startY, startY + spriteWidthPixels - 1 do
+            for x = startX, startX + spriteWidthPixels - 1 do
+                local pixelData = pixels[x][y]
+                if (pixelData.a ~= 0) then
+                    local left = piece.absoluteX + (x - startX) * game.pixel
+                    local top = piece.absoluteY + (y - startY) * game.pixel
+                    local pixel = display.newRect(left, top, game.pixel, game.pixel)
+                    pixel.strokeWidth = 0
+                    pixel:setFillColor(pixelData.r, pixelData.g, pixelData.b, pixelData.a)
+                    pixel:setStrokeColor(pixelData.r, pixelData.g, pixelData.b, pixelData.a)
+                    pixel.myName = "brick"
+                    game.world:insert(pixel)
+                    Memmory.trackPhys(pixel); physics.addBody(pixel, "static")
+                    pixels[x][y].physicsPixel = pixel
+                    pixels[x][y].value = 3
+                end
+            end
+        end
+        piece:removeSelf()
+        pieces[xPiece][yPiece] = nil
+    end
+end
+
+
+CastleViewController = {}
 
 -- Constructor
 function CastleViewController:new (o) --todo save (physics, world, game, x, y) at this point since tower is static
@@ -48,7 +67,6 @@ end
 -- physics — physics object to attach to
 -- world - display group for the whole scene
 function CastleViewController:render(physics, world, game, x, y) --todo remove redundant params
-    local worldHeight = game.level_map.levelHeight
 
     local castle = game.level_map[self.castleName]
 
@@ -71,44 +89,65 @@ function CastleViewController:render(physics, world, game, x, y) --todo remove r
 
     local imageSheet = graphics.newImageSheet( castleFilename, options )
 
-    for row = 0, rowsNumber - 1 do
-        for column = 0, columnsNumber - 1 do
-            local pieceNumber = row * columnsNumber + column + 1
-
+    local castlePieces = {}
+    for pieceX = 1, columnsNumber do
+        castlePieces[pieceX] = {}
+        for pieceY = 1, rowsNumber do
+            local pieceNumber = (pieceY - 1) * columnsNumber + pieceX
             local castlePiece = imageHelper.ourImageSheet(imageSheet, pieceNumber, spriteWidth, spriteWidth, world)
-            local left = self.leftX + column * spriteWidth
-            local top = self.topY + row * spriteWidth
+            local left = self.leftX + (pieceX - 1) * spriteWidth
+            local top = self.topY + (pieceY - 1) * spriteWidth
             castlePiece.x, castlePiece.y = left, top
-            castlePiece.myName = "piece"
-            castlePiece.xPart = column + 1
-            castlePiece.yPart = row + 1
-            castlePiece.xPixels = x
-            castlePiece.yPixels = y - castle.height + 1
-            castlePiece.castle = castle
-            -- world:insert(castlePiece)
-            Memmory.trackPhys(castlePiece); physics.addBody(castlePiece, "static")
-            castlePiece.preCollision = onLocalPreCollision
-            castlePiece:addEventListener("preCollision", castlePiece)
+            castlePiece.xPart = pieceX
+            castlePiece.yPart = pieceY
+            castlePiece.absoluteX = left
+            castlePiece.absoluteY = top
+            castlePieces[pieceX][pieceY] = castlePiece
+--            print(pieceX .. "," .. pieceY)
+        end
+
+    end
+
+    local physicalPixels = {}
+    physicalPixels.height = castle.height
+    physicalPixels.width = castle.width
+    for x=1,castle.width do
+        physicalPixels[x] = {}
+        for y=1,castle.height do
+            physicalPixels[x][y] = {}
+            physicalPixels[x][y].xPiece = math.floor( (x - 1) / spriteWidthPixels) + 1
+            physicalPixels[x][y].yPiece = math.floor( (y - 1) / spriteWidthPixels) + 1
+            physicalPixels[x][y].r, physicalPixels[x][y].g, physicalPixels[x][y].b, physicalPixels[x][y].a = imageHelper.pixel(x - 1, y - 1, castle)
+            physicalPixels[x][y].value = 0 --no pixel by default
+            if (physicalPixels[x][y].a ~= 0) then
+                physicalPixels[x][y].value = 4
+            end
         end
     end
 
---[[    local sPixels = imageHelper.renderPart(x, y - castle.height + 1, castle, game.pixel, spriteWidthPixels, 1, 5)
-    for i,v in ipairs(sPixels) do
-        --self.bricks[i] = v
-        world:insert(v)
-        v.myName = "brick"
-        Memmory.trackPhys(v); physics.addBody(v, "static")
-    end]]
+    --printTable(physicalPixels)
 
---[[
-        local pixels = imageHelper.renderImage(x, y - castle.height + 1, castle, game.pixel)
-        for i,v in ipairs(pixels) do
-            self.bricks[i] = v
-            world:insert(v)
-            v.myName = "brick"
-            Memmory.trackPhys(v); physics.addBody(v, "static")
+    for y=1,physicalPixels.height do
+        for x=1,physicalPixels.width do
+            if physicalPixels[x][y].value == 4 then
+
+                for yInternal=y-1, y+1 do
+                    for xInternal=x-1, x+1 do
+                        if ( (yInternal < 1 or yInternal > physicalPixels.height or
+                             xInternal < 1 or xInternal > physicalPixels.width) or
+                             physicalPixels[xInternal][yInternal].value == 0) then
+                            substitutePiece(physicalPixels[x][y].xPiece, physicalPixels[x][y].yPiece, castlePieces, physicalPixels)
+                            --physicalPixels[x][y].value = 3 --todo: here real call to substitute the whole castle piece
+                            break
+                        end
+                    end
+                end
+
+            end
         end
-]]
+    end
+
+    --printTable(physicalPixels)
 
     self.totalHealth = self:health()
     self.width = castle.width * game.pixel
@@ -203,4 +242,5 @@ end
 function CastleViewController:cannonY()
     return self.topY - 1
 end
+
 

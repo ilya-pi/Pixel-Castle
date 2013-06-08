@@ -49,13 +49,16 @@ public class PNGParser {
         private final String levelName;
         private final CastleData castle1;
         private final CastleData castle2;
+        private final CastleData level;
 
-        public LevelData(int levelWidth, int levelHeight, CastleData castle1, CastleData castle2, String levelName) {
+
+        public LevelData(int levelWidth, int levelHeight, CastleData castle1, CastleData castle2, CastleData level, String levelName) {
             this.levelWidth = levelWidth;
             this.levelHeight = levelHeight;
             this.castle1 = castle1;
             this.castle2 = castle2;
             this.levelName = levelName;
+            this.level = level;
         }
     }
 
@@ -85,7 +88,8 @@ public class PNGParser {
             File castle2File = new File("src/main/resources/" + imageFolder + "/" + castle2Name + extension);
             CastleData castle1Data = parseImage(castle1File, castle1Name, coordinates.castle1X, coordinates.castle1Y);
             CastleData castle2Data = parseImage(castle2File, castle2Name, coordinates.castle2X, coordinates.castle2Y);
-            levelData = new LevelData(coordinates.levelWidth, coordinates.levelHeight, castle1Data, castle2Data, imageFolder);
+            CastleData groundData = parseImage(levelFile, castle2Name, coordinates.castle2X, coordinates.castle2Y);
+            levelData = new LevelData(coordinates.levelWidth, coordinates.levelHeight, castle1Data, castle2Data, groundData, imageFolder);
 
             String jsonString = gson.toJson(levelData);
             FileUtils.writeStringToFile(new File(outputFolder + "/" + imageFolder + ".json"), jsonString);

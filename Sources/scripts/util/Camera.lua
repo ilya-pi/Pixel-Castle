@@ -31,7 +31,8 @@ function Camera:new (o)
 	o.name = "camera"
 
     o.ratio = initialRatio
-    o.minRatio = screenWidth / (game.levelWidth * game.pixel)
+    --o.minRatio = screenWidth / (game.levelWidth * game.pixel)
+    o.minRatio = 0.5
 
     game.sky.x = display.screenOriginX
     game.sky.y = -(game.levelHeight * game.pixel - screenHeight) + display.screenOriginY
@@ -71,6 +72,9 @@ local function calculateTouchX(desiredX, ratio)
 end
 
 local function calculateTouchY(desiredY, ratio)
+    local topBorder = -(game.levelHeight * game.pixel * ratio - screenHeight - display.screenOriginY)
+    return topBorder, topBorder, topBorder
+--[[
     if (desiredY >= display.screenOriginY) then
         return display.screenOriginY, display.screenOriginY, display.screenOriginY
     else
@@ -80,6 +84,7 @@ local function calculateTouchY(desiredY, ratio)
         end
     end
     return desiredY, desiredY, desiredY
+]]
 end
 
 function Camera:touch(event)
@@ -136,7 +141,7 @@ function Camera:moveCamera()
 
         if (game.castle1 ~= nil) then
 			local cannonX = -game.castle1:cannonX() * self.ratio
-			local cannonY =  -game.castle1:cannonY() * self.ratio
+			local cannonY = -game.castle1:cannonY() * self.ratio
 			Memmory.transitionStash.cameraWorldTransition = transition.to(game.world,
                 {
                     time = focusOnCastleTime,
