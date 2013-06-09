@@ -1,6 +1,7 @@
 module(..., package.seeall);
 
 local customUI = require("scripts.util.CustomUI")
+local controls_module = require("scripts.Controls")
 
 TutorialScreen = {}
 
@@ -36,9 +37,9 @@ function TutorialScreen:render()
     self.alphaRect.alpha, self.alphaRect.x, self.alphaRect.y = 0.6, display.contentWidth / 2, display.contentHeight / 2
     self.alphaRect:addEventListener("touch",
         function(event)
-            if event.phase == "ended" then
-                self.game:goto("P1")
-            end
+            -- if event.phase == "ended" then
+            --     self.game:goto("P1")
+            -- end
             return true
         end
     )
@@ -51,7 +52,55 @@ function TutorialScreen:render()
     -- self.tutorialGroup:insert(self.controlAndHand)
 
     -- customUI.text("Drag to adjust the firing angle!", display.contentWidth / 2, display.contentHeight / 2 - 50, 28, self.tutorialGroup)
-    customUI.danceText("Hi!", display.contentWidth / 2, display.contentHeight / 2 - 50, 28, self.tutorialGroup)
+
+    local step1 = display.newGroup()    
+    self.tutorialGroup:insert(step1)
+    customUI.danceText("Hi!", display.contentWidth / 2, display.contentHeight / 4, 28, step1)
+
+    timer.performWithDelay(2000, function()
+            step1:removeSelf()
+            local step2 = display.newGroup()    
+            self.tutorialGroup:insert(step2)
+            local message = customUI.PPText:new("Drag to adjust the firing angle!", display.contentWidth / 2, display.contentHeight / 4, 28, step2)
+            message:dance()
+            local sampleControls = controls_module.Controls:new(
+                { angle = 45, x = display.contentWidth / 2, y = display.contentHeight / 2, container = step2})
+            
+            sampleControls:setCoordinates()
+            sampleControls:render()
+
+            timer.performWithDelay(1000, function()
+                local hand = display.newImageRect("images/hand.png", 42, 62)
+                hand.alpha = 0
+                hand:setReferencePoint(display.CenterReferencePoint)
+                hand.x, hand.y = display.contentWidth / 2 - 25, display.contentHeight / 2 + 100
+                transition.to(hand, {alpha = 1, time = 200, onComplete = function()                        
+                        -- moving forward
+                        local angleAnim = timer.performWithDelay(100, function()
+                                sampleControls.angleLine.rotation = sampleControls.angleLine.rotation + 1
+                                sampleControls.angleText.text = sampleControls.angleLine.rotation .. "°"
+                            end, 20)
+                        transition.to(hand, {x = display.contentWidth / 2 + 25, time = 2000, onComplete = function()
+                                timer.cancel(angleAnim)
+
+                                -- moving back
+                                angleAnim = timer.performWithDelay(100, function()
+                                        sampleControls.angleLine.rotation = sampleControls.angleLine.rotation - 1
+                                        sampleControls.angleText.text = sampleControls.angleLine.rotation .. "°"
+                                    end, 20)
+                                transition.to(hand, {x = display.contentWidth / 2 - 25, time = 2000, onComplete = function()
+                                    timer.cancel(angleAnim)
+
+                                    message:newText("Now try dragging it to 57°...")
+                                    message:dance()
+                                    transition.to(hand, {alpha = 0, time = 1000})
+                                end})
+                            end})
+                    end})
+                end)
+
+        end)
+    
 end
 
 function TutorialScreen:dismiss()

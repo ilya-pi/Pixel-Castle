@@ -60,7 +60,11 @@ function Controls:new(o)
     o.angleLine.y = 0
     o.angleLine.rotation = o.angle
     o.group:insert(o.angleLine)
-    game.world:insert(o.group)
+    if o.container ~= nil then
+        o.container:insert(o.group)
+    else
+        game.world:insert(o.group)
+    end
     return o
 end
 
@@ -72,10 +76,12 @@ function Controls:touch(event)
         self.delta = self.beginX - event.x
         self.angle = self.lastAngle - round(self.delta / touchScaleFactor)
         if (self.angle < -90) then self.angle = -90 end
-        if (self.angle > 90) then self.angle = 90 end
+        if (self.angle > 90) then self.angle = 90 end        
     elseif event.phase == "ended" or event.phase == "cancelled" then
         self.lastAngle = self.angle
     end
+
+    self:setCoordinates()
     -- return true, so that touch event wont be fired for the background
     return true
 end

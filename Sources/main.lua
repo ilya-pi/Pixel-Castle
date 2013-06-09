@@ -47,7 +47,7 @@ local pauseMenuOverlay = pausemenu_module.PauseMenuOverlay:new({game = game})
 local function gameLoop()
 
     if game.state.name == "P1" then
-        game.controls1:render()
+        -- game.controls1:render()
     elseif (game.state.name == "BULLET1" or game.state.name == "BULLET2") then
         if (game.bullet ~= nil and not game.bullet:isAlive()) then
             game.bullet:remove()
@@ -73,7 +73,7 @@ local function gameLoop()
     elseif (game.state.name == "P2") then
         -- todo implement proper AI here
         game:goto("BULLET2")
-        game.controls2:render()
+        -- game.controls2:render()
     elseif (game.state.name == "MOVE_TO_P1") then
         if game.castle1.events:missed() then
             game.castle1:showBubble(game, "missed!")
@@ -235,11 +235,12 @@ local function startGame()
     game.camera = camera_module.Camera:new({ listener = cameraListener })
 
     game.controls1 = controls_module.Controls:new({ angle = 45, x = game.castle1:cannonX(), y = game.castle1:cannonY()})
-    game.controls2 = controls_module.Controls:new({ angle = -45, x = game.castle2:cannonX(), y = game.castle2:cannonY()})
---[[
-    print("rendered conrols 1" .. game.castle1:cannonX() .. " " .. game.castle1:cannonY())
-    print("rendered conrols 2" .. game.castle2:cannonX() .. " " .. game.castle2:cannonY())
-]]
+    game.controls2 = controls_module.Controls:new({ angle = -45, x = game.castle2:cannonX(), y = game.castle2:cannonY()})    
+    game.controls1:render()
+    game.controls2:render()
+    game.controls1:hide()
+    game.controls2:hide()
+
     game.controls1.fireButton:addEventListener("touch",
         function(event)
             if event.phase == "ended" then
@@ -306,12 +307,14 @@ end
 local function startGameFromTutorial()
     game.cameraState = "CASTLE1_FOCUS"
     tutorialScreen:dismiss()
+    game.controls1:show()
 end
 
 local function startStoryGameFromLevelSelect()
     game.cameraState = "CASTLE1_FOCUS"
     mainMenuScreen:dismiss()
     startGame()
+        game.controls1:show()
 end
 
 local function playMenu()

@@ -17,6 +17,39 @@ function dance(text)
                 })
 end
 
+PPText = {}
+
+function PPText:new(message, x, y, size, group, referencePoint)
+    local o = {}   -- create object if user does not provide one
+    setmetatable(o, self)
+    self.__index = self
+
+    self.text = display.newText(message, x + 2, y + 2, "TrebuchetMS-Bold", size)
+    self.textShadow = display.newText(message, x, y, "TrebuchetMS-Bold", size)
+    self.text:setReferencePoint((referencePoint ~= nil) and referencePoint or display.CenterReferencePoint)
+    self.textShadow:setReferencePoint((referencePoint ~= nil) and referencePoint or display.CenterReferencePoint)
+    self.text.x, self.text.y = x + 2, y + 2
+    self.textShadow.x, self.textShadow.y = x, y
+    group:insert(self.text)
+    group:insert(self.textShadow)
+    self.text:setTextColor(37, 54, 34)
+    self.textShadow:setTextColor(255, 255, 255)
+    self.text.text = message
+    self.textShadow.text = message
+
+    return o
+end
+
+function PPText:newText(newText)
+    self.text.text = newText
+    self.textShadow.text = newText
+end
+
+function PPText:dance()
+    dance(self.text)
+    dance(self.textShadow)
+end
+
 function text(message, x, y, size, group, referencePoint)
     local text = display.newText(message, x + 2, y + 2, "TrebuchetMS-Bold", size)
     local textShadow = display.newText(message, x, y, "TrebuchetMS-Bold", size)
