@@ -10,6 +10,9 @@ function TutorialScreen:new (o)
     o = o or {}   -- create object if user does not provide one
     setmetatable(o, self)
     self.__index = self
+
+    self.finisheTutorial = false
+
     return o
 end
 
@@ -37,9 +40,9 @@ function TutorialScreen:render()
     self.alphaRect.alpha, self.alphaRect.x, self.alphaRect.y = 0.6, display.contentWidth / 2, display.contentHeight / 2
     self.alphaRect:addEventListener("touch",
         function(event)
-            -- if event.phase == "ended" then
-            --     self.game:goto("P1")
-            -- end
+            if event.phase == "ended" and self.finisheTutorial then
+                self.game:goto("P1")
+            end
             return true
         end
     )
@@ -93,7 +96,16 @@ function TutorialScreen:render()
 
                                     message:newText("Now try dragging it to 57°...")
                                     message:dance()
-                                    transition.to(hand, {alpha = 0, time = 1000})
+                                    transition.to(hand, {alpha = 0, time = 1000, onComplete = function()
+                                            timer.performWithDelay(100, function(event)
+                                                    if sampleControls.angleLine.rotation >= 57 then
+                                                        message:newText("Good, and now fire!")
+                                                        message:dance()
+                                                        self.finisheTutorial = true
+                                                        timer.cancel(event.source)
+                                                    end
+                                                end, 0)
+                                        end})                                    
                                 end})
                             end})
                     end})
