@@ -38,14 +38,14 @@ function TutorialScreen:render()
     self.alphaRect:setReferencePoint(display.CenterReferencePoint)
     self.alphaRect:setFillColor(0, 0, 0, 255)
     self.alphaRect.alpha, self.alphaRect.x, self.alphaRect.y = 0.6, display.contentWidth / 2, display.contentHeight / 2
-    self.alphaRect:addEventListener("touch",
-        function(event)
-            if event.phase == "ended" and self.finisheTutorial then
-                self.game:goto("P1")
-            end
-            return true
-        end
-    )
+    -- self.alphaRect:addEventListener("touch",
+    --     function(event)
+    --         if event.phase == "ended" and self.finisheTutorial then
+    --             self.game:goto("P1")
+    --         end
+    --         return true
+    --     end
+    -- )
     self.tutorialGroup:insert(self.alphaRect)
 
     -- self.controlAndHand = display.newImageRect("images/tutorial_hand.png", 120, 120)
@@ -67,7 +67,13 @@ function TutorialScreen:render()
             local message = customUI.PPText:new("Drag to adjust the firing angle!", display.contentWidth / 2, display.contentHeight / 4, 28, step2)
             message:dance()
             local sampleControls = controls_module.Controls:new(
-                { angle = 45, x = display.contentWidth / 2, y = display.contentHeight / 2, container = step2})
+                { angle = 45, x = display.contentWidth / 2, y = display.contentHeight / 2, container = step2,
+                onFire = function(event)
+                    if event.phase == "ended" and self.finisheTutorial then
+                        self.game:goto("P1")
+                    end
+                    return true
+                end})
             
             sampleControls:setCoordinates()
             sampleControls:render()
@@ -76,7 +82,7 @@ function TutorialScreen:render()
                 local hand = display.newImageRect("images/hand.png", 42, 62)
                 hand.alpha = 0
                 hand:setReferencePoint(display.CenterReferencePoint)
-                hand.x, hand.y = display.contentWidth / 2 - 25, display.contentHeight / 2 + 100
+                hand.x, hand.y = display.contentWidth / 2 - 25, display.contentHeight / 2 + 115
                 transition.to(hand, {alpha = 1, time = 200, onComplete = function()                        
                         -- moving forward
                         local angleAnim = timer.performWithDelay(100, function()

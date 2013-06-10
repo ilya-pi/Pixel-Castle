@@ -1,8 +1,10 @@
 module(..., package.seeall)
 
+local widget = require("widget")
+
 Controls = {}
 
-local padding = 10
+local padding = 25
 local scaleFactor = 0.5
 local touchScaleFactor = 8
 
@@ -47,10 +49,25 @@ function Controls:new(o)
     o.listener = o.slidePad:addEventListener("touch", o)
     o.group:insert(o.slidePad)
 
-    o.fireButton = display.newImage("images/castle_control/fire_button.png")
-    o.fireButton:scale(scaleFactor, scaleFactor)
-    o.fireButton.x = (o.slidePad.width / 2 + padding + o.fireButton.width / 2) * scaleFactor
-    o.fireButton.y = yControls
+    -- o.fireButton = display.newImage("images/castle_control/fire_button.png")
+    -- o.fireButton:scale(scaleFactor, scaleFactor)
+    -- o.fireButton.x = (o.slidePad.width / 2 + padding + o.fireButton.width / 2) * scaleFactor
+    -- o.fireButton.y = yControls
+    -- o.group:insert(o.fireButton)
+
+    o.fireButton = widget.newButton{
+        width = 42,
+        height = 42,
+        defaultFile = "images/button.png",
+        overFile = "images/button_over.png",
+        id = "firebtn",
+        label = "FIRE",
+        font = "TrebuchetMS-Bold",
+        fontSize = 12,
+        labelColor = { default = { 255 }, over = { 0 } },
+        onRelease = o.onFire
+    }
+    o.fireButton.x, o.fireButton.y = (o.slidePad.width / 2 + padding + o.fireButton.width / 2) * scaleFactor, yControls
     o.group:insert(o.fireButton)
 
     o.angleLine = display.newImage("images/castle_control/angle_stick.png")

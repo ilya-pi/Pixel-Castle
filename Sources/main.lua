@@ -234,29 +234,47 @@ local function startGame()
 
     game.camera = camera_module.Camera:new({ listener = cameraListener })
 
-    game.controls1 = controls_module.Controls:new({ angle = 45, x = game.castle1:cannonX(), y = game.castle1:cannonY()})
-    game.controls2 = controls_module.Controls:new({ angle = -45, x = game.castle2:cannonX(), y = game.castle2:cannonY()})    
+    game.controls1 = controls_module.Controls:new({ angle = 45, x = game.castle1:cannonX(), y = game.castle1:cannonY(), 
+        onFire = function(event)
+            if event.phase == "ended" then
+                game:goto("BULLET1")
+            end
+            return true
+        end})
+    game.controls2 = controls_module.Controls:new({ angle = -45, x = game.castle2:cannonX(), y = game.castle2:cannonY(), 
+        onFire = function(event)
+            if event.phase == "ended" then
+                game:goto("BULLET2")
+            end
+            return true
+        end})
     game.controls1:render()
     game.controls2:render()
     game.controls1:hide()
     game.controls2:hide()
 
-    game.controls1.fireButton:addEventListener("touch",
-        function(event)
-            if event.phase == "ended" then
-                game:goto("BULLET1")
-            end
-            return true
-        end
-    )
-    game.controls2.fireButton:addEventListener("touch",
-        function(event)
-            if event.phase == "ended" then
-                game:goto("BULLET2")
-            end
-            return true
-        end
-    )
+    -- game.controls1.fireButton.onRelease = function(event)
+    --         if event.phase == "ended" then
+    --             game:goto("BULLET1")
+    --         end
+    --         return true
+    --     end
+    -- game.controls1.fireButton:addEventListener("touch",
+    --     function(event)
+    --         if event.phase == "ended" then
+    --             game:goto("BULLET1")
+    --         end
+    --         return true
+    --     end
+    -- )
+    -- game.controls2.fireButton:addEventListener("touch",
+    --     function(event)
+    --         if event.phase == "ended" then
+    --             game:goto("BULLET2")
+    --         end
+    --         return true
+    --     end
+    -- )
 
     Runtime:addEventListener("enterFrame", game)
 
