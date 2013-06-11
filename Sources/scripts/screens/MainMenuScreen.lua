@@ -347,7 +347,7 @@ function MainMenuScreen:showOptionsMenu()
         fontSize = 24,
         labelColor = { default = { 255 }, over = { 0 } },
         onRelease = function(event)
-            print("credits clicked")
+            self.game:goto("CREDITS")
             return true
         end
     }
@@ -375,6 +375,46 @@ function MainMenuScreen:hideOptionsMenu()
     self.optionsMenuGroup:removeSelf()
     self.optionsMenuGroup = nil
 end
+
+function MainMenuScreen:showCredits()
+    self.creditsGroup = display.newGroup()
+    self.displayGroup:insert(self.creditsGroup)
+
+    local bg = display.newImageRect("images/button.png", 5 * display.contentWidth / 6, 4 * display.contentHeight / 5)
+    -- bg.alpha = 0.25
+    self.creditsGroup:insert(bg)
+    bg:setReferencePoint(display.CenterReferencePoint)
+    bg.x, bg.y = display.contentWidth / 2, display.contentHeight / 2
+
+    customUI.textBox("Pixel Castle by AstroBerries (http://astroberries.com)" ..
+        "\n\n\tproduced by\n\t\tIlya Pimenov \n\n\tdesigned by\n\t\tRodrigo Masseli\n\n\thacked by\n\t\tSegey Belyakov\n\t\tIlya Pimenov"
+        , 
+        display.contentWidth / 12 + 15, display.contentHeight / 4 + 5,  5 * display.contentWidth / 6 - 15, 200, 12, self.creditsGroup, display.TopLeftReferencePoint)
+
+    customUI.text("Credits", display.contentWidth / 2, 50 + display.screenOriginY, 30, self.creditsGroup)
+
+    local backButton = widget.newButton{
+        width = 60,
+        height = 60,
+        defaultFile = "images/menus_common/back_button.png",
+        overFile = "images/menus_common/back_button_tapped.png",
+        onRelease = function(event)
+            self.game:goto("OPTIONS")
+            return true
+        end
+    }
+    backButton:setReferencePoint(display.TopLeftReferencePoint)
+    backButton.x, backButton.y = display.screenOriginX, display.screenOriginY
+    self.creditsGroup:insert(backButton)
+end
+
+function MainMenuScreen:hideCredits()
+    -- todo dismiss credits transition
+    self.creditsGroup:removeSelf()
+    self.creditsGroup = nil
+end
+
+
 
 function MainMenuScreen:dismiss()
     timer.cancel(Memmory.timerStash.bgMovementTimer)

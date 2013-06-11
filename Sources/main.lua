@@ -253,29 +253,6 @@ local function startGame()
     game.controls1:hide()
     game.controls2:hide()
 
-    -- game.controls1.fireButton.onRelease = function(event)
-    --         if event.phase == "ended" then
-    --             game:goto("BULLET1")
-    --         end
-    --         return true
-    --     end
-    -- game.controls1.fireButton:addEventListener("touch",
-    --     function(event)
-    --         if event.phase == "ended" then
-    --             game:goto("BULLET1")
-    --         end
-    --         return true
-    --     end
-    -- )
-    -- game.controls2.fireButton:addEventListener("touch",
-    --     function(event)
-    --         if event.phase == "ended" then
-    --             game:goto("BULLET2")
-    --         end
-    --         return true
-    --     end
-    -- )
-
     Runtime:addEventListener("enterFrame", game)
 
     Memmory.timerStash.gameLoopTimer = timer.performWithDelay(game.delay, gameLoop, 0)
@@ -302,6 +279,16 @@ end
 
 local function optionsMenu()
     mainMenuScreen:hideMainMenu()
+    mainMenuScreen:showOptionsMenu()
+end
+
+local function credits()
+    mainMenuScreen:hideOptionsMenu()
+    mainMenuScreen:showCredits()
+end
+
+local function optionsFromCredits()
+    mainMenuScreen:hideCredits()
     mainMenuScreen:showOptionsMenu()
 end
 
@@ -382,7 +369,8 @@ local function init()
     game.db = dbWrapper.DbWrapper:new()
 
     game:addState({ name = "MAINMENU", transitions = {PLAYMENU = playMenu, OPTIONS = optionsMenu}})
-    game:addState({ name = "OPTIONS", transitions = {MAINMENU = mainMenuFromOptions}})
+    game:addState({ name = "OPTIONS", transitions = {MAINMENU = mainMenuFromOptions, CREDITS = credits}})
+    game:addState({ name = "CREDITS", transitions = {OPTIONS = optionsFromCredits}})
 
     game:addState({ name = "PLAYMENU", transitions = {LEVELSELECT = levelSelectFromPlayMenu, MAINMENU = mainMenuFromPlayMenu, P1 = startStoryGameFromLevelSelect} })
     game:addState({ name = "LEVELSELECT", transitions = {P1 = startStoryGameFromLevelSelect, TUTORIAL = tutorial, PLAYMENU = playMenuFromLevelSelect} })
