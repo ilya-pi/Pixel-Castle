@@ -100,18 +100,30 @@ local function eventPlayer1Fire()
     game.controls1:hide()
     local cannonX = game.castle1:cannonX()
     local cannonY = game.castle1:cannonY()
-    game.bullet = bullet_module.Bullet:new({game = game})
-    game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls1:getAngle())), impulse * math.cos(math.rad(game.controls1:getAngle())))
-    game.cameraState = "CANNONBALL_FOCUS"
+    game.castle1:say("Ready", function()
+        game.castle1:say("Aim", function()
+            game.castle1:say("Fire!", function()
+                game.bullet = bullet_module.Bullet:new({game = game})
+                game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls1:getAngle())), impulse * math.cos(math.rad(game.controls1:getAngle())))
+                game.cameraState = "CANNONBALL_FOCUS"
+            end, {r = 255, g = 0, b = 0})
+        end, {r = 255, g = 255, b = 0})
+    end)
 end
 
 local function eventPlayer2Fire()
     game.controls2:hide()
     local cannonX = game.castle2:cannonX()
     local cannonY = game.castle2:cannonY()
-    game.bullet = bullet_module.Bullet:new({game = game})
-    game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls2:getAngle())), impulse * math.cos(math.rad(game.controls2:getAngle())))
-    game.cameraState = "CANNONBALL_FOCUS"
+    game.castle1:say("Ready", function()
+        game.castle1:say("Aim", function()
+            game.castle1:say("Fire!", function()
+                game.bullet = bullet_module.Bullet:new({game = game})
+                game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls2:getAngle())), impulse * math.cos(math.rad(game.controls2:getAngle())))
+                game.cameraState = "CANNONBALL_FOCUS"
+            end, {r = 255, g = 0, b = 0})
+        end, {r = 255, g = 255, b = 0})
+    end)
 end
 
 local function eventBulletRemoved()

@@ -189,25 +189,58 @@ function CastleViewController:updateHealth(game)
 	end
 end
 
-function CastleViewController:showBubble(game, message)
-	local bubbleGroup = display.newGroup()
-	local bubble
-	if (self.location == "left") then
-		bubble = display.newImageRect("images/speech_left.png", 80, 60)
-	else
-		bubble = display.newImageRect("images/speech_right.png", 80, 60)
-	end
-	bubbleGroup:insert(bubble)
+function CastleViewController:say(message, callback, tint)
+    local bubbleGroup = display.newGroup()
+    local bubble
+    if (self.location == "left") then
+        bubble = display.newImageRect("images/speech_left.png", 80, 60)
+    else
+        bubble = display.newImageRect("images/speech_right.png", 80, 60)
+    end
+    if tint ~=nil then
+        bubble:setFillColor(tint.r, tint.g, tint.b)
+    end
 
-	local text = display.newText(message, -100, -100, "TrebuchetMS-Bold", 14)
+    bubbleGroup:insert(bubble)
+
+    local text = display.newText(message, -100, -100, "TrebuchetMS-Bold", 14)
     text:setReferencePoint(display.CenterReferencePoint)
     text:setTextColor(0, 0, 0)
     text.x, text.y = 0, -7
     bubbleGroup:insert(text)
 
-	game.world:insert(bubbleGroup)
-	bubbleGroup.x, bubbleGroup.y = self:cannonX(), self:cannonY()
-	table.insert(Memmory.transitionStash, transition.to(bubbleGroup, {time = 3500, alpha = 0, y = self:cannonY() - 100}, function() bubbleGroup:removeSelf() end))
+    game.world:insert(bubbleGroup)
+    bubbleGroup.x, bubbleGroup.y = self:cannonX(), self:cannonY()
+    table.insert(Memmory.transitionStash, transition.to(bubbleGroup, {time = 700, alpha = 0, y = self:cannonY() - 50, 
+        onComplete = function() 
+            bubbleGroup:removeSelf() 
+            callback()
+        end}))
+    -- Memmory.timerStash.castleSayTimer = timer.performWithDelay(2000, function()
+    --         bubbleGroup:removeSelf()
+    --         callback()
+    --     end)
+end
+
+function CastleViewController:showBubble(game, message)
+    local bubbleGroup = display.newGroup()
+    local bubble
+    if (self.location == "left") then
+        bubble = display.newImageRect("images/speech_left.png", 80, 60)
+    else
+        bubble = display.newImageRect("images/speech_right.png", 80, 60)
+    end
+    bubbleGroup:insert(bubble)
+
+    local text = display.newText(message, -100, -100, "TrebuchetMS-Bold", 14)
+    text:setReferencePoint(display.CenterReferencePoint)
+    text:setTextColor(0, 0, 0)
+    text.x, text.y = 0, -7
+    bubbleGroup:insert(text)
+
+    game.world:insert(bubbleGroup)
+    bubbleGroup.x, bubbleGroup.y = self:cannonX(), self:cannonY()
+    table.insert(Memmory.transitionStash, transition.to(bubbleGroup, {time = 3500, alpha = 0, y = self:cannonY() - 100, onComplete = function() bubbleGroup:removeSelf() end}))
 end
 
 function CastleViewController:health()
