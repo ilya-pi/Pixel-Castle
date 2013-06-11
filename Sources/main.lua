@@ -236,7 +236,6 @@ local function startGame()
 
     game.wind = wind_module.Wind:new({ x = 1, y = 1, game = game.game })
     game.wind:update()
-    pauseMenuOverlay:renderButton()
 
     game.levelWidth = game.level_map.levelWidth
     game.levelHeight = game.level_map.levelHeight
@@ -324,6 +323,7 @@ end
 local function startGameFromTutorial()
     game.cameraState = "CASTLE1_FOCUS"
     tutorialScreen:dismiss()
+    pauseMenuOverlay:renderButton()
     game.controls1:show()
 end
 
@@ -331,7 +331,8 @@ local function startStoryGameFromLevelSelect()
     game.cameraState = "CASTLE1_FOCUS"
     mainMenuScreen:dismiss()
     startGame()
-        game.controls1:show()
+    pauseMenuOverlay:renderButton()
+    game.controls1:show()
 end
 
 local function playMenu()
