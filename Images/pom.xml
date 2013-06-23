@@ -54,12 +54,18 @@
                         <configuration>
                             <target>
                                 <copy todir="${project.basedir}/../Sources/data/">
-                                    <fileset dir="${project.build.directory}/json">
+                                    <fileset dir="${project.build.directory}/corona-compiled-resources">
                                         <include name="*.json"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/../Sources/images/levels">
                                     <fileset dir="${basedir}/src/main/resources">
+                                        <include name="**/*.png"/>
+                                    </fileset>
+                                </copy>
+                                <!--Override level image with new merged with castles level image-->
+                                <copy todir="${project.basedir}/../Sources/images/levels">
+                                    <fileset dir="${project.build.directory}/corona-compiled-resources">
                                         <include name="**/*.png"/>
                                     </fileset>
                                 </copy>

@@ -5,53 +5,6 @@ local imageHelper = require("scripts.util.Image")
 local customUI = require("scripts.util.CustomUI")
 local eventTrack = require("scripts.util.EventTrack")
 
-local spriteWidthPixels = 3
-
-local function printTable(table)
-    for y=1,table.height do
-        local row = ""
-        for x=1,table.width do
-            --row = row .. table[x][y].value .. " "
-            --row = row .. table[x][y].xPiece .. "," .. table[x][y].yPiece .. " "
-            row = row .. x .. "," .. y .. " "
-        end
-        print(row)
-    end
-end
-
-local function substitutePiece(xPiece, yPiece, pieces, pixels)
-    --print("substitutePiece " .. xPiece .. " " .. yPiece)
-    local piece = pieces[xPiece][yPiece]
-    if piece ~= nil then
-        local startX = (xPiece - 1) * spriteWidthPixels + 1
-        local startY = (yPiece - 1) * spriteWidthPixels + 1
-
-        --print("start: " .. startX + spriteWidthPixels .. "," .. startY + spriteWidthPixels)
-
-        for y = startY, startY + spriteWidthPixels - 1 do
-            for x = startX, startX + spriteWidthPixels - 1 do
-                local pixelData = pixels[x][y]
-                if (pixelData.a ~= 0) then
-                    local left = piece.absoluteX + (x - startX) * game.pixel
-                    local top = piece.absoluteY + (y - startY) * game.pixel
-                    local pixel = display.newRect(left, top, game.pixel, game.pixel)
-                    pixel.strokeWidth = 0
-                    pixel:setFillColor(pixelData.r, pixelData.g, pixelData.b, pixelData.a)
-                    pixel:setStrokeColor(pixelData.r, pixelData.g, pixelData.b, pixelData.a)
-                    pixel.myName = "brick"
-                    game.world:insert(pixel)
-                    Memmory.trackPhys(pixel); physics.addBody(pixel, "static")
-                    pixels[x][y].physicsPixel = pixel
-                    pixels[x][y].value = 3
-                end
-            end
-        end
-        piece:removeSelf()
-        pieces[xPiece][yPiece] = nil
-    end
-end
-
-
 CastleViewController = {}
 
 -- Constructor
@@ -66,100 +19,23 @@ end
 
 -- physics — physics object to attach to
 -- world - display group for the whole scene
-function CastleViewController:render(physics, world, game, x, y) --todo remove redundant params
+function CastleViewController:render(physics, world, game) --todo remove redundant params
 
-    local castle = game.level_map[self.castleName]
-
-    self.leftX = x * game.pixel
-    self.rightX = (x + castle.width) * game.pixel
-    self.topY = (y - castle.height + 1) * game.pixel
-
-     --todo: castle image width and height should be dividable on this number
-    local rowsNumber = castle.height / spriteWidthPixels
-    local columnsNumber = castle.width / spriteWidthPixels
-    local numFrames = rowsNumber * columnsNumber
-    local spriteWidth = spriteWidthPixels * game.pixel
-    local options =
-    {
-        width = spriteWidthPixels,
-        height = spriteWidthPixels,
-        numFrames = numFrames
-    }
-    local castleFilename = "images/levels/" .. game.level_map.levelName .. "/" .. self.castleName .. ".png"
-
-    local imageSheet = graphics.newImageSheet( castleFilename, options )
-
-    local castlePieces = {}
-    for pieceX = 1, columnsNumber do
-        castlePieces[pieceX] = {}
-        for pieceY = 1, rowsNumber do
-            local pieceNumber = (pieceY - 1) * columnsNumber + pieceX
-            local castlePiece = imageHelper.ourImageSheet(imageSheet, pieceNumber, spriteWidth, spriteWidth, world)
-            local left = self.leftX + (pieceX - 1) * spriteWidth
-            local top = self.topY + (pieceY - 1) * spriteWidth
-            castlePiece.x, castlePiece.y = left, top
-            castlePiece.xPart = pieceX
-            castlePiece.yPart = pieceY
-            castlePiece.absoluteX = left
-            castlePiece.absoluteY = top
-            castlePieces[pieceX][pieceY] = castlePiece
---            print(pieceX .. "," .. pieceY)
-        end
-
-    end
-
-    local physicalPixels = {}
-    physicalPixels.height = castle.height
-    physicalPixels.width = castle.width
-    for x=1,castle.width do
-        physicalPixels[x] = {}
-        for y=1,castle.height do
-            physicalPixels[x][y] = {}
-            physicalPixels[x][y].xPiece = math.floor( (x - 1) / spriteWidthPixels) + 1
-            physicalPixels[x][y].yPiece = math.floor( (y - 1) / spriteWidthPixels) + 1
-            physicalPixels[x][y].r, physicalPixels[x][y].g, physicalPixels[x][y].b, physicalPixels[x][y].a = imageHelper.pixel(x - 1, y - 1, castle)
-            physicalPixels[x][y].value = 0 --no pixel by default
-            if (physicalPixels[x][y].a ~= 0) then
-                physicalPixels[x][y].value = 4
-            end
-        end
-    end
-
-    --printTable(physicalPixels)
-
-    for y=1,physicalPixels.height do
-        for x=1,physicalPixels.width do
-            if physicalPixels[x][y].value == 4 then
-
-                for yInternal=y-1, y+1 do
-                    for xInternal=x-1, x+1 do
-                        if ( (yInternal < 1 or yInternal > physicalPixels.height or
-                             xInternal < 1 or xInternal > physicalPixels.width) or
-                             physicalPixels[xInternal][yInternal].value == 0) then
-                            substitutePiece(physicalPixels[x][y].xPiece, physicalPixels[x][y].yPiece, castlePieces, physicalPixels)
-                            --physicalPixels[x][y].value = 3 --todo: here real call to substitute the whole castle piece
-                            break
-                        end
-                    end
-                end
-
-            end
-        end
-    end
-
-    --printTable(physicalPixels)
+    self.leftX = self.castleData.x * game.pixel
+    self.rightX = (self.castleData.x + self.castleData.width) * game.pixel
+    self.topY = (self.castleData.y + 1) * game.pixel
 
     self.totalHealth = self:health()
-    self.width = castle.width * game.pixel
+    self.width = self.castleData.width * game.pixel
 
     self.healthBar = display.newRect(0, 0, self.width, 3)
     self.healthBar:setReferencePoint(display.BottomLeftReferencePoint)
     self.healthBar.x = self.leftX
     self.healthBar.y = self.topY - 15
     world:insert(self.healthBar)
-   	self.healthBar:setFillColor(0, 255, 0, 150)
+    self.healthBar:setFillColor(0, 255, 0, 150)
 
-    print("Rendered castle with " .. x .. ", " .. y)
+    print("Rendered castle with " .. self.castleData.x .. ", " .. self.castleData.y)
 end
 
 function CastleViewController:isDestroyed(game)

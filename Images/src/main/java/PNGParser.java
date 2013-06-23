@@ -4,23 +4,25 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class PNGParser {
 
-    public static final String castle1Name = "castle1";
-    public static final String castle2Name = "castle2";
-    public static final String levelName = "level";
-    public static final String extension = ".png";
+    public static final String CASTLE_1_NAME = "castle1";
+    public static final String CASTLE_2_NAME = "castle2";
+    public static final String LEVEL_NAME = "level";
+    public static final String EXTENSION = "png";
+
+    public static final int spriteWidthPixels = 3;
+
+    public static final Color TRANSPARENT_COLOR = new Color(0, 0, 0, 0);
 
     public static Gson gson = new GsonBuilder().create();
     public static Configuration config;
@@ -71,7 +73,7 @@ public class PNGParser {
         int levelHeight = -1;
     }
 
-    public static void main(String[] args) throws ConfigurationException, IOException {
+    public static void main(String[] args) throws Exception {
         config = new PropertiesConfiguration("config.properties");
         String[] imageFolders = config.getStringArray("images.resource.folders");
         String outputFolder = config.getString("images.resource.output.folder");
@@ -80,25 +82,117 @@ public class PNGParser {
             System.out.println("processing level folder = " + imageFolder);
             System.out.println("=======================================");
 
-            File levelFile = new File("src/main/resources/" + imageFolder + "/" + levelName + extension);
-            CastleCoordinates coordinates = getCoordinates(levelFile);
+            File levelFile = new File("src/main/resources/" + imageFolder + "/" + LEVEL_NAME + "." + EXTENSION);
+            BufferedImage levelImage = ImageIO.read(levelFile);
+            CastleCoordinates coordinates = getCoordinates(levelImage);
+            levelImage.setRGB(coordinates.castle1X, coordinates.castle1Y, TRANSPARENT_COLOR.getRGB());
+            levelImage.setRGB(coordinates.castle2X, coordinates.castle2Y, TRANSPARENT_COLOR.getRGB());
 
-            LevelData levelData;
-            File castle1File = new File("src/main/resources/" + imageFolder + "/" + castle1Name + extension);
-            File castle2File = new File("src/main/resources/" + imageFolder + "/" + castle2Name + extension);
-            CastleData castle1Data = parseImage(castle1File, castle1Name, coordinates.castle1X, coordinates.castle1Y);
-            CastleData castle2Data = parseImage(castle2File, castle2Name, coordinates.castle2X, coordinates.castle2Y);
-            CastleData groundData = parseImage(levelFile, castle2Name, coordinates.castle2X, coordinates.castle2Y);
-            levelData = new LevelData(coordinates.levelWidth, coordinates.levelHeight, castle1Data, castle2Data, groundData, imageFolder);
+            File castle1File = new File("src/main/resources/" + imageFolder + "/" + CASTLE_1_NAME + "." + EXTENSION);
+            BufferedImage castle1Image = ImageIO.read(castle1File);
+            File castle2File = new File("src/main/resources/" + imageFolder + "/" + CASTLE_2_NAME + "." + EXTENSION);
+            BufferedImage castle2Image = ImageIO.read(castle2File);
 
-            String jsonString = gson.toJson(levelData);
+            Level.Castle castle1 = new Level.Castle(castle1Image.getWidth(), castle1Image.getHeight(), coordinates.castle1X, coordinates.castle1Y - castle1Image.getHeight() + 1);
+            Level.Castle castle2 = new Level.Castle(castle2Image.getWidth(), castle2Image.getHeight(), coordinates.castle2X, coordinates.castle2Y - castle2Image.getHeight() + 1);
+            BufferedImage merged = new BufferedImage(levelImage.getWidth(), levelImage.getHeight(), levelImage.getType());
+            Graphics2D g2 = merged.createGraphics();
+            g2.drawImage(levelImage, 0, 0, null);
+            g2.drawImage(castle1Image, castle1.getX(), castle1.getY(), null);
+            g2.drawImage(castle2Image, castle2.getX(), castle2.getY(), null);
+            g2.dispose();
+
+            File levelFolder = new File(outputFolder + "/" + imageFolder);
+            FileUtils.forceMkdir(levelFolder);
+            ImageIO.write(merged, EXTENSION, new File(levelFolder.getPath() + "/" + LEVEL_NAME + "." + EXTENSION));  // ignore returned boolean
+
+            //generating pixels
+            int width = merged.getWidth();
+            int height = merged.getHeight();
+            int pixelsSkipFromTop = -1;
+            List<Level.Pixel[]> rows = new ArrayList<Level.Pixel[]>(height);
+            for (int y = 0; y < height; y++) {
+
+                Level.Pixel[] row = new Level.Pixel[width];
+                for (int x = 0; x < width; x++) {
+                    int rgb = merged.getRGB(x, y);
+                    int alpha = (rgb >> 24) & 0xFF;
+                    int red =   (rgb >> 16) & 0xFF;
+                    int green = (rgb >>  8) & 0xFF;
+                    int blue =  (rgb      ) & 0xFF;
+
+                    if (alpha != 0) {
+                        if (pixelsSkipFromTop == -1) {
+                            pixelsSkipFromTop = y + 1;
+                        }
+                        int[] rgba = {red, green, blue, alpha};
+                        Level.Pixel pixel = new Level.Pixel(rgba, 4);
+                        row[x] = pixel;
+                    } else {
+                        row[x] = null; //to be sure ))
+                    }
+                }
+                if (pixelsSkipFromTop != -1) {
+                    rows.add(row);
+                } else {
+                    rows.add(null);
+                }
+            }
+
+            Level.Pixel[][] pixels = rows.toArray(new Level.Pixel[rows.size()][]);
+
+            Level levelForJson = new Level(pixels, height, width, imageFolder, castle1, castle2, pixelsSkipFromTop);
+            String pixelsJson = gson.toJson(levelForJson);
+            FileUtils.writeStringToFile(new File(outputFolder + "/" + imageFolder + ".json"), pixelsJson);
+
+
+
+
+/*            String jsonString = gson.toJson(levelData);
             FileUtils.writeStringToFile(new File(outputFolder + "/" + imageFolder + ".json"), jsonString);
+
+            BufferedImage image = ImageIO.read(levelFile);
+            int width = image.getWidth();
+            int height = image.getHeight();
+            int startY = -1;
+            List<Level.Pixel[]> rows = new ArrayList<Level.Pixel[]>(height);
+            for (int y = 0; y < height; y++) {
+
+                Level.Pixel[] row = new Level.Pixel[width];
+                for (int x = 0; x < width; x++) {
+                    int rgb = image.getRGB(x, y);
+                    int alpha = (rgb >> 24) & 0xFF;
+                    int red =   (rgb >> 16) & 0xFF;
+                    int green = (rgb >>  8) & 0xFF;
+                    int blue =  (rgb      ) & 0xFF;
+
+                    if (alpha != 0) {
+                        if (startY == -1) {
+                            startY = y + 1;
+                        }
+                        int[] rgba = {red, green, blue, alpha};
+                        Level.Pixel pixel = new Level.Pixel(rgba, 4);
+                        row[x] = pixel;
+                    } else {
+                        row[x] = null; //to be sure ))
+                    }
+                }
+                if (startY != -1) {
+                    rows.add(row);
+                }
+            }
+
+            Level.Pixel[][] pixels = rows.toArray(new Level.Pixel[rows.size()][]);
+
+
+            String pixelsJson = gson.toJson(pixels);
+            FileUtils.writeStringToFile(new File(outputFolder + "/test.json"), pixelsJson);*/
+
         }
     }
 
-    private static CastleCoordinates getCoordinates(File file) throws IOException {
+    private static CastleCoordinates getCoordinates(BufferedImage image) throws IOException {
         CastleCoordinates coordinates = new CastleCoordinates();
-        BufferedImage image = ImageIO.read(file); //todo catch exceptions?
         int width = image.getWidth();
         int height = image.getHeight();
         for (int x = 0; x < width; x++) {
