@@ -198,8 +198,9 @@ function EarthViewController:calculateHit(physicsPixel, hit)
                                                end
                     )
                 else
-                  local color = 255 / (4 - tmpPixel.hl) --todo: Sergey just dim existent color intead of grayscale
-                  tmpPixel.physicsPixel:setFillColor(color, color, color, 255)
+                  local  dimmer = 4 - tmpPixel.hl
+                  local r, g, b = unpack(tmpPixel.rgba)
+                  tmpPixel.physicsPixel:setFillColor(r / dimmer, g / dimmer, b / dimmer, 255)
                 end
                     
             end
