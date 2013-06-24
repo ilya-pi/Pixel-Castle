@@ -6,64 +6,98 @@ local imageHelper = require("scripts.util.Image")
 
 local spriteWidthPixels = 3
 
-local function substitutePiece(xPiece, yPiece, pieces, pixels)
-    print("substitutePiece " .. xPiece .. " " .. yPiece)
-    local piece = pieces[xPiece][yPiece]
+EarthViewController = {}
+        
+function EarthViewController:substitutePiece(xPiece, yPiece)
+    local piece = self.castlePieces[xPiece][yPiece]
     if piece ~= nil then
         local startX = (xPiece - 1) * spriteWidthPixels + 1
         local startY = (yPiece - 1) * spriteWidthPixels + 1
 
-        --print("start: " .. startX + spriteWidthPixels .. "," .. startY + spriteWidthPixels)
-
         for y = startY, startY + spriteWidthPixels - 1 do
             for x = startX, startX + spriteWidthPixels - 1 do
-                if pixels[y] ~= nil and pixels[y][x] ~= nil then
-                    local pixelData = pixels[y][x]
+                if self.level.pixels[y] ~= nil and self.level.pixels[y][x] ~= nil then
+                    local pixelData = self.level.pixels[y][x]
                     if (pixelData[4] ~= 0) then
                         local left = piece.absoluteX + (x - startX) * game.pixel
                         local top = piece.absoluteY + (y - startY) * game.pixel
-                        local pixel = display.newRect(left, top, game.pixel, game.pixel)
-                        pixel.strokeWidth = 0
-                        pixel:setFillColor(pixelData.rgba[1], pixelData.rgba[2], pixelData.rgba[3], pixelData.rgba[4])
-                        --pixel:setStrokeColor(pixelData.rgba[1], pixelData.rgba[2], pixelData.rgba[3], pixelData.rgba[4])
-                        pixel.myName = "brick"
-                        game.world:insert(pixel)
-                        Memmory.trackPhys(pixel); physics.addBody(pixel, "static")
-                        pixels[y][x].physicsPixel = pixel
-                        pixels[y][x].hl = 3
+                        local myPixel = display.newRect(left, top, game.pixel, game.pixel)
+                        myPixel.strokeWidth = 0
+                        myPixel:setFillColor(pixelData.rgba[1], pixelData.rgba[2], pixelData.rgba[3], pixelData.rgba[4])
+                        --myPixel:setStrokeColor(pixelData.rgba[1], pixelData.rgba[2], pixelData.rgba[3], pixelData.rgba[4])
+                        myPixel.myName = "brick"
+                        myPixel.pX = x
+                        myPixel.pY = y
+                        game.world:insert(myPixel)
+                        Memmory.trackPhys(myPixel); timer.performWithDelay(1, function() physics.addBody(myPixel, "static") end)
+                        self.level.pixels[y][x].physicsPixel = myPixel
+                        self.level.pixels[y][x].hl = 3
                     end
                 end
             end
         end
-
-        if not piece.empty then
-            piece:removeSelf()
-        end
-        pieces[xPiece][yPiece] = nil
+        
+        piece:removeSelf()
+        self.castlePieces[xPiece][yPiece] = nil
     end
 end
 
-EarthViewController = {}
+function EarthViewController:checkPixels(startX, endX, startY, endY, substitueAll) 
+    if startX < self.minX then startX = self.minX end
+    if endX > self.maxX then endX = self.maxX end
+    if startY < self.minY then startY = self.minY end
+    if endY > self.maxY then endY = self.maxY end
+    
+    for y=startY, endY do
+        for x=startX, endX do
+            
+            if self.level.pixels[y][x] ~= nil and self.level.pixels[y][x].hl == 4 then
+                if substitueAll then
+                    local xPiece = math.floor((x - 1) / spriteWidthPixels) + 1
+                    local yPiece = math.floor((y - 1) / spriteWidthPixels) + 1
+                    self:substitutePiece(xPiece, yPiece)
+                else
+                    for yInternal=y-1, y+1 do
+                        for xInternal=x-1, x+1 do
+                            if (yInternal < startY or yInternal > endY or
+                                xInternal < startX or xInternal > endX) then
+                                --do nothing
+                            else
+                                if (self.level.pixels[yInternal] == nil or self.level.pixels[yInternal][xInternal] == nil) then
+                                    local xPiece = math.floor((x - 1) / spriteWidthPixels) + 1
+                                    local yPiece = math.floor((y - 1) / spriteWidthPixels) + 1
+                                    self:substitutePiece(xPiece, yPiece)
+                                    break
+                                end
+                            end
+
+                        end
+                    end
+                end
+
+            end
+
+        end
+    end
+end
 
 -- Constructor
-function EarthViewController:new (o)
+function EarthViewController:new(o)
 	o = o or {castleCount = 1}   -- create object if user does not provide one
 	setmetatable(o, self)
 	self.__index = self
+        
+        o.level = game.level_map
+        o.minX = 1 
+        o.maxX = o.level.levelWidth
+        o.minY = o.level.pixelsSkipFromTop 
+        o.maxY = o.level.levelHeight
 	return o
 end
 
 -- physics — physics object to attach to
 -- world - display group for the whole scene
 function EarthViewController:render(physics)
---[[    imageHelper.ourImage("images/levels/" .. game.level_map.levelName .. "/level.png",
-        game.level_map.levelWidth * game.pixel, 
-        game.level_map.levelHeight * game.pixel,
-        game.world)]]
-
-
-
-    self.level = game.level_map
 
     self.leftX = 0
     self.topY = 0
@@ -83,9 +117,9 @@ function EarthViewController:render(physics)
     local imageSheet = graphics.newImageSheet( levelFilename, options )
     
     local startYpiece = math.floor(self.level.pixelsSkipFromTop / spriteWidthPixels)
-    local castlePieces = {}
+    self.castlePieces = {}
     for pieceX = 1, columnsNumber do
-        castlePieces[pieceX] = {}
+        self.castlePieces[pieceX] = {}
         for pieceY = startYpiece, rowsNumber do
             local pieceNumber = (pieceY - 1) * columnsNumber + pieceX
             local emptyBlock = true
@@ -108,7 +142,7 @@ function EarthViewController:render(physics)
             local castlePiece
             if not emptyBlock then
                 castlePiece = imageHelper.ourImageSheet(imageSheet, pieceNumber, spriteWidth, spriteWidth, game.world)
-                Memmory.trackPhys(castlePiece); physics.addBody(castlePiece, "static")
+                --Memmory.trackPhys(castlePiece); physics.addBody(castlePiece, "static")
             else
                 castlePiece = {empty = true}
             end
@@ -120,86 +154,57 @@ function EarthViewController:render(physics)
             castlePiece.yPart = pieceY
             castlePiece.absoluteX = left
             castlePiece.absoluteY = top
-            castlePieces[pieceX][pieceY] = castlePiece
-            --            print(pieceX .. "," .. pieceY)
+            self.castlePieces[pieceX][pieceY] = castlePiece
         end
 
     end
 
---    local physicalPixels = {}
---    for x=1, level.width do
---        physicalPixels[x] = {}
---        for y=1, level.height do
---            physicalPixels[x][y] = {}
---            physicalPixels[x][y].xPiece = math.floor( math(x - 1) / spriteWidthPixels) + 1
---            physicalPixels[x][y].yPiece = math.floor( (y - 1) / spriteWidthPixels) + 1
---            physicalPixels[x][y].r, physicalPixels[x][y].g, physicalPixels[x][y].b, physicalPixels[x][y].a = imageHelper.pixel(x - 1, y - 1, level)
---            physicalPixels[x][y].value = 0 --no pixel by default
---            if (physicalPixels[x][y].a ~= 0) then
---                physicalPixels[x][y].value = 4
---            end
---        end
---    end
+    self:checkPixels(1, self.level.levelWidth, self.level.pixelsSkipFromTop, self.level.levelHeight, false)
     
---    for y=1, self.level.levelHeight do
---        if self.level.pixels[y] ~= nil then
---            for x=1, self.level.levelWidth do
---                self.level.pixels[y][x].xPiece 
---            end
+    --self:substitutePiece(26, 95)
+--        local piece = self.castlePieces[26][95]
+--        if piece ~= nil then 
+--            piece:removeSelf()
 --        end
---    end
-    --printTable(physicalPixels)
-    
---    for y=1, self.level.levelHeight do
---        
---        if self.level.pixels[y] == nil then
---            print("empty row")
---        else
---            local myRow = ""
---            for x=1, self.level.levelWidth do
---                if self.level.pixels[y][x] ~= nil then
---                    myRow = myRow .. " " .. self.level.pixels[y][x].hl
---                else
---                    myRow = myRow .. " 0"
---                end
---            end
---            print(myRow)
---        end
---            
---    end
         
-                
-    
-
-    for y=self.level.pixelsSkipFromTop, self.level.levelHeight do
-        for x=1, self.level.levelWidth do
-            if self.level.pixels[y][x] ~= nil and self.level.pixels[y][x].hl == 4 then
-
-                for yInternal=y-1, y+1 do
-                    for xInternal=x-1, x+1 do
-                        if (yInternal < self.level.pixelsSkipFromTop or yInternal > self.level.levelHeight or
-                                xInternal < 1 or xInternal > self.level.levelWidth) then
-                                --do nothing
-                        else
-                            if (self.level.pixels[yInternal] == nil or self.level.pixels[yInternal][xInternal] == nil) then
-                                local xPiece = math.floor((x - 1) / spriteWidthPixels) + 1
-                                local yPiece = math.floor((y - 1) / spriteWidthPixels) + 1
-                                substitutePiece(xPiece, yPiece, castlePieces, self.level.pixels)
-                                break
-                            end
-                        end
-
-                    end
-                end
-
-            end
-                
-        end
-    end
 
     game.castle1 = castle_module.CastleViewController:new{castleData = self.level.castle1, location = "left"}
     game.castle1:render(physics, game.world, game, game.level_map.castle1.x, game.level_map.castle1.y)
 
     game.castle2 = castle_module.CastleViewController:new{castleData = self.level.castle2, location = "right"}
     game.castle2:render(physics, game.world, game)
+end
+
+function EarthViewController:calculateHit(physicsPixel, hit) 
+    print("bullet size " .. #hit)
+    local x = physicsPixel.pX
+    local y = physicsPixel.pY
+    local dx = (#hit - 1) / 2
+    --local dx = 10
+    self:checkPixels(x - dx, x + dx, y - dx, y + dx, true)
+    for hitX=-dx, dx do
+        for hitY=-dx, dx do
+            local pixelY = hitY + y
+            local pixelX = hitX + x
+            local power = hit[hitX + dx + 1][hitY + dx + 1]
+            if self.level.pixels[pixelY] ~= nil and self.level.pixels[pixelY][pixelX] ~= nil and power > 0 then
+                local tmpPixel = self.level.pixels[pixelY][pixelX]
+                tmpPixel.hl = tmpPixel.hl - power
+                if tmpPixel.hl <= 0 then
+                --if power > 0 then
+                    timer.performWithDelay(10, function() 
+                                                    tmpPixel.physicsPixel:removeSelf()
+                                                    self.level.pixels[pixelY][pixelX] = nil
+                                               end
+                    )
+                else
+                  local color = 255 / (4 - tmpPixel.hl) --todo: Sergey just dim existent color intead of grayscale
+                  tmpPixel.physicsPixel:setFillColor(color, color, color, 255)
+                end
+                    
+            end
+        end
+    end
+    
+    self:checkPixels(x - dx - 2, x + dx + 2, y - dx - 2, y + dx + 2, false)
 end

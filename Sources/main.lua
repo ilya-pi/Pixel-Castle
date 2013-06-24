@@ -225,14 +225,14 @@ local function startGame()
 
     --todo pre-step P1
 
-    local skyObj = sky_module.SkyViewController:new()
-    skyObj:render(game.sky)
+    game.skyObj = sky_module.SkyViewController:new()
+    game.skyObj:render(game.sky)
 
-    local backgroundObj = background_module.Background:new()
-    backgroundObj:render(game.background)
+    game.backgroundObj = background_module.Background:new()
+    game.backgroundObj:render(game.background)
 
-    local earth = earth_module.EarthViewController:new()
-    earth:render(physics)
+    game.earth = earth_module.EarthViewController:new()
+    game.earth:render(physics)
 
     game.wind = wind_module.Wind:new({ x = 1, y = 1, game = game.game })
     game.wind:update()
