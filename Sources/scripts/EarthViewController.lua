@@ -168,10 +168,10 @@ function EarthViewController:render(physics)
 --        end
         
 
-    game.castle1 = castle_module.CastleViewController:new{castleData = self.level.castle1, location = "left"}
+    game.castle1 = castle_module.CastleViewController:new{castleData = self.level.castle1, location = "left", pixels = self.level.pixels}
     game.castle1:render(physics, game.world, game, game.level_map.castle1.x, game.level_map.castle1.y)
 
-    game.castle2 = castle_module.CastleViewController:new{castleData = self.level.castle2, location = "right"}
+    game.castle2 = castle_module.CastleViewController:new{castleData = self.level.castle2, location = "right", pixels = self.level.pixels}
     game.castle2:render(physics, game.world, game)
 end
 
@@ -193,6 +193,7 @@ function EarthViewController:calculateHit(physicsPixel, hit)
                 if tmpPixel.hl <= 0 then
                 --if power > 0 then
                     timer.performWithDelay(10, function() 
+                                                    tmpPixel.physicsPixel.state = "removed"
                                                     tmpPixel.physicsPixel:removeSelf()
                                                     self.level.pixels[pixelY][pixelX] = nil
                                                end

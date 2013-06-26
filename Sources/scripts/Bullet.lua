@@ -69,6 +69,7 @@ function Bullet:fireBullet(x, y, dx, dy)
     game.world:insert(self.bullet)
     Memmory.trackPhys(self.bullet); physics.addBody(self.bullet, { density = 100, friction = 0, bounce = 0})
     self.bullet.isBullet = true
+    self.bullet.isFixedRotation = true
     self.bullet.collision = onCollision
     self.bullet:addEventListener("collision", self.bullet)
 

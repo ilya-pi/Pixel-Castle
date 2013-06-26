@@ -120,20 +120,24 @@ function CastleViewController:showBubble(game, message)
 end
 
 function CastleViewController:health()
-	-- to let the castles die right away, return 5 health points
-	-- return 5
-	local score = 0
-	for i, v in ipairs(self.bricks) do
-		if (v ~= nil) then
-			if (v.state == "removed") then
-				self.events:keep({action = "hit"})
-				table.remove(self.bricks, i)
-			else
-				score = score + 1
-			end
-		end
-	end
-	return score
+    -- to let the castles die right away, return 5 health points
+    -- return 5
+    local score = 0
+    for y = self.castleData.y, self.castleData.y + self.castleData.height do
+        for x = self.castleData.x, self.castleData.x + self.castleData.width do
+            if self.pixels[y] ~= nil and self.pixels[y][x] ~= nil then
+                if self.pixels[y][x].hl == 4 then
+                    score = score + 3
+                elseif self.pixels[y][x].hl < 0 then
+                    --do nothing
+                else
+                    score = score + self.pixels[y][x].hl
+                end
+            end
+        end
+    end
+
+    return score
 end
 
 function CastleViewController:healthPercent()
