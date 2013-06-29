@@ -137,6 +137,10 @@ end
 
 -- Camera follows bolder automatically
 function Camera:moveCamera()
+    if game.state.name == "PAUSEMENU" then
+        return
+    end
+
     --todo: a lot of possible optimisations here for ex. do not call calculateX,Y three times per call
     --todo: get castle as a parameter
 	if (game.cameraState == "CASTLE1_FOCUS") then
