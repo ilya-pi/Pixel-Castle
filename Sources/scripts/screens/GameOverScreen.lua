@@ -2,6 +2,7 @@ module(..., package.seeall)
 
 local widget = require("widget")
 local imageHelper = require("scripts.util.Image")
+local customUI = require("scripts.util.CustomUI")
 
 GameOverScreen = {} -- required arg: game
 
@@ -28,7 +29,7 @@ local function infoText(message, x, y, size, group)
     text.text = message
 end
 
-function GameOverScreen:render()
+function GameOverScreen:renderVs()
     self.displayGroup = display.newGroup()
 
     local width = display.contentWidth + 2 * display.screenOriginX
@@ -66,7 +67,7 @@ function GameOverScreen:render()
         messageText.text = "Wins!"
         playerTextShadow.text = "Player 1"
         playerText.text = "Player 1"
-        self.game.db:levelComplete(self.game.selectedLevel, 1) --todo: think about screen
+        -- self.game.db:levelComplete(self.game.selectedLevel, 1) --todo: think about screen
     else
         messageTextShadow.text = "Wins!"
         messageText.text = "Wins!"
@@ -133,6 +134,118 @@ function GameOverScreen:render()
 
     infoText( (100 - self.game.castle1:healthPercent()) .. "% destroyed", width / 6, height / 2 + 65, 21, self.displayGroup)
     infoText( (100 - self.game.castle2:healthPercent()) .. "% destroyed", 5 * display.contentWidth / 6, height / 2 + 65, 21, self.displayGroup)    
+end
+
+function GameOverScreen:renderCampaign()
+    if self.game.castle2:isDestroyed(self.game) then
+
+        self.game.db:levelComplete(self.game.selectedLevel, 1)
+
+        self.displayGroup = display.newGroup()
+        local width = display.contentWidth + 2 * display.screenOriginX
+        local height = display.contentHeight + 2 * display.screenOriginY
+        
+        local overlay = display.newRect(display.screenOriginX, display.screenOriginY, display.contentWidth - 2 * display.screenOriginX, display.contentHeight - 2 * display.screenOriginY)
+        self.displayGroup:insert(overlay)
+        overlay:setFillColor(195, 214, 93, 100)
+
+        local star = display.newImageRect("images/winner.png", 380, 380)
+        self.displayGroup:insert(star)
+        star:setReferencePoint(display.CenterReferencePoint)
+        star.x, star.y = display.contentWidth / 2, display.contentHeight / 2
+
+        customUI.text2("LEVEL CLEAR!", display.contentWidth / 2, display.contentHeight / 2, 32, self.displayGroup)
+
+        local selectBtn = widget.newButton{
+            id = "selectbtn",
+            label = "Level select",
+            font = "TrebuchetMS-Bold",
+            fontSize = 24,
+            width = 150, height = 40,
+            defaultFile = "images/button.png",
+            overFile = "images/button.png",
+            labelColor = { default = { 255 }, over = { 0 } },
+            onRelease = function(event)
+                self.game:goto("MAINMENU")
+                self.game:goto("PLAYMENU")
+                self.game:goto("LEVELSELECT")
+                return true
+            end
+        }
+        self.displayGroup:insert(selectBtn)
+        selectBtn.x, selectBtn.y = 160, 280
+
+        local nextBtn = widget.newButton{
+            id = "nextbtn",
+            label = "Next level",
+            font = "TrebuchetMS-Bold",
+            fontSize = 24,
+            width = 150, height = 40,
+            defaultFile = "images/button.png",
+            overFile = "images/button.png",
+            labelColor = { default = { 255 }, over = { 0 } },
+            onRelease = function(event)
+                if self.game.selectedLevel == 6 then
+                    self.game:goto("MAINMENU")
+                    self.game:goto("OPTIONS")
+                    self.game:goto("CREDITS")
+                else
+                    self.game.selectedLevel = self.game.selectedLevel + 1
+                    self.game:goto("P1")                    
+                end
+                return true
+            end
+        }
+        self.displayGroup:insert(nextBtn)
+        nextBtn.x, nextBtn.y = 320, 280
+
+    else
+        self.displayGroup = display.newGroup()
+        local width = display.contentWidth + 2 * display.screenOriginX
+        local height = display.contentHeight + 2 * display.screenOriginY
+        
+        local overlay = display.newRect(display.screenOriginX, display.screenOriginY, display.contentWidth - 2 * display.screenOriginX, display.contentHeight - 2 * display.screenOriginY)
+        self.displayGroup:insert(overlay)
+        overlay:setFillColor(227, 100, 146, 150)
+
+        customUI.text("You lose!", display.contentWidth / 2, display.contentHeight / 2, 32, self.displayGroup)
+
+        local selectBtn = widget.newButton{
+            id = "selectbtn",
+            label = "Level select",
+            font = "TrebuchetMS-Bold",
+            fontSize = 24,
+            width = 150, height = 40,
+            defaultFile = "images/button.png",
+            overFile = "images/button.png",
+            labelColor = { default = { 255 }, over = { 0 } },
+            onRelease = function(event)
+                self.game:goto("MAINMENU")
+                self.game:goto("PLAYMENU")
+                self.game:goto("LEVELSELECT")
+                return true
+            end
+        }
+        self.displayGroup:insert(selectBtn)
+        selectBtn.x, selectBtn.y = 160, 280
+
+        local tryBtn = widget.newButton{
+            id = "trybtn",
+            label = "Try again",
+            font = "TrebuchetMS-Bold",
+            fontSize = 24,
+            width = 150, height = 40,
+            defaultFile = "images/button.png",
+            overFile = "images/button.png",
+            labelColor = { default = { 255 }, over = { 0 } },
+            onRelease = function(event)
+                self.game:goto("P1")
+                return true
+            end
+        }
+        self.displayGroup:insert(tryBtn)
+        tryBtn.x, tryBtn.y = 320, 280     
+    end
 end
 
 function GameOverScreen:dismiss()

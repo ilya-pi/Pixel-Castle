@@ -142,7 +142,7 @@ function EarthViewController:render(physics)
             local castlePiece
             if not emptyBlock then
                 castlePiece = imageHelper.ourImageSheet(imageSheet, pieceNumber, spriteWidth, spriteWidth, game.world)
-                --Memmory.trackPhys(castlePiece); physics.addBody(castlePiece, "static")
+                -- Memmory.trackPhys(castlePiece); physics.addBody(castlePiece, "static")
             else
                 castlePiece = {empty = true}
             end
