@@ -31,11 +31,11 @@ function Camera:new (o)
 	o.name = "camera"
 
     o.ratio = initialRatio
-    local minScaleFactor = game.levelConfig.screens[1].levels[game.selectedLevel].minScaleFactor
+    local minScaleFactor = tonumber(game.levelConfig.screens[1].levels[game.selectedLevel].minScaleFactor)
     if minScaleFactor == -1 then
         o.minRatio = screenWidth / (game.levelWidth * game.pixel)
     else 
-        o.minRation = minScaleFactor
+        o.minRatio = minScaleFactor
     end
     --o.minRatio = 0.5
 
@@ -78,7 +78,7 @@ end
 
 local function calculateTouchY(desiredY, ratio)
     -- local topBorder = -(game.levelHeight * game.pixel * ratio - screenHeight - display.screenOriginY)
-    -- return topBorder, topBorder, topBorder
+--     return topBorder, topBorder, topBorder
     if (desiredY >= display.screenOriginY) then
         return display.screenOriginY, display.screenOriginY, display.screenOriginY
     else
