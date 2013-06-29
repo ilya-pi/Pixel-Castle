@@ -14,7 +14,7 @@ display.setDefault("minTextureFilter", "nearest")
 
 screenHeight = display.contentHeight - 2 * display.screenOriginY
 screenWidth = display.contentWidth - 2 * display.screenOriginX
---physics.setDrawMode( "hybrid" )
+-- physics.setDrawMode( "hybrid" )
 
 local Memmory = require("scripts.util.Memmory")
 local imageHelper = require("scripts.util.Image")
@@ -70,10 +70,13 @@ local function gameLoop()
             game.cameraState = "CASTLE2_FOCUS"
             game:goto("P2")
         end
-    elseif (game.state.name == "P2") then
-        -- todo implement proper AI here
-        game:goto("BULLET2")
-        -- game.controls2:render()
+    elseif (game.state.name == "P2") then        
+        if game.mode == "versus" then            
+            game.controls2:render()            
+        else -- "campaign"
+            -- todo implement proper AI here
+            game:goto("BULLET2")
+        end
     elseif (game.state.name == "MOVE_TO_P1") then
         if game.castle1.events:missed() then
             game.castle1:showBubble(game, "missed!")
@@ -275,12 +278,19 @@ end
 local function restartGame()
     gameOverScreen:dismiss()
     cleanup()
+    game.cameraState = "CASTLE1_FOCUS"
     startGame()
+    pauseMenuOverlay:renderButton()
+    game.controls1:show()
 end    
 
 local function gameOver()
     pauseMenuOverlay:dismissButton()
-    gameOverScreen:render()
+    if game.mode == "versus" then
+        gameOverScreen:renderVs()
+    else
+        gameOverScreen:renderCampaign()
+    end
 end
 
 local function mainMenu()
@@ -327,12 +337,22 @@ local function startGameFromTutorial()
     game.controls1:show()
 end
 
-local function startStoryGameFromLevelSelect()
+local function startCommonGame()
     game.cameraState = "CASTLE1_FOCUS"
     mainMenuScreen:dismiss()
     startGame()
     pauseMenuOverlay:renderButton()
     game.controls1:show()
+end
+
+local function startStoryGameFromLevelSelect()
+    game.mode = "campaign"
+    startCommonGame()
+end
+
+local function startVsGameFromLevelSelect()
+    game.mode = "versus"
+    startCommonGame()
 end
 
 local function playMenu()
@@ -347,6 +367,11 @@ end
 
 local function levelSelectFromPlayMenu()
     mainMenuScreen:hidePlayMenu()
+    mainMenuScreen:showLevelSelect()
+end
+
+local function levelSelectFromGameover()
+    -- mainMenuScreen:hidePlayMenu()
     mainMenuScreen:showLevelSelect()
 end
 
@@ -385,7 +410,8 @@ local function init()
     game:addState({ name = "OPTIONS", transitions = {MAINMENU = mainMenuFromOptions, CREDITS = credits}})
     game:addState({ name = "CREDITS", transitions = {OPTIONS = optionsFromCredits}})
 
-    game:addState({ name = "PLAYMENU", transitions = {LEVELSELECT = levelSelectFromPlayMenu, MAINMENU = mainMenuFromPlayMenu, P1 = startStoryGameFromLevelSelect} })
+    game:addState({ name = "PLAYMENU", transitions = {LEVELSELECT = levelSelectFromPlayMenu, MAINMENU = mainMenuFromPlayMenu, P1 = startVsGameFromLevelSelect} })
+
     game:addState({ name = "LEVELSELECT", transitions = {P1 = startStoryGameFromLevelSelect, TUTORIAL = tutorial, PLAYMENU = playMenuFromLevelSelect} })
     game:addState({ name = "TUTORIAL", transitions = {P1 = startGameFromTutorial} })
 

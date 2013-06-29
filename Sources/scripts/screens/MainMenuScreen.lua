@@ -6,15 +6,7 @@ local Memmory = require("scripts.util.Memmory")
 local imageHelper = require("scripts.util.Image")
 local customUI = require("scripts.util.CustomUI")
 
---[[
-local CustomUI = require("scripts.util.CustomUI")
-CustomUI.checkbox(100, 100, "test", function(event)
-    local switch = event.target
-    print( switch.id, "is on?:", switch.isOn )
-    end)
-]]
-
-MainMenuScreen = {} -- required arg: game
+MainMenuScreen = {}
 
 -- Constructor
 function MainMenuScreen:new (o)

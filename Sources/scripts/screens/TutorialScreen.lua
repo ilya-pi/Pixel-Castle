@@ -38,23 +38,7 @@ function TutorialScreen:render()
     self.alphaRect:setReferencePoint(display.CenterReferencePoint)
     self.alphaRect:setFillColor(0, 0, 0, 255)
     self.alphaRect.alpha, self.alphaRect.x, self.alphaRect.y = 0.6, display.contentWidth / 2, display.contentHeight / 2
-    -- self.alphaRect:addEventListener("touch",
-    --     function(event)
-    --         if event.phase == "ended" and self.finisheTutorial then
-    --             self.game:goto("P1")
-    --         end
-    --         return true
-    --     end
-    -- )
     self.tutorialGroup:insert(self.alphaRect)
-
-    -- self.controlAndHand = display.newImageRect("images/tutorial_hand.png", 120, 120)
-    -- self.controlAndHand:setReferencePoint(display.CenterReferencePoint)
-    -- self.controlAndHand.x = display.contentWidth / 2
-    -- self.controlAndHand.y = display.contentHeight / 2 + 50
-    -- self.tutorialGroup:insert(self.controlAndHand)
-
-    -- customUI.text("Drag to adjust the firing angle!", display.contentWidth / 2, display.contentHeight / 2 - 50, 28, self.tutorialGroup)
 
     local step1 = display.newGroup()    
     self.tutorialGroup:insert(step1)

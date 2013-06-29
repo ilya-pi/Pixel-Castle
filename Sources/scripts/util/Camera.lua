@@ -72,9 +72,8 @@ local function calculateTouchX(desiredX, ratio)
 end
 
 local function calculateTouchY(desiredY, ratio)
-    local topBorder = -(game.levelHeight * game.pixel * ratio - screenHeight - display.screenOriginY)
-    return topBorder, topBorder, topBorder
---[[
+    -- local topBorder = -(game.levelHeight * game.pixel * ratio - screenHeight - display.screenOriginY)
+    -- return topBorder, topBorder, topBorder
     if (desiredY >= display.screenOriginY) then
         return display.screenOriginY, display.screenOriginY, display.screenOriginY
     else
@@ -84,7 +83,6 @@ local function calculateTouchY(desiredY, ratio)
         end
     end
     return desiredY, desiredY, desiredY
-]]
 end
 
 function Camera:touch(event)
