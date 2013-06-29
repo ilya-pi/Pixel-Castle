@@ -1,6 +1,5 @@
 module(..., package.seeall)
 
-local levelConfig = require("scripts.levels.levelConfig")
 require("sqlite3")
 
 DbWrapper = {}
@@ -31,8 +30,8 @@ local function init()
     end
 
     if levelsCount == 0 then
-        for screenNumber = 1, #levelConfig.screens do
-            local levels = levelConfig.screens[screenNumber].levels
+        for screenNumber = 1, #game.levelConfig.screens do
+            local levels = game.levelConfig.screens[screenNumber].levels
             for levelNumber = 1, #levels do
                 local addLevel = [[INSERT INTO levels VALUES (NULL, ]] .. levelNumber .. [[, ]] .. screenNumber .. [[, 0, 'locked');]]
                 db:exec(addLevel)

@@ -33,11 +33,11 @@ local mainmenu_module = require("scripts.screens.MainMenuScreen")
 local pausemenu_module = require("scripts.screens.PauseMenuOverlay")
 local tutorial_module = require("scripts.screens.TutorialScreen")
 
-local levelConfig = require("scripts.levels.levelConfig")
 local dbWrapper = require("scripts.db.DbWrapper")
 
 game = game_module.GameModel:new()
 
+game.levelConfig = require("scripts.levels.levelConfig")
 local mainMenuScreen = mainmenu_module.MainMenuScreen:new({game = game})
 local gameOverScreen = gameover_module.GameOverScreen:new({game = game})
 local tutorialScreen = tutorial_module.TutorialScreen:new({game = game})
@@ -220,7 +220,7 @@ local function startGame()
     game.world.distanceRatio = 1.0
 
     -- Loading game resources
-    local levelFileName = levelConfig.screens[1].levels[game.selectedLevel].file
+    local levelFileName = game.levelConfig.screens[1].levels[game.selectedLevel].file
     game.level_map = imageHelper.loadImageData("data/" .. levelFileName);
 
     --todo pre-step P1

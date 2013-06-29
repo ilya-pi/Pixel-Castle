@@ -146,9 +146,9 @@ end
 
 function CastleViewController:cannonX()
     if (self.location == "left") then
-	    return self.rightX + 1
+	    return self.rightX + 2 * game.pixel
     else
-        return self.leftX - 1
+        return self.leftX - 3 * game.pixel
     end
 end
 

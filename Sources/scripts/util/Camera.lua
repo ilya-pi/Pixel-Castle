@@ -31,8 +31,13 @@ function Camera:new (o)
 	o.name = "camera"
 
     o.ratio = initialRatio
-    --o.minRatio = screenWidth / (game.levelWidth * game.pixel)
-    o.minRatio = 0.5
+    local minScaleFactor = game.levelConfig.screens[1].levels[game.selectedLevel].minScaleFactor
+    if minScaleFactor == -1 then
+        o.minRatio = screenWidth / (game.levelWidth * game.pixel)
+    else 
+        o.minRation = minScaleFactor
+    end
+    --o.minRatio = 0.5
 
     game.sky.x = display.screenOriginX
     game.sky.y = -(game.levelHeight * game.pixel - screenHeight) + display.screenOriginY

@@ -73,7 +73,7 @@ function Bullet:fireBullet(x, y, dx, dy)
     self.bullet.collision = onCollision
     self.bullet:addEventListener("collision", self.bullet)
 
-    local force = 7650
+    local force = game.levelConfig.screens[1].levels[game.selectedLevel].bulletImpulse
     self.bullet:applyForce(dx * force, -dy * force, x, y)
 end
 
