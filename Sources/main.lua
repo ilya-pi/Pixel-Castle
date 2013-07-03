@@ -109,8 +109,8 @@ local function eventPlayer1Fire()
                 game.bullet = bullet_module.Bullet:new({game = game})
                 game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls1:getAngle())), impulse * math.cos(math.rad(game.controls1:getAngle())))
                 game.cameraState = "CANNONBALL_FOCUS"
-            end, {r = 255, g = 0, b = 0})
-        end, {r = 255, g = 255, b = 0})
+            end)
+        end)
     end)
 end
 

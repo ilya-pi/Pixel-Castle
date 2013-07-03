@@ -201,7 +201,8 @@ function EarthViewController:calculateHit(physicsPixel, hit)
                 else
                   local  dimmer = 4 - tmpPixel.hl
                   local r, g, b = unpack(tmpPixel.rgba)
-                  tmpPixel.physicsPixel:setFillColor(r / dimmer, g / dimmer, b / dimmer, 255)
+                  -- tmpPixel.physicsPixel:setFillColor(r / dimmer, g / dimmer, b / dimmer, 255)
+                  tmpPixel.physicsPixel:setFillColor(53, 93, 34, 255)
                 end
                     
             end

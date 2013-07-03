@@ -12,6 +12,20 @@ local hit = {
     {0,0,1,1,1,0,0},
 }
 
+-- local hit = {
+--     {0,0,1,1,1,0,0,1},
+--     {0,1,2,3,2,1,0,1},
+--     {1,2,3,3,3,2,1,1},
+--     {1,3,3,3,3,3,1,1},
+--     {1,2,3,3,3,2,1,1},
+--     {0,1,2,3,2,1,0,1},
+--     {0,0,1,1,1,0,0,1},
+--     {0,0,1,1,1,0,0,1},
+-- }
+
+local fireSound = audio.loadSound("sound/fire.mp3")
+local hitSound = audio.loadSound("sound/hit.mp3")
+
 Bullet = { 
             pixels = {},
          }
@@ -28,6 +42,7 @@ end
 local function onCollision(self, event)
     event.contact.isEnabled = false
     if (event.other.myName == "brick") then
+        audio.play(hitSound)
         self.bodyType = "static"
         self:removeSelf()
         --event.other:removeSelf()
@@ -62,6 +77,8 @@ local function onCollision(self, event)
     end
 
 function Bullet:fireBullet(x, y, dx, dy)
+    audio.play(fireSound)
+
     self.bullet = display.newRect(x, y, 20, 20)
     self.bullet.myName = "cannonball"
     self.bullet.strokeWidth = 0

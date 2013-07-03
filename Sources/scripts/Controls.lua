@@ -58,8 +58,8 @@ function Controls:new(o)
     o.fireButton = widget.newButton{
         width = 42,
         height = 42,
-        defaultFile = "images/button.png",
-        overFile = "images/button_over.png",
+        defaultFile = "images/fire_button.png",
+        overFile = "images/fire_button_pressed.png",
         id = "firebtn",
         label = "FIRE",
         font = "TrebuchetMS-Bold",
