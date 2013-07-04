@@ -130,8 +130,8 @@ local function eventPlayer2Fire()
 end
 
 local function eventBulletRemoved()
-    game.castle1:updateHealth(game)
-    game.castle2:updateHealth(game)
+    -- game.castle1:updateHealth(game)
+    -- game.castle2:updateHealth(game)
 end
 
 local function eventPlayer1Active()

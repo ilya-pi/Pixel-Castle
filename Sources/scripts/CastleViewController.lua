@@ -29,12 +29,12 @@ function CastleViewController:render(physics, world, game) --todo remove redunda
     self.width = self.castleData.width * game.pixel
     self.height = self.castleData.height * game.pixel
 
-    self.healthBar = display.newRect(0, 0, self.width, 3)
-    self.healthBar:setReferencePoint(display.BottomLeftReferencePoint)
-    self.healthBar.x = self.leftX
-    self.healthBar.y = self.topY - 15
-    world:insert(self.healthBar)
-    self.healthBar:setFillColor(0, 255, 0, 150)
+    -- self.healthBar = display.newRect(0, 0, self.width, 3)
+    -- self.healthBar:setReferencePoint(display.BottomLeftReferencePoint)
+    -- self.healthBar.x = self.leftX
+    -- self.healthBar.y = self.topY - 15
+    -- world:insert(self.healthBar)
+    -- self.healthBar:setFillColor(0, 255, 0, 150)
 
     print("Rendered castle with " .. self.castleData.x .. ", " .. self.castleData.y)
 end
@@ -47,24 +47,24 @@ function CastleViewController:isDestroyed(game)
 	end
 end
 
-function CastleViewController:updateHealth(game)
-	local curr = self:healthPercent()
+-- function CastleViewController:updateHealth(game)
+-- 	local curr = self:healthPercent()
 
-	local healthEstimation = (curr - game.minCastleHealthPercet ) / (100 - game.minCastleHealthPercet) * 30	
-	if healthEstimation > 20 then
-		self.healthBar:setFillColor(0, 255, 0, 150)
-	elseif healthEstimation > 10 then
-		self.healthBar:setFillColor(255, 255, 0, 150)
-	else
-		self.healthBar:setFillColor(255, 0, 0, 150)
-	end
+-- 	local healthEstimation = (curr - game.minCastleHealthPercet ) / (100 - game.minCastleHealthPercet) * 30	
+-- 	if healthEstimation > 20 then
+-- 		self.healthBar:setFillColor(0, 255, 0, 150)
+-- 	elseif healthEstimation > 10 then
+-- 		self.healthBar:setFillColor(255, 255, 0, 150)
+-- 	else
+-- 		self.healthBar:setFillColor(255, 0, 0, 150)
+-- 	end
 
-	if curr <= game.minCastleHealthPercet then
-		self.healthBar.width = 1
-	else		
-		self.healthBar.width = self.width * (curr - game.minCastleHealthPercet ) / (100 - game.minCastleHealthPercet)
-	end
-end
+-- 	if curr <= game.minCastleHealthPercet then
+-- 		self.healthBar.width = 1
+-- 	else		
+-- 		self.healthBar.width = self.width * (curr - game.minCastleHealthPercet ) / (100 - game.minCastleHealthPercet)
+-- 	end
+-- end
 
 function CastleViewController:say(message, callback, tint)
     local bubbleGroup = display.newGroup()

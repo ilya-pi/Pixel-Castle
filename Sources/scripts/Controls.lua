@@ -70,6 +70,21 @@ function Controls:new(o)
     o.fireButton.x, o.fireButton.y = (o.slidePad.width / 2 + padding + o.fireButton.width / 2) * scaleFactor, yControls
     o.group:insert(o.fireButton)
 
+    -- o.gunButton = widget.newButton{
+    --     width = 42,
+    --     height = 42,
+    --     defaultFile = "images/fire_button.png",
+    --     overFile = "images/fire_button_pressed.png",
+    --     id = "gunbtn",
+    --     label = "GUN",
+    --     font = "TrebuchetMS-Bold",
+    --     fontSize = 12,
+    --     labelColor = { default = { 255 }, over = { 0 } },
+    --     onRelease = o.onFire
+    -- }
+    -- o.gunButton.x, o.gunButton.y = (o.slidePad.width / 2 + padding + o.fireButton.width / 2) * scaleFactor, yControls - 42 - 3
+    -- o.group:insert(o.gunButton)    
+
     o.angleLine = display.newImage("images/castle_control/angle_stick.png")
     o.angleLine:scale(scaleFactor, scaleFactor)
     o.angleLine:setReferencePoint(display.BottomCenterReferencePoint);
