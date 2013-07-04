@@ -54,6 +54,7 @@ function TutorialScreen:render()
                 { angle = 45, x = display.contentWidth / 2, y = display.contentHeight / 2, container = step2,
                 onFire = function(event)
                     if event.phase == "ended" and self.finisheTutorial then
+                        self.finisheTutorial = false
                         self.game:goto("P1")
                     end
                     return true
