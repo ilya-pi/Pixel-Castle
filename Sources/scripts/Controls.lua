@@ -106,6 +106,7 @@ end
 function Controls:render()
     self:calculateCoordinates()
     self:setCoordinates()
+    self.group:toFront()
 end
 
 function Controls:hide()
