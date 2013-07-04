@@ -27,6 +27,7 @@ function CastleViewController:render(physics, world, game) --todo remove redunda
 
     self.totalHealth = self:health()
     self.width = self.castleData.width * game.pixel
+    self.height = self.castleData.height * game.pixel
 
     self.healthBar = display.newRect(0, 0, self.width, 3)
     self.healthBar:setReferencePoint(display.BottomLeftReferencePoint)
