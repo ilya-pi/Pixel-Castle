@@ -71,9 +71,9 @@ local function gameLoop()
             game:goto("P2")
         end
     elseif (game.state.name == "P2") then        
-        if game.mode == "versus" then            
+        if game.mode == "versus" then
             game.controls2:render()            
-        else -- "campaign"
+        elseif game.mode == "campaign" then
             -- todo implement proper AI here
             game:goto("BULLET2")
         end
@@ -288,7 +288,7 @@ local function gameOver()
     pauseMenuOverlay:dismissButton()
     if game.mode == "versus" then
         gameOverScreen:renderVs()
-    else
+    elseif game.mode == "campaign" then
         gameOverScreen:renderCampaign()
     end
 end
@@ -331,6 +331,7 @@ local function tutorial()
 end
 
 local function startGameFromTutorial()
+    game.mode = "campaign"
     game.cameraState = "CASTLE1_FOCUS"
     tutorialScreen:dismiss()
     pauseMenuOverlay:renderButton()
