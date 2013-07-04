@@ -147,12 +147,12 @@ function Camera:moveCamera()
         self.ratio = initialRatio
 
         if (game.castle1 ~= nil) then
-			local cannonX = -game.castle1:cannonX() * self.ratio
-			local cannonY = -game.castle1:cannonY() * self.ratio
+			local cannonX = -game.castle1:cannonX() * self.ratio + game.castle1.width + 45
+			local cannonY = -game.castle1:cannonY() * self.ratio + (display.contentHeight - game.castle1.height) - 25
 			Memmory.transitionStash.cameraWorldTransition = transition.to(game.world,
                 {
                     time = focusOnCastleTime,
-                    x = calculateTouchX(cannonX + 100, self.ratio),
+                    x = calculateTouchX(cannonX, self.ratio),
                     y = calculateTouchY(cannonY, self.ratio),
                     xScale = initialRatio,
                     yScale = initialRatio,
@@ -162,7 +162,7 @@ function Camera:moveCamera()
 			Memmory.transitionStash.cameraSkyTransition = transition.to(game.sky,
                 {
                     time = focusOnCastleTime,
-                    x = (calculateTouchX(cannonX + 100, self.ratio) - display.screenOriginX) * game.sky.distanceRatio + display.screenOriginX,
+                    x = (calculateTouchX(cannonX, self.ratio) - display.screenOriginX) * game.sky.distanceRatio + display.screenOriginX,
                     y = calculateTouchY(cannonY, self.ratio),
                     xScale = initialRatio,
                     yScale = initialRatio,
@@ -172,7 +172,7 @@ function Camera:moveCamera()
 			Memmory.transitionStash.cameraBgTransition = transition.to(game.background,
                 {
                     time = focusOnCastleTime,
-                    x = (calculateTouchX(cannonX + 100, self.ratio) - display.screenOriginX) * game.background.distanceRatio + display.screenOriginX,
+                    x = (calculateTouchX(cannonX, self.ratio) - display.screenOriginX) * game.background.distanceRatio + display.screenOriginX,
                     y = calculateTouchY(cannonY, self.ratio),
                     xScale = initialRatio,
                     yScale = initialRatio,
@@ -184,8 +184,8 @@ function Camera:moveCamera()
 	elseif (game.cameraState == "CASTLE2_FOCUS") then
         self.ratio = initialRatio
 		if (game.castle2 ~= nil) then
-			local cannonX = -game.castle2:cannonX()
-			local cannonY =  -game.castle2:cannonY()
+            local cannonX = -game.castle2:cannonX() * self.ratio + (display.contentWidth - game.castle2.width) - 45
+            local cannonY = -game.castle2:cannonY() * self.ratio + (display.contentHeight - game.castle2.height) - 25
 			Memmory.transitionStash.cameraWorldTransition = transition.to(game.world,
                 {
                     time = focusOnCastleTime,
