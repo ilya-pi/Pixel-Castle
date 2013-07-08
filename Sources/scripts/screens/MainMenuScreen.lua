@@ -36,20 +36,20 @@ function MainMenuScreen:render()
     local bgWidth = bgHeight * 128 / 40
 
     self.bg = imageHelper.ourImage("images/castle_splash.png", bgWidth, bgHeight, self.displayGroup)
+    self.bg2 = imageHelper.ourImage("images/castle_splash.png", bgWidth, bgHeight, self.displayGroup)
     self.bg.x, self.bg.y = display.screenOriginX, display.screenOriginY
+    self.bg2.x, self.bg2.y = display.screenOriginX + bgWidth, display.screenOriginY
 
-    self.bgMoveLeft = true
+    -- self.bgMoveLeft = true
     Memmory.timerStash.bgMovementTimer = timer.performWithDelay(30, function()
-        if self.bgMoveLeft then
-            self.bg.x = self.bg.x - 1
-        else
-            self.bg.x = self.bg.x + 1
-        end
+        self.bg.x = self.bg.x - 1
+        self.bg2.x = self.bg2.x - 1
 
-        if (self.bg.x < display.contentWidth - display.screenOriginX - bgWidth) then
-            self.bgMoveLeft = false
-        elseif (self.bg.x > display.screenOriginX) then
-            self.bgMoveLeft = true
+        if self.bg.x <= display.screenOriginX - bgWidth then
+            local tmp = self.bg
+            self.bg = self.bg2
+            self.bg2 = tmp
+            self.bg2.x = self.bg.x + bgWidth
         end
     end, 0)
 
