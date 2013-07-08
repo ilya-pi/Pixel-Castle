@@ -84,14 +84,17 @@ function Bullet:fireBullet(x, y, dx, dy)
     self.bullet.strokeWidth = 0
     self.bullet:setFillColor(26, 55, 37)
     game.world:insert(self.bullet)
-    Memmory.trackPhys(self.bullet); physics.addBody(self.bullet, { density = 100, friction = 0, bounce = 0})
-    self.bullet.isBullet = true
-    self.bullet.isFixedRotation = true
+    Memmory.trackPhys(self.bullet); physics.addBody(self.bullet, { density = 100, friction = 10, bounce = 10})
+
+    -- without this flag it still runs fine, and should not consume as much resources
+    -- self.bullet.isBullet = true
     self.bullet.collision = onCollision
     self.bullet:addEventListener("collision", self.bullet)
 
     local force = game.levelConfig.screens[1].levels[game.selectedLevel].bulletImpulse
-    self.bullet:applyForce(dx * force, -dy * force, x, y)
+    -- twenty downbelow is a magic number that enables to adjust rotation speed accordingly to the x velocity
+    self.bullet:applyTorque(math.floor(dx * force / 20))
+    self.bullet:applyForce(dx * force, -dy * force, self.bullet.x, self.bullet.y)
 end
 
 function Bullet:getX()
