@@ -210,8 +210,8 @@ local function startGame()
     spinner:start()
     loading:insert(spinner)
 
-    game.background.distanceRatio = 0.8
-    game.sky.distanceRatio = 0.6
+    game.background.distanceRatio = 0.6
+    game.sky.distanceRatio = 0.4
     game.world.distanceRatio = 1.0
 
     -- Loading game resources
