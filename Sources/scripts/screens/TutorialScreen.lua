@@ -42,9 +42,9 @@ function TutorialScreen:render()
 
     local step1 = display.newGroup()    
     self.tutorialGroup:insert(step1)
-    customUI.danceText("Hi!", display.contentWidth / 2, display.contentHeight / 4, 28, step1)
+    -- customUI.danceText("Hi!", display.contentWidth / 2, display.contentHeight / 4, 28, step1)
 
-    timer.performWithDelay(2000, function()
+    timer.performWithDelay(100, function()
             step1:removeSelf()
             local step2 = display.newGroup()    
             self.tutorialGroup:insert(step2)
