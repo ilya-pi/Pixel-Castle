@@ -39,16 +39,20 @@ function GameOverScreen:renderVs()
     self.displayGroup:insert(overlay)
     overlay:setFillColor(195, 214, 93, 150)
 
-    local star1 = display.newImageRect("images/winner.png", 380, 380)
-    self.displayGroup:insert(star1)
-    star1:setReferencePoint(display.CenterReferencePoint)
+    local star = display.newImageRect("images/winner.png", 380, 380)
+    self.displayGroup:insert(star)
+    star:setReferencePoint(display.CenterReferencePoint)
     if self.game.castle1:isDestroyed(self.game) and self.game.castle2:isDestroyed(self.game) then
-        star1.x, star1.y = width / 2, height / 2
+        star.x, star.y = width / 2, height / 2
     elseif self.game.castle2:isDestroyed(self.game) then
-        star1.x, star1.y = width / 6, height / 2
+        star.x, star.y = width / 6, height / 2
     else
-        star1.x, star1.y = 5 * width / 6, height / 2
+        star.x, star.y = 5 * width / 6, height / 2
     end    
+
+    self.startTimer = timer.performWithDelay(30, function()
+            star.rotation = (star.rotation + 3) % 360
+        end, -1)
 
     local playerTextShadow = display.newText( ".", display.contentWidth / 2 + 2, display.contentHeight / 4 + 2, "TrebuchetMS-Bold", 48)
     local playerText = display.newText( ".", display.contentWidth / 2, display.contentHeight / 4, "TrebuchetMS-Bold", 48)
@@ -154,6 +158,10 @@ function GameOverScreen:renderCampaign()
         star:setReferencePoint(display.CenterReferencePoint)
         star.x, star.y = display.contentWidth / 2, display.contentHeight / 2
 
+        self.startTimer = timer.performWithDelay(30, function()
+            star.rotation = (star.rotation + 3) % 360
+        end, -1)
+
         customUI.text2("LEVEL CLEAR!", display.contentWidth / 2, display.contentHeight / 2, 32, self.displayGroup)
 
         local selectBtn = widget.newButton{
@@ -249,5 +257,6 @@ function GameOverScreen:renderCampaign()
 end
 
 function GameOverScreen:dismiss()
+    timer.cancel(self.startTimer)
     self.displayGroup:removeSelf()
 end
