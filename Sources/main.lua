@@ -59,9 +59,9 @@ local function gameLoop()
             end
         end
     elseif (game.state.name == "MOVE_TO_P2") then
-        if game.castle2.events:missed() then
-            game.castle2:showBubble(game, "missed!")
-        end
+        -- if game.castle2.events:missed() then
+            -- game.castle2:say("missed!")
+        -- end
         game.castle1.events:flush()
         game.castle2.events:flush()
         if game.castle1:isDestroyed(game) or game.castle2:isDestroyed(game) then
@@ -72,15 +72,15 @@ local function gameLoop()
         end
     elseif (game.state.name == "P2") then        
         if game.mode == "versus" then
-            game.controls2:render()            
+            -- game.controls2:render()            
         elseif game.mode == "campaign" then
             -- todo implement proper AI here
             game:goto("BULLET2")
         end
     elseif (game.state.name == "MOVE_TO_P1") then
-        if game.castle1.events:missed() then
-            game.castle1:showBubble(game, "missed!")
-        end
+        -- if game.castle1.events:missed() then
+            -- game.castle1:say("missed!")
+        -- end
         game.castle1.events:flush()
         game.castle2.events:flush()
 
@@ -103,14 +103,10 @@ local function eventPlayer1Fire()
     game.controls1:hide()
     local cannonX = game.castle1:cannonX()
     local cannonY = game.castle1:cannonY()
-    game.castle1:say("Ready", function()
-        game.castle1:say("Aim", function()
-            game.castle1:say("Fire!", function()
-                game.bullet = bullet_module.Bullet:new({game = game})
-                game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls1:getAngle())), impulse * math.cos(math.rad(game.controls1:getAngle())))
-                game.cameraState = "CANNONBALL_FOCUS"
-            end)
-        end)
+    game.castle1:say("Fook ya!", function()
+        game.bullet = bullet_module.Bullet:new({game = game})
+        game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls1:getAngle())), impulse * math.cos(math.rad(game.controls1:getAngle())))
+        game.cameraState = "CANNONBALL_FOCUS"
     end)
 end
 
@@ -118,14 +114,10 @@ local function eventPlayer2Fire()
     game.controls2:hide()
     local cannonX = game.castle2:cannonX()
     local cannonY = game.castle2:cannonY()
-    game.castle1:say("Ready", function()
-        game.castle1:say("Aim", function()
-            game.castle1:say("Fire!", function()
-                game.bullet = bullet_module.Bullet:new({game = game})
-                game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls2:getAngle())), impulse * math.cos(math.rad(game.controls2:getAngle())))
-                game.cameraState = "CANNONBALL_FOCUS"
-            end, {r = 255, g = 0, b = 0})
-        end, {r = 255, g = 255, b = 0})
+    game.castle2:say("Fook ya!", function()
+        game.bullet = bullet_module.Bullet:new({game = game})
+        game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls2:getAngle())), impulse * math.cos(math.rad(game.controls2:getAngle())))
+        game.cameraState = "CANNONBALL_FOCUS"
     end)
 end
 

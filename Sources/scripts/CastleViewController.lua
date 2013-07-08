@@ -69,7 +69,7 @@ end
 function CastleViewController:say(message, callback, tint)
     local bubbleGroup = display.newGroup()
     local bubble
-    if (self.location == "left") then
+    if self.location == "left" then
         bubble = display.newImageRect("images/speech_left.png", 80, 60)
     else
         bubble = display.newImageRect("images/speech_right.png", 80, 60)
@@ -80,44 +80,62 @@ function CastleViewController:say(message, callback, tint)
 
     bubbleGroup:insert(bubble)
 
-    local text = display.newText(message, -100, -100, "TrebuchetMS-Bold", 14)
+    local text = display.newText(message, -100, -100, "TrebuchetMS-Bold", 12)
     text:setReferencePoint(display.CenterReferencePoint)
     text:setTextColor(0, 0, 0)
-    text.x, text.y = 0, -7
-    bubbleGroup:insert(text)
-
-    game.world:insert(bubbleGroup)
-    bubbleGroup.x, bubbleGroup.y = self:cannonX(), self:cannonY()
-    table.insert(Memmory.transitionStash, transition.to(bubbleGroup, {time = 700, alpha = 0, y = self:cannonY() - 50, 
-        onComplete = function() 
-            bubbleGroup:removeSelf() 
-            callback()
-        end}))
-    -- Memmory.timerStash.castleSayTimer = timer.performWithDelay(2000, function()
-    --         bubbleGroup:removeSelf()
-    --         callback()
-    --     end)
-end
-
-function CastleViewController:showBubble(game, message)
-    local bubbleGroup = display.newGroup()
-    local bubble
-    if (self.location == "left") then
-        bubble = display.newImageRect("images/speech_left.png", 80, 60)
+    if self.location == "left" then
+        text.rotation = -10
     else
-        bubble = display.newImageRect("images/speech_right.png", 80, 60)
+        text.rotation = 10
     end
-    bubbleGroup:insert(bubble)
 
-    local text = display.newText(message, -100, -100, "TrebuchetMS-Bold", 14)
-    text:setReferencePoint(display.CenterReferencePoint)
-    text:setTextColor(0, 0, 0)
     text.x, text.y = 0, -7
     bubbleGroup:insert(text)
 
     game.world:insert(bubbleGroup)
-    bubbleGroup.x, bubbleGroup.y = self:cannonX(), self:cannonY()
-    table.insert(Memmory.transitionStash, transition.to(bubbleGroup, {time = 3500, alpha = 0, y = self:cannonY() - 100, onComplete = function() bubbleGroup:removeSelf() end}))
+    bubbleGroup:setReferencePoint(display.LeftTopReferencePoint)
+
+    local startX
+    local startY
+    local xOver
+    local finishX
+    local finishY
+
+    if self.location == "left" then
+        startX, startY, xOver, finishX, finishY = self:cannonX() - 40, self:cannonY() + 30, 40, self:cannonX(), self:cannonY()
+    else
+        startX, startY, xOver, finishX, finishY = self:cannonX() + 40, self:cannonY() + 30, -40, self:cannonX(), self:cannonY()
+    end
+
+    bubbleGroup.x, bubbleGroup.y = startX, startY
+    bubbleGroup.xScale = 0.1
+    bubbleGroup.yScale = 0.1
+
+    table.insert(Memmory.transitionStash, transition.to(bubbleGroup, {time = 300, xScale = 1.5, yScale = 2.0, 
+        transition = easing.inExpo, x = finishX + xOver, y = finishY - 30,
+        onComplete = function() 
+            table.insert(Memmory.transitionStash, transition.to(bubbleGroup, {time = 50, xScale = 1, yScale = 1, 
+                x = finishX, y = finishY,
+                onComplete = function()
+                    if callback ~= nil then
+                        timer.performWithDelay(300, function()
+                            callback()
+                        end)
+                    end
+                    table.insert(Memmory.transitionStash, transition.to(bubbleGroup, {time = 1000, y = finishY - 50,
+                         alpha = 0,
+                        onComplete = function()
+                            bubbleGroup:removeSelf() 
+                        end})
+                    )
+                    -- old implementation
+                    -- timer.performWithDelay(1000, function()
+                    --         bubbleGroup:removeSelf() 
+                    --     end)
+
+            end}))
+
+        end}))
 end
 
 function CastleViewController:health()
