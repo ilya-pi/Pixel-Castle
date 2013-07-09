@@ -145,6 +145,54 @@ function checkbox(left, top, id, initial, handler)
     }    
 end
 
+AstroSwitch = {}
+
+-- ("images/toggle_on.png", "images/toggle_off.png", "images/toggle_transition.png", 100, 100, display.CenterReferencePoint, 213, 62, true, function() end)
+function AstroSwitch:new(onImg, offImg, transitionImg, x, y, referencePoint, width, height, initial, handler, group)
+    local o = {}   -- create object if user does not provide one
+    setmetatable(o, self)
+    self.__index = self
+
+    -- local putImage = function(path)
+    --     local image = display.newImageRect(path, width, height)
+    --     image:setReferencePoint(referencePoint)
+    --     group:insert(self.image)
+    --     image.x, image.y = x, y
+    --     return image
+    -- end
+
+    local onObjectTouch = function(event)
+        if event.phase == "ended" then
+            self.putImage(transitionImg)
+            self.switchTimer = timer.performWithDelay(50, function()
+                self.state = not self.state
+                if self.state then
+                    self.putImage(onImg)
+                else
+                    self.putImage(offImg)
+                end
+                handler(self.state)
+                timer.cancel(self.switchTimer)
+            end, 1)
+        end
+        return true
+    end
+
+    self.putImage = function(path)
+        local image = display.newImageRect(path, width, height)
+        image:setReferencePoint(referencePoint)
+        group:insert(image)
+        image.x, image.y = x, y
+        image:addEventListener("touch", onObjectTouch)
+        return image
+    end
+
+    self.image = self.putImage(onImg)
+    self.state = initial
+
+    return o
+end
+
 local sliderSheetOptions = {
     frames = { 
     {

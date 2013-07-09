@@ -299,15 +299,15 @@ function MainMenuScreen:showOptionsMenu()
     bg.x, bg.y = display.contentWidth / 2, display.contentHeight / 2
 
     customUI.text("Vibration", display.contentWidth / 6 + 20, display.contentHeight * (1 / 4 + 1/3), 21, self.optionsMenuGroup, display.TopLeftReferencePoint)
-    self.optionsMenuGroup:insert(customUI.checkbox(display.contentWidth - display.contentWidth / 6 - 116, display.contentHeight * (1 / 4 + 1/3), "vibrationToggle",
-        game.vibration,
-        function(event)
-            local switch = event.target
-            self.game.vibration = switch.isOn
-            if switch.isOn then
+
+    local astroSwitch = customUI.AstroSwitch:new("images/toggle_on.png", "images/toggle_off.png", "images/toggle_transition.png", 
+        display.contentWidth - display.contentWidth / 6 - 75, display.contentHeight * (1 / 4 + 1/3) + 20
+        , display.CenterReferencePoint, 106, 31, true, function(isOn)
+            self.game.vibration = isOn
+            if isOn then
                 system.vibrate()
             end
-        end))
+        end, self.optionsMenuGroup)
 
     customUI.text("SFX volume", display.contentWidth / 6 + 20, display.contentHeight * (1 / 4 + 1/6) + 5, 21, self.optionsMenuGroup, display.TopLeftReferencePoint)
     self.optionsMenuGroup:insert(customUI.slider(display.contentWidth - display.contentWidth / 6 - 166, display.contentHeight * (1 / 4 + 1/6), 150, "sfxVolumeSlider",
