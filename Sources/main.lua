@@ -103,22 +103,44 @@ local function eventPlayer1Fire()
     game.controls1:hide()
     local cannonX = game.castle1:cannonX()
     local cannonY = game.castle1:cannonY()
-    game.castle1:say("Fook ya!", function()
+
+    local commonAction = function()
         game.bullet = bullet_module.Bullet:new({game = game})
         game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls1:getAngle())), impulse * math.cos(math.rad(game.controls1:getAngle())))
         game.cameraState = "CANNONBALL_FOCUS"
-    end)
+    end
+
+    local action = {
+        [0] = function() game.castle1:say(">;-E", commonAction) end,
+        [1] = function() game.castle1:say("Eat this!", commonAction) end,
+        [2] = function() game.castle1:say("ABRVLGH", commonAction) end,
+        [3] = function() game.castle1:say("Adios", commonAction) end,
+        [4] = commonAction,
+        [5] = commonAction,
+    }
+    action[math.random(1, 99) % 6]()
 end
 
 local function eventPlayer2Fire()
     game.controls2:hide()
     local cannonX = game.castle2:cannonX()
     local cannonY = game.castle2:cannonY()
-    game.castle2:say("Fook ya!", function()
+
+    local commonAction = function()
         game.bullet = bullet_module.Bullet:new({game = game})
         game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls2:getAngle())), impulse * math.cos(math.rad(game.controls2:getAngle())))
         game.cameraState = "CANNONBALL_FOCUS"
-    end)
+    end
+
+    local action = {
+        [0] = function() game.castle2:say(">;-E", commonAction) end,
+        [1] = function() game.castle2:say("Eat this!", commonAction) end,
+        [2] = function() game.castle2:say("ABRVLGH", commonAction) end,
+        [3] = function() game.castle2:say("Adios", commonAction) end,
+        [4] = commonAction,
+        [5] = commonAction,
+    }
+    action[math.random(1, 99) % 6]()
 end
 
 local function eventBulletRemoved()
