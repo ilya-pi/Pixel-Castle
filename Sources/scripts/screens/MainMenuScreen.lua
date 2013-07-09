@@ -40,7 +40,6 @@ function MainMenuScreen:render()
     self.bg.x, self.bg.y = display.screenOriginX, display.screenOriginY
     self.bg2.x, self.bg2.y = display.screenOriginX + bgWidth, display.screenOriginY
 
-    -- self.bgMoveLeft = true
     Memmory.timerStash.bgMovementTimer = timer.performWithDelay(30, function()
         self.bg.x = self.bg.x - 1
         self.bg2.x = self.bg2.x - 1
@@ -147,7 +146,7 @@ function MainMenuScreen:showPlayMenu()
         fontSize = 24,
         labelColor = { default = { 255 }, over = { 0 } },
         onRelease = function(event)
-            self.game:goto("P1")
+            self.game:goto("LEVEL_INTRO")
             print("versus mode")
             return true
         end
@@ -207,7 +206,7 @@ function MainMenuScreen:showLevelSelect()
             local onRelease
 
             --status - "locked", "new", "done"
-            local goto = "P1" --todo: move to db
+            local goto = "LEVEL_INTRO" --todo: move to db
             if levelNumber == 1 then
                 goto = "TUTORIAL"
             end

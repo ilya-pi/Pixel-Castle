@@ -19,7 +19,9 @@ GameModel = {
     sfxVolume = 50,
     bgmVolume = 50,
     tint = false, -- whether to use tint or not, simply set false to eliminate it atm
-    tintColor = {r = 255, g = 0, b = 255} -- actuall tint color
+    tintColor = {r = 255, g = 0, b = 255}, -- actuall tint color
+
+    LEVEL_INTRO_DELAY = 3000
 }
 
 -- Constructor

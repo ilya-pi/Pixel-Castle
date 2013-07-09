@@ -29,13 +29,11 @@ function SkyViewController:render(group)
         sky2.x = sky2.x + game.wind.speed / 2
 
         if sky1.x <= display.screenOriginX - skyWidth then
-        	print("me1")
             local tmp = sky1
             sky1 = sky2
             sky2 = tmp
             sky2.x = sky1.x + skyWidth
         elseif sky1.x >= display.screenOriginX then
-        	print("me2")
             local tmp = sky1
             sky1 = sky2
             sky2 = tmp

@@ -132,7 +132,7 @@ function GameOverScreen:renderVs()
         overFile = "images/button.png",
         labelColor = { default = { 255 }, over = { 0 } },
         onRelease = function(event)
-            self.game:goto("P1")
+            self.game:goto("LEVEL_INTRO")
             return true
         end
     }
@@ -199,7 +199,7 @@ function GameOverScreen:renderCampaign()
                     self.game:goto("CREDITS")
                 else
                     self.game.selectedLevel = self.game.selectedLevel + 1
-                    self.game:goto("P1")                    
+                    self.game:goto("LEVEL_INTRO")
                 end
                 return true
             end
@@ -247,7 +247,7 @@ function GameOverScreen:renderCampaign()
             overFile = "images/button.png",
             labelColor = { default = { 255 }, over = { 0 } },
             onRelease = function(event)
-                self.game:goto("P1")
+                self.game:goto("LEVEL_INTRO")
                 return true
             end
         }

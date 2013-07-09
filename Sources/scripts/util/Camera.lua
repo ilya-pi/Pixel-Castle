@@ -256,5 +256,29 @@ function Camera:moveCamera()
         end
 	elseif (game.cameraState == "FOCUSING") then
 		-- do nothing
+    elseif game.cameraState == "OVERVIEW" then
+        local viewPortHeight = game.levelHeight * game.pixel - display.screenOriginY
+        if viewPortHeight < display.contentHeight - display.screenOriginY then
+            viewPortHeight = display.contentHeight - display.screenOriginY
+        end
+        self.ratio = screenHeight / viewPortHeight
+
+        if game.levelWidth * game.pixel * self.ratio < -2 * display.screenOriginX + display.contentWidth then
+            self.ratio = (-2 * display.screenOriginX + display.contentWidth) / (game.levelWidth * game.pixel)
+        end
+
+        local properY = display.screenOriginY - (game.levelHeight * game.pixel * self.ratio - (display.contentHeight - 2 * display.screenOriginY))
+        game.world.x, game.world.y = 0, properY
+
+        game.world.xScale = self.ratio
+        game.world.yScale = self.ratio
+
+        game.sky.x, game.sky.y = 0, properY
+        game.sky.xScale = self.ratio
+        game.sky.yScale = self.ratio
+
+        game.background.x, game.background.y = 0, properY
+        game.background.xScale = self.ratio
+        game.background.yScale = self.ratio
     end
 end
