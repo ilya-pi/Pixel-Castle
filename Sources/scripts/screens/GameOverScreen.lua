@@ -39,19 +39,26 @@ function GameOverScreen:renderVs()
     self.displayGroup:insert(overlay)
     overlay:setFillColor(195, 214, 93, 150)
 
-    local star = display.newImageRect("images/winner.png", 380, 380)
+    local star = display.newImageRect("images/winner.png", 480, 480)
+    local star2 = display.newImageRect("images/winner2.png", 480, 480)
     self.displayGroup:insert(star)
+    self.displayGroup:insert(star2)
     star:setReferencePoint(display.CenterReferencePoint)
+    star2:setReferencePoint(display.CenterReferencePoint)
     if self.game.castle1:isDestroyed(self.game) and self.game.castle2:isDestroyed(self.game) then
         star.x, star.y = width / 2, height / 2
+        star2.x, star2.y = width / 2, height / 2
     elseif self.game.castle2:isDestroyed(self.game) then
         star.x, star.y = width / 6, height / 2
+        star2.x, star2.y = width / 6, height / 2
     else
         star.x, star.y = 5 * width / 6, height / 2
+        star2.x, star2.y = 5 * width / 6, height / 2
     end    
 
     self.startTimer = timer.performWithDelay(30, function()
-            star.rotation = (star.rotation + 3) % 360
+            star.rotation = (star.rotation - 3) % 360
+            star2.rotation = (star2.rotation + 3) % 360
         end, -1)
 
     local playerTextShadow = display.newText( ".", display.contentWidth / 2 + 2, display.contentHeight / 4 + 2, "TrebuchetMS-Bold", 48)
@@ -153,13 +160,18 @@ function GameOverScreen:renderCampaign()
         self.displayGroup:insert(overlay)
         overlay:setFillColor(195, 214, 93, 100)
 
-        local star = display.newImageRect("images/winner.png", 380, 380)
+        local star = display.newImageRect("images/winner.png", 580, 580)
+        local star2 = display.newImageRect("images/winner2.png", 580, 580)
         self.displayGroup:insert(star)
+        self.displayGroup:insert(star2)
         star:setReferencePoint(display.CenterReferencePoint)
+        star2:setReferencePoint(display.CenterReferencePoint)
         star.x, star.y = display.contentWidth / 2, display.contentHeight / 2
+        star2.x, star2.y = display.contentWidth / 2, display.contentHeight / 2
 
         self.startTimer = timer.performWithDelay(30, function()
-            star.rotation = (star.rotation + 3) % 360
+            star.rotation = (star.rotation - 3) % 360
+            star2.rotation = (star2.rotation + 3) % 360
         end, -1)
 
         customUI.text2("LEVEL CLEAR!", display.contentWidth / 2, display.contentHeight / 2, 32, self.displayGroup)

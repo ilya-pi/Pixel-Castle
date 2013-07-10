@@ -43,8 +43,8 @@ end
 
 function Wind:update()
     
-    self.speed = math.random(-5, 5)
-    -- self.speed = -5
+    -- self.speed = math.random(-5, 5)
+    self.speed = -5
     physics.setGravity(game.levelConfig.screens[1].levels[game.selectedLevel].maxWindForce / 5 * self.speed, 9.8)
 
     local centerOfArrow = (self.wind_hud.width * scaleFactor - leftMargin) / 2 + leftMargin
