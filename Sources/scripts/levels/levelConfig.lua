@@ -23,21 +23,21 @@ screens = {
                 minScaleFactor = 0.5
             },
             {
-                file = "level3.json",
-                bulletImpulse = 6200,
-                maxWindForce = 9.8,
+                file = "level4.json",
+                bulletImpulse = 6700,
+                maxWindForce = 3,
                 minScaleFactor = -1
             },
             {
-                file = "level3.json",
-                bulletImpulse = 6200,
-                maxWindForce = 9.8,
+                file = "level5.json",
+                bulletImpulse = 6900,
+                maxWindForce = 3,
                 minScaleFactor = -1
             },
             {
-                file = "level3.json",
-                bulletImpulse = 6200,
-                maxWindForce = 9.8,
+                file = "level6.json",
+                bulletImpulse = 7000,
+                maxWindForce = 5,
                 minScaleFactor = -1
             }
         }
