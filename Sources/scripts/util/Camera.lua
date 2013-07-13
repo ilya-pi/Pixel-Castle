@@ -80,13 +80,16 @@ local function calculateTouchY(desiredY, ratio)
     -- local topBorder = -(game.levelHeight * game.pixel * ratio - screenHeight - display.screenOriginY)
 --     return topBorder, topBorder, topBorder
     if (desiredY >= display.screenOriginY) then
-        return display.screenOriginY, display.screenOriginY, display.screenOriginY
+        print("case1 " .. display.screenOriginY)
+        return 2 * display.screenOriginY, 2 * display.screenOriginY, 2 * display.screenOriginY
     else
-        local topBorder = -(game.levelHeight * game.pixel * ratio - screenHeight - display.screenOriginY)
+        local topBorder = -(game.levelHeight * game.pixel * ratio - screenHeight - 2 * display.screenOriginY)
         if (desiredY <= topBorder) then
+            print("case2 " .. topBorder)
             return topBorder, topBorder, topBorder
         end
     end
+    print("case3 " .. desiredY)
     return desiredY, desiredY, desiredY
 end
 
@@ -220,7 +223,16 @@ function Camera:moveCamera()
 		end		
 	elseif (game.cameraState == "CANNONBALL_FOCUS") then
 		if (game.bullet ~= nil and game.bullet:isAlive()) then
-            local viewPortHeight = game.levelHeight * game.pixel - game.bullet:getY() - display.screenOriginY
+
+
+            local viewPortHeight
+            if -game.bullet:getY() >= display.screenOriginY then
+                viewPortHeight = game.levelHeight * game.pixel - display.screenOriginY
+            else
+                viewPortHeight = game.levelHeight * game.pixel - game.bullet:getY() - display.screenOriginY
+            end
+            -- local viewPortHeight = game.levelHeight * game.pixel - game.bullet:getY() - display.screenOriginY
+
             if viewPortHeight < display.contentHeight - display.screenOriginY then
                 viewPortHeight = display.contentHeight - display.screenOriginY
             end
@@ -235,7 +247,7 @@ function Camera:moveCamera()
             end
 
             local worldX, backgroundX, skyX = calculateTouchX(-game.bullet:getX() * self.ratio - bulletMargin, self.ratio)  --todo: Sergey Belyakov get rid of jumps when shooting
-            local worldY, backgroundY, skyY = calculateTouchY((-game.bullet:getY() + display.screenOriginX + 50) * self.ratio, self.ratio)
+            local worldY, backgroundY, skyY = calculateTouchY(-game.bullet:getY() * self.ratio, self.ratio)
             --            print("VP " .. viewPortHeight .. "; bullet x=" .. -game.bullet:getX() .. ", y=" .. -game.bullet:getY() .. "; bottom " .. -(game.levelHeight * game.pixel * self.ratio - screenHeight - display.screenOriginY))
 
 			game.world.x = worldX

@@ -52,8 +52,8 @@ function GameOverScreen:renderVs()
         star.x, star.y = display.contentWidth / 6, height / 2
         star2.x, star2.y = display.contentWidth / 6, height / 2
     else
-        star.x, star.y = 5 * width / 6, height / 2
-        star2.x, star2.y = 5 * width / 6, height / 2
+        star.x, star.y = 5 * display.contentWidth / 6, height / 2
+        star2.x, star2.y = 5 * display.contentWidth / 6, height / 2
     end    
 
     self.startTimer = timer.performWithDelay(30, function()

@@ -419,7 +419,7 @@ function MainMenuScreen:showCredits()
         defaultFile = "images/menus_common/back_button.png",
         overFile = "images/menus_common/back_button_tapped.png",
         onRelease = function(event)
-            -- self.game:goto("OPTIONS")
+            self.game:goto("OPTIONS")
             return true
         end
     }
