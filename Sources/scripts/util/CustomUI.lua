@@ -96,20 +96,23 @@ function textBox(message, x, y, w, h, size, group, referencePoint)
 end
 
 function danceText(message, x, y, size, group, referencePoint)
+    local g = display.newGroup()
     local text = display.newText(message, x + 2, y + 2, "TrebuchetMS-Bold", size)
     local textShadow = display.newText(message, x, y, "TrebuchetMS-Bold", size)
     text:setReferencePoint((referencePoint ~= nil) and referencePoint or display.CenterReferencePoint)
     textShadow:setReferencePoint((referencePoint ~= nil) and referencePoint or display.CenterReferencePoint)
     text.x, text.y = x + 2, y + 2
     textShadow.x, textShadow.y = x, y
-    group:insert(text)
-    group:insert(textShadow)
+    g:insert(text)
+    g:insert(textShadow)
+    group:insert(g)
     text:setTextColor(37, 54, 34)
     textShadow:setTextColor(255, 255, 255)
     text.text = message
     textShadow.text = message
     dance(text)
     dance(textShadow)
+    return g
 end
 
 local toggleSheetOptions = {

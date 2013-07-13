@@ -31,6 +31,7 @@ local wind_module = require("scripts.Wind")
 local gameover_module = require("scripts.screens.GameOverScreen")
 local mainmenu_module = require("scripts.screens.MainMenuScreen")
 local pausemenu_module = require("scripts.screens.PauseMenuOverlay")
+local turn_module = require("scripts.screens.TurnOverlayScreen")
 local tutorial_module = require("scripts.screens.TutorialScreen")
 
 local dbWrapper = require("scripts.db.DbWrapper")
@@ -42,6 +43,7 @@ local mainMenuScreen = mainmenu_module.MainMenuScreen:new({game = game})
 local gameOverScreen = gameover_module.GameOverScreen:new({game = game})
 local tutorialScreen = tutorial_module.TutorialScreen:new({game = game})
 local pauseMenuOverlay = pausemenu_module.PauseMenuOverlay:new({game = game})
+local turnOverlay = turn_module.TurnOverlay:new()
 
 -- Main game loop
 local function gameLoop()
@@ -428,24 +430,26 @@ local function kickoffLevel()
 end
 
 local function turnP1()
-    timer.performWithDelay(10, function()
+    turnOverlay:render()
+    timer.performWithDelay(1000, function()
             game:goto("P1")
         end)
     -- game:goto("P1")
 end
 
 local function turnP2()
-    timer.performWithDelay(10, function()
+    turnOverlay:render()
+    timer.performWithDelay(500, function()
             game:goto("P2")
         end)
 end
 
 local function turnP1off()
-    -- game:goto("P1")
+    turnOverlay:dismiss()
 end
 
 local function turnP2off()
-    -- game:goto("P2")
+    turnOverlay:dismiss()
 end
 
 local function init()
