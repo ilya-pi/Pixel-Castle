@@ -371,18 +371,36 @@ function MainMenuScreen:showCredits()
     self.creditsGroup = display.newGroup()
     self.displayGroup:insert(self.creditsGroup)
 
-    local bg = display.newImageRect("images/button.png", 5 * display.contentWidth / 6, 4 * display.contentHeight / 5)
-    -- bg.alpha = 0.25
+    local width = (-2 * display.screenOriginX + display.contentWidth)
+    local height = 2 * display.screenOriginY + display.contentHeight
+
+    customUI.text("Credits", display.contentWidth / 2, 50 + display.screenOriginY, 30, self.creditsGroup)
+
+    local bg = display.newImageRect("images/button.png", 2 * width / 3, display.contentHeight / 2)
     self.creditsGroup:insert(bg)
     bg:setReferencePoint(display.CenterReferencePoint)
     bg.x, bg.y = display.contentWidth / 2, display.contentHeight / 2
 
-    customUI.textBox("Pixel Castle by AstroBerries (http://astroberries.com)" ..
-        "\n\n\tproduced by\n\t\tIlya Pimenov \n\n\tdesigned by\n\t\tRodrigo Masseli\n\n\thacked by\n\t\tSegey Belyakov\n\t\tIlya Pimenov"
-        , 
-        display.contentWidth / 12 + 15, display.contentHeight / 4 + 5,  5 * display.contentWidth / 6 - 15, 200, 12, self.creditsGroup, display.TopLeftReferencePoint)
-
-    customUI.text("Credits", display.contentWidth / 2, 50 + display.screenOriginY, 30, self.creditsGroup)
+    customUI.text("Vibration", display.contentWidth / 6 + 20, display.contentHeight * (1 / 4 + 1/3), 21, self.creditsGroup, display.TopLeftReferencePoint)
+    customUI.text("SFX volume", display.contentWidth / 6 + 20, display.contentHeight * (1 / 4 + 1/6) + 5, 21, self.creditsGroup, display.TopLeftReferencePoint)
+    customUI.text("BGM volume", display.contentWidth / 6 + 20, display.contentHeight / 4, 21, self.creditsGroup, display.TopLeftReferencePoint)
+    local website = widget.newButton{
+        width = 170,
+        height = 40,
+        defaultFile = "images/button.png",
+        overFile = "images/button_over.png",
+        id = "websitebtnid",
+        label = "Astroberries website",
+        font = "TrebuchetMS-Bold",
+        fontSize = 24,
+        labelColor = { default = { 255 }, over = { 0 } },
+        onRelease = function(event)
+            -- self.game:goto("CREDITS")
+            return true
+        end
+    }
+    website.x, website.y = display.contentWidth / 2, 3 * display.contentHeight / 4 + 30
+    self.creditsGroup:insert(website)
 
     local backButton = widget.newButton{
         width = 60,

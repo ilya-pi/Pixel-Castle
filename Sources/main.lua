@@ -51,13 +51,13 @@ local function gameLoop()
     if game.state.name == "P1" then
         -- game.controls1:render()
     elseif (game.state.name == "BULLET1" or game.state.name == "BULLET2") then
-        if (game.bullet ~= nil and not game.bullet:isAlive()) then
+        if (game.bullet ~= nil and not game.bullet:isAlive()) then  
             game.bullet:remove()
             game.bullet = nil
             if (game.state.name == "BULLET1") then
-                game:goto("MOVE_TO_P2")
+                game:goto("HIT1_OVERVIEW")
             else
-                game:goto("MOVE_TO_P1")
+                game:goto("HIT2_OVERVIEW")
             end
         end
     elseif (game.state.name == "MOVE_TO_P2") then
@@ -452,6 +452,24 @@ local function turnP2off()
     turnOverlay:dismiss()
 end
 
+local function hit1()
+    timer.performWithDelay(1000, function()
+        game:goto("MOVE_TO_P2")
+    end)    
+end
+
+local function hit2()
+    timer.performWithDelay(1000, function()
+        game:goto("MOVE_TO_P1")
+    end)    
+end
+
+local function hit1off()
+end
+
+local function hit2off()
+end
+
 local function init()
     game.selectedLevel = 1
 
@@ -466,20 +484,26 @@ local function init()
         { name = "LEVEL_INTRO", transitions = {TURN_P1 = {kickoffLevel, turnP1}} },
         { name = "TURN_P1", transitions = {P1 = {turnP1off}} },
         { name = "P1", transitions = {BULLET1 = {eventPlayer1Fire}, PAUSEMENU = {pause}} },
-        { name = "BULLET1", transitions = {MOVE_TO_P2 = {eventBulletRemoved}, PAUSEMENU = {pause}} },
+        { name = "BULLET1", transitions = {HIT1_OVERVIEW = {eventBulletRemoved, hit1}, PAUSEMENU = {pause}} },
+        { name = "HIT1_OVERVIEW", transitions = {MOVE_TO_P2 = {hit1off}} },
         { name = "MOVE_TO_P2", transitions = { TURN_P2 = {eventPlayer2Active, turnP2}, GAMEOVER = {gameOver}, PAUSEMENU = {pause}} },
         { name = "TURN_P2", transitions = {P2 = {turnP2off}} },
         { name = "P2", transitions = {BULLET2 = {eventPlayer2Fire}, PAUSEMENU = {pause}} },
-        { name = "BULLET2", transitions = {MOVE_TO_P1 = {eventBulletRemoved}, PAUSEMENU = {pause}} },
-        { name = "MOVE_TO_P1", transitions = { TURN_P1 = {eventPlayer1Active, turnP1}, GAMEOVER = {gameOver}, PAUSEMENU = {pause}} },
-        
+        { name = "BULLET2", transitions = {HIT2_OVERVIEW = {eventBulletRemoved, hit2}, PAUSEMENU = {pause}} },
+        { name = "HIT2_OVERVIEW", transitions = {MOVE_TO_P1 = {hit2off}} },
+        { name = "MOVE_TO_P1", transitions = { TURN_P1 = {eventPlayer1Active, turnP1}, GAMEOVER = {gameOver}, PAUSEMENU = {pause}} },        
         { name = "PAUSEMENU", transitions = { P1 = {unpause}, BULLET1 = {unpause}, MOVE_TO_P1 = {unpause}, 
         MOVE_TO_P2 = {unpause}, P2 = {unpause}, BULLET2 = {unpause}, MOVE_TO_P1 = {unpause}, MAINMENU = {exitToMain}} },
         { name = "GAMEOVER", transitions = { LEVEL_INTRO = {restartGame}, MAINMENU = {gameOverToMainMenu}}}  })
 
     game:setState("MAINMENU")
+
     mainMenuScreen:render()
     mainMenuScreen:showMainMenu()
+
+    -- game:goto("OPTIONS")
+    -- game:goto("CREDITS")
+
 end
 
 init()

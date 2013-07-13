@@ -21,7 +21,11 @@ function PauseMenuOverlay:renderButton()
         defaultFile = "images/menus_common/pause_button.png",
         overFile = "images/menus_common/pause_button_tapped.png",
         onRelease = function(event)
-            self.game:goto("PAUSEMENU")
+            if game.state.name == "P1" or game.state.name == "BULLET1" or game.state.name == "MOVE_TO_P1"
+                or game.state.name == "MOVE_TO_P2" or game.state.name == "P2" or game.state.name == "BULLET2"
+                or game.state.name == "MOVE_TO_P1" or game.state.name == "MAINMENU" then
+                self.game:goto("PAUSEMENU")
+            end
             return true
         end
     }

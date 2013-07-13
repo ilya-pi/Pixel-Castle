@@ -46,11 +46,11 @@ function GameOverScreen:renderVs()
     star:setReferencePoint(display.CenterReferencePoint)
     star2:setReferencePoint(display.CenterReferencePoint)
     if self.game.castle1:isDestroyed(self.game) and self.game.castle2:isDestroyed(self.game) then
-        star.x, star.y = width / 2, height / 2
-        star2.x, star2.y = width / 2, height / 2
+        star.x, star.y = display.contentWidth / 2, height / 2
+        star2.x, star2.y = display.contentWidth / 2, height / 2
     elseif self.game.castle2:isDestroyed(self.game) then
-        star.x, star.y = width / 6, height / 2
-        star2.x, star2.y = width / 6, height / 2
+        star.x, star.y = display.contentWidth / 6, height / 2
+        star2.x, star2.y = display.contentWidth / 6, height / 2
     else
         star.x, star.y = 5 * width / 6, height / 2
         star2.x, star2.y = 5 * width / 6, height / 2
