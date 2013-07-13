@@ -122,7 +122,8 @@ function CastleViewController:say(message, callback, tint)
                             callback()
                         end)
                     end
-                    table.insert(Memmory.transitionStash, transition.to(bubbleGroup, {time = 1000, y = finishY - 50,
+                    table.insert(Memmory.transitionStash, transition.to(bubbleGroup, {time = 1000, 
+                        -- y = finishY - 50,
                          alpha = 0,
                         onComplete = function()
                             bubbleGroup:removeSelf() 

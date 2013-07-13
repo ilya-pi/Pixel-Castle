@@ -32,8 +32,8 @@ end
 function GameOverScreen:renderVs()
     self.displayGroup = display.newGroup()
 
-    local width = display.contentWidth + 2 * display.screenOriginX
-    local height = display.contentHeight + 2 * display.screenOriginY
+    local width = display.contentWidth - 2 * display.screenOriginX
+    local height = display.contentHeight - 2 * display.screenOriginY
     
     local overlay = display.newRect(display.screenOriginX, display.screenOriginY, display.contentWidth - 2 * display.screenOriginX, display.contentHeight - 2 * display.screenOriginY)
     self.displayGroup:insert(overlay)
@@ -57,8 +57,8 @@ function GameOverScreen:renderVs()
     end    
 
     self.startTimer = timer.performWithDelay(30, function()
-            star.rotation = (star.rotation - 3) % 360
-            star2.rotation = (star2.rotation + 3) % 360
+            star.rotation = (star.rotation - 0.3) % 360
+            star2.rotation = (star2.rotation + 0.3) % 360
         end, -1)
 
     local playerTextShadow = display.newText( ".", display.contentWidth / 2 + 2, display.contentHeight / 4 + 2, "TrebuchetMS-Bold", 48)
@@ -100,16 +100,16 @@ function GameOverScreen:renderVs()
     local castle1 = display.newImageRect("images/levels/" .. self.game.levelName .. "/castle1.png", (100 / game.castle1.height) * game.castle1.width, 100)
     self.displayGroup:insert(castle1)
     castle1:setReferencePoint(display.CenterReferencePoint)
-    castle1.x = width / 6
+    castle1.x = display.contentWidth / 6
     castle1.y = height / 2
 
     local castle2 = display.newImageRect("images/levels/" .. self.game.levelName .. "/castle2.png", (100 / game.castle2.height) * game.castle2.width, 100)
     self.displayGroup:insert(castle2)
     castle2:setReferencePoint(display.CenterReferencePoint)
-    castle2.x = 5 * width / 6
+    castle2.x = 5 * display.contentWidth / 6
     castle2.y = height / 2
 
-    infoText( (100 - self.game.castle1:healthPercent()) .. "% destroyed", width / 6, height / 2 + 65, 21, self.displayGroup)
+    infoText( (100 - self.game.castle1:healthPercent()) .. "% destroyed", display.contentWidth / 6, height / 2 + 65, 21, self.displayGroup)
     infoText( (100 - self.game.castle2:healthPercent()) .. "% destroyed", 5 * display.contentWidth / 6, height / 2 + 65, 21, self.displayGroup)    
 
     local mainMenuBtn = widget.newButton{
@@ -170,8 +170,8 @@ function GameOverScreen:renderCampaign()
         star2.x, star2.y = display.contentWidth / 2, display.contentHeight / 2
 
         self.startTimer = timer.performWithDelay(30, function()
-            star.rotation = (star.rotation - 3) % 360
-            star2.rotation = (star2.rotation + 3) % 360
+            star.rotation = (star.rotation - 1) % 360
+            star2.rotation = (star2.rotation + 1) % 360
         end, -1)
 
         customUI.text2("LEVEL CLEAR!", display.contentWidth / 2, display.contentHeight / 2, 32, self.displayGroup)

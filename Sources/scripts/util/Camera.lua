@@ -268,16 +268,16 @@ function Camera:moveCamera()
         end
 
         local properY = display.screenOriginY - (game.levelHeight * game.pixel * self.ratio - (display.contentHeight - 2 * display.screenOriginY))
-        game.world.x, game.world.y = 0, properY
+        game.world.x, game.world.y = display.screenOriginX, properY
 
         game.world.xScale = self.ratio
         game.world.yScale = self.ratio
 
-        game.sky.x, game.sky.y = 0, properY
+        game.sky.x, game.sky.y = display.screenOriginX, properY
         game.sky.xScale = self.ratio
         game.sky.yScale = self.ratio
 
-        game.background.x, game.background.y = 0, properY
+        game.background.x, game.background.y = display.screenOriginX, properY
         game.background.xScale = self.ratio
         game.background.yScale = self.ratio
     end
