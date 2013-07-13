@@ -434,7 +434,6 @@ local function turnP1()
     timer.performWithDelay(1000, function()
             game:goto("P1")
         end)
-    -- game:goto("P1")
 end
 
 local function turnP2()
@@ -500,10 +499,6 @@ local function init()
 
     mainMenuScreen:render()
     mainMenuScreen:showMainMenu()
-
-    -- game:goto("OPTIONS")
-    -- game:goto("CREDITS")
-
 end
 
 init()

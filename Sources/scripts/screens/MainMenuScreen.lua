@@ -372,34 +372,45 @@ function MainMenuScreen:showCredits()
     self.displayGroup:insert(self.creditsGroup)
 
     local width = (-2 * display.screenOriginX + display.contentWidth)
-    local height = 2 * display.screenOriginY + display.contentHeight
+    local height = -2 * display.screenOriginY + display.contentHeight
 
-    customUI.text("Credits", display.contentWidth / 2, 50 + display.screenOriginY, 30, self.creditsGroup)
+    local viewWidth = 2 * width / 3
+    local viewHeight = height / 2
+    local xOffset = display.screenOriginX + (width - viewWidth) / 2
+    local yOffset = display.screenOriginY + height / 4
+    local padding = 25
+    local lineH = viewHeight / 8
 
-    local bg = display.newImageRect("images/button.png", 2 * width / 3, display.contentHeight / 2)
+    customUI.text("Credits", display.contentWidth / 2, 50 + display.screenOriginY, 25, self.creditsGroup)
+
+    local bg = display.newImageRect("images/button.png", viewWidth, viewHeight)
     self.creditsGroup:insert(bg)
-    bg:setReferencePoint(display.CenterReferencePoint)
-    bg.x, bg.y = display.contentWidth / 2, display.contentHeight / 2
+    bg:setReferencePoint(display.TopLeftReferencePoint)
+    bg.x, bg.y = xOffset, yOffset
 
-    customUI.text("Vibration", display.contentWidth / 6 + 20, display.contentHeight * (1 / 4 + 1/3), 21, self.creditsGroup, display.TopLeftReferencePoint)
-    customUI.text("SFX volume", display.contentWidth / 6 + 20, display.contentHeight * (1 / 4 + 1/6) + 5, 21, self.creditsGroup, display.TopLeftReferencePoint)
-    customUI.text("BGM volume", display.contentWidth / 6 + 20, display.contentHeight / 4, 21, self.creditsGroup, display.TopLeftReferencePoint)
+    customUI.text("Hacked by", xOffset + padding, yOffset + 1 * lineH, 19, self.creditsGroup, display.TopLeftReferencePoint)
+    customUI.text("Designed by", xOffset + padding, yOffset + 4 * lineH, 19, self.creditsGroup, display.TopLeftReferencePoint)
+
+    customUI.text("Ilya Pimenov", xOffset + viewWidth - padding, yOffset + 1 * lineH, 19, self.creditsGroup, display.TopRightReferencePoint)
+    customUI.text("Sergey Belyakov", xOffset + viewWidth - padding, yOffset + 2 * lineH, 19, self.creditsGroup, display.TopRightReferencePoint)
+    customUI.text("Rodrigo Maselli", xOffset + viewWidth - padding, yOffset + 4 * lineH, 19, self.creditsGroup, display.TopRightReferencePoint)
+
     local website = widget.newButton{
-        width = 170,
+        width = 260,
         height = 40,
         defaultFile = "images/button.png",
         overFile = "images/button_over.png",
         id = "websitebtnid",
         label = "Astroberries website",
         font = "TrebuchetMS-Bold",
-        fontSize = 24,
+        fontSize = 19,
         labelColor = { default = { 255 }, over = { 0 } },
         onRelease = function(event)
-            -- self.game:goto("CREDITS")
+            system.openURL("http://ilyapimenov.com")
             return true
         end
     }
-    website.x, website.y = display.contentWidth / 2, 3 * display.contentHeight / 4 + 30
+    website.x, website.y = display.contentWidth / 2, yOffset + viewHeight + 1.5 * padding
     self.creditsGroup:insert(website)
 
     local backButton = widget.newButton{
@@ -408,7 +419,7 @@ function MainMenuScreen:showCredits()
         defaultFile = "images/menus_common/back_button.png",
         overFile = "images/menus_common/back_button_tapped.png",
         onRelease = function(event)
-            self.game:goto("OPTIONS")
+            -- self.game:goto("OPTIONS")
             return true
         end
     }
