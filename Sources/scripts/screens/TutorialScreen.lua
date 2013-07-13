@@ -42,7 +42,6 @@ function TutorialScreen:render()
 
     local step1 = display.newGroup()    
     self.tutorialGroup:insert(step1)
-    -- customUI.danceText("Hi!", display.contentWidth / 2, display.contentHeight / 4, 28, step1)
 
     timer.performWithDelay(100, function()
             step1:removeSelf()
@@ -55,7 +54,7 @@ function TutorialScreen:render()
                 onFire = function(event)
                     if event.phase == "ended" and self.finisheTutorial then
                         self.finisheTutorial = false
-                        self.game:goto("P1")
+                        self.game:goto("TURN_P1")
                     end
                     return true
                 end})

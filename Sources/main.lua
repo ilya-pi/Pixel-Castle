@@ -68,7 +68,7 @@ local function gameLoop()
                game:goto("GAMEOVER")
         else
             game.cameraState = "CASTLE2_FOCUS"
-            game:goto("P2")
+            game:goto("TURN_P2")
         end
     elseif (game.state.name == "P2") then        
         if game.mode == "versus" then
@@ -88,7 +88,7 @@ local function gameLoop()
                game:goto("GAMEOVER")
         else
             game.cameraState = "CASTLE1_FOCUS"
-            game:goto("P1")
+            game:goto("TURN_P1")
         end        
     end
 end
@@ -297,7 +297,7 @@ local function restartGame()
     timer.performWithDelay(game.LEVEL_INTRO_DELAY, function()
         pauseMenuOverlay:renderButton()
         game.controls1:show()
-        game:goto("P1")
+        game:goto("TURN_P1")
         end)
 end    
 
@@ -363,7 +363,7 @@ local function startCommonGame()
     timer.performWithDelay(game.LEVEL_INTRO_DELAY, function()
         pauseMenuOverlay:renderButton()
         game.controls1:show()
-        game:goto("P1")
+        game:goto("TURN_P1")
         end)    
 end
 
@@ -427,33 +427,51 @@ local function kickoffLevel()
     game.cameraState = "CASTLE1_FOCUS"
 end
 
+local function turnP1()
+    timer.performWithDelay(10, function()
+            game:goto("P1")
+        end)
+    -- game:goto("P1")
+end
+
+local function turnP2()
+    timer.performWithDelay(10, function()
+            game:goto("P2")
+        end)
+end
+
+local function turnP1off()
+    -- game:goto("P1")
+end
+
+local function turnP2off()
+    -- game:goto("P2")
+end
+
 local function init()
     game.selectedLevel = 1
 
     game.db = dbWrapper.DbWrapper:new()
 
-    game:addState({ name = "MAINMENU", transitions = {PLAYMENU = playMenu, OPTIONS = optionsMenu}})
-    game:addState({ name = "OPTIONS", transitions = {MAINMENU = mainMenuFromOptions, CREDITS = credits}})
-    game:addState({ name = "CREDITS", transitions = {OPTIONS = optionsFromCredits}})
-
-    game:addState({ name = "PLAYMENU", transitions = {LEVELSELECT = levelSelectFromPlayMenu, MAINMENU = mainMenuFromPlayMenu, LEVEL_INTRO = startVsGameFromLevelSelect} })
-
-    game:addState({ name = "LEVELSELECT", transitions = {LEVEL_INTRO = startStoryGameFromLevelSelect, TUTORIAL = tutorial, PLAYMENU = playMenuFromLevelSelect} })
-    game:addState({ name = "TUTORIAL", transitions = {P1 = startGameFromTutorial} })
-
-    game:addState({ name = "LEVEL_INTRO", transitions = {P1 = kickoffLevel} })
-
-    game:addState({ name = "P1", transitions = {BULLET1 = eventPlayer1Fire, PAUSEMENU = pause} })
-    game:addState({ name = "BULLET1", transitions = {MOVE_TO_P2 = eventBulletRemoved, PAUSEMENU = pause} })
-    game:addState({ name = "MOVE_TO_P2", transitions = { P2 = eventPlayer2Active, GAMEOVER = gameOver, PAUSEMENU = pause} })
-    game:addState({ name = "P2", transitions = {BULLET2 = eventPlayer2Fire, PAUSEMENU = pause} })
-    game:addState({ name = "BULLET2", transitions = {MOVE_TO_P1 = eventBulletRemoved, PAUSEMENU = pause} })    
-    game:addState({ name = "MOVE_TO_P1", transitions = { P1 = eventPlayer1Active, GAMEOVER = gameOver, PAUSEMENU = pause} })
-
-    game:addState({ name = "PAUSEMENU", transitions = { P1 = unpause, BULLET1 = unpause, MOVE_TO_P1 = unpause, 
-        MOVE_TO_P2 = unpause, P2 = unpause, BULLET2 = unpause, MOVE_TO_P1 = unpause, MAINMENU = exitToMain} })
-
-    game:addState({ name = "GAMEOVER", transitions = { LEVEL_INTRO = restartGame, MAINMENU = gameOverToMainMenu } })
+    game:addStates({  { name = "MAINMENU", transitions = {PLAYMENU = {playMenu}, OPTIONS = {optionsMenu}} },
+        { name = "OPTIONS", transitions = {MAINMENU = {mainMenuFromOptions}, CREDITS = {credits}} },
+        { name = "CREDITS", transitions = {OPTIONS = {optionsFromCredits}} },
+        { name = "PLAYMENU", transitions = {LEVELSELECT = {levelSelectFromPlayMenu}, MAINMENU = {mainMenuFromPlayMenu}, LEVEL_INTRO = {startVsGameFromLevelSelect}} },
+        { name = "LEVELSELECT", transitions = {LEVEL_INTRO = {startStoryGameFromLevelSelect}, TUTORIAL = {tutorial}, PLAYMENU = {playMenuFromLevelSelect}} },
+        { name = "TUTORIAL", transitions = {TURN_P1 = {startGameFromTutorial, turnP1}} },
+        { name = "LEVEL_INTRO", transitions = {TURN_P1 = {kickoffLevel, turnP1}} },
+        { name = "TURN_P1", transitions = {P1 = {turnP1off}} },
+        { name = "P1", transitions = {BULLET1 = {eventPlayer1Fire}, PAUSEMENU = {pause}} },
+        { name = "BULLET1", transitions = {MOVE_TO_P2 = {eventBulletRemoved}, PAUSEMENU = {pause}} },
+        { name = "MOVE_TO_P2", transitions = { TURN_P2 = {eventPlayer2Active, turnP2}, GAMEOVER = {gameOver}, PAUSEMENU = {pause}} },
+        { name = "TURN_P2", transitions = {P2 = {turnP2off}} },
+        { name = "P2", transitions = {BULLET2 = {eventPlayer2Fire}, PAUSEMENU = {pause}} },
+        { name = "BULLET2", transitions = {MOVE_TO_P1 = {eventBulletRemoved}, PAUSEMENU = {pause}} },
+        { name = "MOVE_TO_P1", transitions = { TURN_P1 = {eventPlayer1Active, turnP1}, GAMEOVER = {gameOver}, PAUSEMENU = {pause}} },
+        
+        { name = "PAUSEMENU", transitions = { P1 = {unpause}, BULLET1 = {unpause}, MOVE_TO_P1 = {unpause}, 
+        MOVE_TO_P2 = {unpause}, P2 = {unpause}, BULLET2 = {unpause}, MOVE_TO_P1 = {unpause}, MAINMENU = {exitToMain}} },
+        { name = "GAMEOVER", transitions = { LEVEL_INTRO = {restartGame}, MAINMENU = {gameOverToMainMenu}}}  })
 
     game:setState("MAINMENU")
     mainMenuScreen:render()

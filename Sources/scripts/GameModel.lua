@@ -37,13 +37,22 @@ function GameModel:addState(state)
     self.states[state.name] = state
 end
 
+function GameModel:addStates(states)
+    for key,value in pairs(states) do
+        self.states[value.name] = value
+    end
+end
+
 function GameModel:setState(stateName)        
     self.state = self.states[stateName]
 end
 
 function GameModel:goto(gotoState)
     print(self.state.name .. ' -> ' .. gotoState)
-    self.state.transitions[gotoState]()    
+    for key,value in pairs(self.state.transitions[gotoState]) do
+        value()
+    end
+    -- self.state.transitions[gotoState][1]()
     self.exState = "" .. self.state.name
     self.state = self.states[gotoState]
 end
