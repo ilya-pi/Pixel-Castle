@@ -3,6 +3,38 @@ module(..., package.seeall)
 local widget = require("widget")
 -- local Memmory = require("scripts.util.Memmory")
 
+function backBtn(f, g)
+    local b = widget.newButton{
+        width = 60,
+        height = 60,
+        defaultFile = "images/menus_common/back_button.png",
+        overFile = "images/menus_common/back_button_tapped.png",
+        onRelease = f
+    }
+    b:setReferencePoint(display.TopLeftReferencePoint)
+    b.x, b.y = display.screenOriginX, display.screenOriginY
+    g:insert(b)
+    return b
+end
+
+function button(w, h, id, l, f, g, x, y)
+    local b = widget.newButton{
+        width = w,
+        height = h,
+        defaultFile = "images/button.png",
+        overFile = "images/button_over.png",
+        id = id,
+        label = l,
+        font = "TrebuchetMS-Bold",
+        fontSize = 19,
+        labelColor = { default = { 255 }, over = { 180 } },
+        onRelease = f
+    }
+    g:insert(b)
+    b.x, b.y = x, y
+    return b
+end
+
 function dance(text)
     local tick = 100
     transition.to(text,{

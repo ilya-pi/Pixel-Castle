@@ -59,23 +59,10 @@ function PauseMenuOverlay:renderPauseScreen()
 
     customUI.danceText("PAUSED", display.contentWidth / 2, display.contentHeight / 2 - 50, 28, self.pauseOverlayGroup)
 
-    local mainMenu = widget.newButton{
-        width = 240,
-        height = 40,
-        defaultFile = "images/button.png",
-        overFile = "images/button_over.png",
-        id = "back_to_main_menu_btn",
-        label = "Exit to Main Menu",
-        font = "TrebuchetMS-Bold",
-        fontSize = 24,
-        labelColor = { default = { 255 }, over = { 0 } },
-        onRelease = function(event)
+    local play = customUI.button(240, 40, "back_to_main_menu_btn", "Exit to Main Menu", function(event)
             self.game:goto("MAINMENU")
             return true
-        end
-    }
-    mainMenu.x, mainMenu.y = display.contentWidth / 2, 260  --end of first quater of screen (center of button coords)
-    self.pauseOverlayGroup:insert(mainMenu)
+        end, self.pauseOverlayGroup, display.contentWidth / 2, 260)
 
     local playButton = widget.newButton{
         width = 60,
@@ -92,7 +79,6 @@ function PauseMenuOverlay:renderPauseScreen()
     playButton.y = display.screenOriginY
     self.playButton = playButton
     self.pauseOverlayGroup:insert(self.playButton)
-
 end
 
 function PauseMenuOverlay:dismissPauseScreen()

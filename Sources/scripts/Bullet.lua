@@ -95,6 +95,7 @@ function Bullet:fireBullet(x, y, dx, dy)
     -- twenty downbelow is a magic number that enables to adjust rotation speed accordingly to the x velocity
     self.bullet:applyTorque(math.floor(dx * force / 20))
     self.bullet:applyForce(dx * force, -dy * force, self.bullet.x, self.bullet.y)
+    -- self.bullet:applyLinearImpulse(dx * force, -dy * force, self.bullet.x, self.bullet.y)
 end
 
 function Bullet:getX()

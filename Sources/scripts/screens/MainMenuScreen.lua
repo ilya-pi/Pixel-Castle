@@ -18,17 +18,6 @@ function MainMenuScreen:new (o)
     return o
 end
 
-local function infoText(message, x, y, size, group)
-    local textShadow = display.newText(message, x + 2, y + 2, "TrebuchetMS-Bold", size)
-    local text = display.newText(message, x, y, "TrebuchetMS-Bold", size)
-    group:insert(textShadow)
-    group:insert(text)
-    textShadow:setTextColor(255, 255, 255)
-    text:setTextColor(37, 54, 34)
-    textShadow.text = message
-    text.text = message
-end
-
 function MainMenuScreen:render()
     self.displayGroup = display.newGroup()
 
@@ -56,48 +45,21 @@ function MainMenuScreen:render()
     local g = graphics.newGradient({ 236, 0, 140, 150 }, { 0, 114, 88, 175 }, "down")
     overlay:setFillColor(g)
     self.displayGroup:insert(overlay)
-
 end
 
 function MainMenuScreen:showMainMenu()
     self.mainMenuGroup = display.newGroup()
     self.displayGroup:insert(self.mainMenuGroup)
 
-    local play = widget.newButton{
-        width = 140,
-        height = 40,
-        defaultFile = "images/button.png",
-        overFile = "images/button_over.png",
-        id = "playbtn",
-        label = "Play",
-        font = "TrebuchetMS-Bold",
-        fontSize = 24,
-        labelColor = { default = { 255 }, over = { 0 } },
-        onRelease = function(event)
+    local play = customUI.button(140, 40, "playbtn", "Play", function(event)
             self.game:goto("PLAYMENU")
             return true
-        end
-    }
-    play.x, play.y = 5 * display.contentWidth / 7 + 20, 210
-    self.mainMenuGroup:insert(play)
+        end, self.mainMenuGroup, 5 * display.contentWidth / 7 + 20, 210)
 
-    local options = widget.newButton{
-        width = 140,
-        height = 40,
-        defaultFile = "images/button.png",
-        overFile = "images/button_over.png",
-        id = "optionsbtn",
-        label = "Options",
-        font = "TrebuchetMS-Bold",
-        fontSize = 24,
-        labelColor = { default = { 255 }, over = { 0 } },
-        onRelease = function(event)
+    local options = customUI.button(140, 40, "optionsbtn", "Options", function(event)
             self.game:goto("OPTIONS")
             return true
-        end
-    }
-    options.x, options.y = 5 * display.contentWidth / 7 + 20, 260
-    self.mainMenuGroup:insert(options)
+        end, self.mainMenuGroup, 5 * display.contentWidth / 7 + 20, 260)
 
     local logo = imageHelper.ourImage("images/title.png", 175, 80, self.mainMenuGroup)
     logo.x, logo.y = 4 * display.contentWidth / 7, display.contentHeight / 6
@@ -115,58 +77,22 @@ function MainMenuScreen:showPlayMenu()
     local logo = imageHelper.ourImage("images/title.png", 175, 80, self.playMenuGroup)
     logo.x, logo.y = 4 * display.contentWidth / 7, display.contentHeight / 6
 
-    local storyMode = widget.newButton{
-        width = 170,
-        height = 40,
-        defaultFile = "images/button.png",
-        overFile = "images/button_over.png",
-        id = "story_mode_btn",
-        label = "Story Mode",
-        font = "TrebuchetMS-Bold",
-        fontSize = 24,
-        labelColor = { default = { 255 }, over = { 0 } },
-        onRelease = function(event)
+    customUI.button(170, 40, "story_mode_btn", "Story Mode", function(event)
             self.game:goto("LEVELSELECT")
             print("tutorial in story mode")
             return true
-        end
-    }
-    --storyMode.x, storyMode.y = 5 * display.contentWidth / 7 + 20, 260
-    storyMode.x, storyMode.y = display.contentWidth / 4, 260  --end of first quater of screen (center of button coords)
-    self.playMenuGroup:insert(storyMode)
+        end, self.playMenuGroup, display.contentWidth / 4, 260)
 
-    local versusMode = widget.newButton{
-        width = 170,
-        height = 40,
-        defaultFile = "images/button.png",
-        overFile = "images/button_over.png",
-        id = "story_mode_btn",
-        label = "Versus Mode",
-        font = "TrebuchetMS-Bold",
-        fontSize = 24,
-        labelColor = { default = { 255 }, over = { 0 } },
-        onRelease = function(event)
+    customUI.button(170, 40, "story_mode_btn", "Versus Mode", function(event)
             self.game:goto("LEVEL_INTRO")
             print("versus mode")
             return true
-        end
-    }
-    versusMode.x, versusMode.y = display.contentWidth / 4 * 3, 260  --end of third quater of screen (center of button coords)
-    self.playMenuGroup:insert(versusMode)
+        end, self.playMenuGroup, display.contentWidth / 4 * 3, 260)
 
-    local backButton = widget.newButton{
-        width = 60,
-        height = 60,
-        defaultFile = "images/menus_common/back_button.png",
-        overFile = "images/menus_common/back_button_tapped.png",
-        onRelease = function(event)
+    customUI.backBtn(function(event)
             self.game:goto("MAINMENU")
             return true
-        end
-    }
-    backButton:setReferencePoint(display.TopLeftReferencePoint)
-    backButton.x, backButton.y = display.screenOriginX, display.screenOriginY
-    self.playMenuGroup:insert(backButton)
+        end, self.playMenuGroup)
 end
 
 function MainMenuScreen:showLevelSelect()
@@ -176,14 +102,14 @@ function MainMenuScreen:showLevelSelect()
 
     local levelNumberTextSize = 16
     local levelNumberTextPaddingTop = 2
-    local textSize = 28
+    local textSize = 25
     local layerSelectMagicYnumber = 15 --it's only one configuration number everything else should be calculated automatically
 
     local castleSize = 50
     local rawsCount = 2
     local columnsCount = 3
 
-    -- local rawsCount = 3
+    -- local rowsCount = 3
     -- local columnsCount = 5
 
     local levelsGroupViewportWidth = display.contentWidth - 2 * display.screenOriginX
@@ -260,21 +186,10 @@ function MainMenuScreen:showLevelSelect()
     self.levelsGroup.x = display.contentWidth / 2
     self.levelsGroup.y = display.contentHeight / 2 + self.textMarginTop - layerSelectMagicYnumber
 
-    local backButton = widget.newButton{
-        width = 60,
-        height = 60,
-        defaultFile = "images/menus_common/back_button.png",
-        overFile = "images/menus_common/back_button_tapped.png",
-        onRelease = function(event)
+    customUI.backBtn(function(event)
             self.game:goto("PLAYMENU")
             return true
-        end
-    }
-    backButton:setReferencePoint(display.TopLeftReferencePoint)
-    backButton.x, backButton.y = display.screenOriginX, display.screenOriginY
-
-
-    self.levelSelectGroup:insert(backButton)
+        end, self.levelSelectGroup)
 end
 
 function MainMenuScreen:hideLevelSelect()
@@ -327,39 +242,17 @@ function MainMenuScreen:showOptionsMenu()
             self.game.bgmVolume = value
         end))
 
-    local credits = widget.newButton{
-        width = 170,
-        height = 40,
-        defaultFile = "images/button.png",
-        overFile = "images/button_over.png",
-        id = "credits_id",
-        label = "Credits",
-        font = "TrebuchetMS-Bold",
-        fontSize = 24,
-        labelColor = { default = { 255 }, over = { 0 } },
-        onRelease = function(event)
+    customUI.button(170, 40, "credits_id", "Credits", function(event)
             self.game:goto("CREDITS")
             return true
-        end
-    }
-    credits.x, credits.y = display.contentWidth / 2, 3 * display.contentHeight / 4 + 30
-    self.optionsMenuGroup:insert(credits)
+        end, self.optionsMenuGroup, display.contentWidth / 2, 3 * display.contentHeight / 4 + 30)
 
-    customUI.text("Options", display.contentWidth / 2, 50 + display.screenOriginY, 30, self.optionsMenuGroup)
+    customUI.text("Options", display.contentWidth / 2, 50 + display.screenOriginY, 25, self.optionsMenuGroup)
 
-    local backButton = widget.newButton{
-        width = 60,
-        height = 60,
-        defaultFile = "images/menus_common/back_button.png",
-        overFile = "images/menus_common/back_button_tapped.png",
-        onRelease = function(event)
+    customUI.backBtn(function(event)
             self.game:goto("MAINMENU")
             return true
-        end
-    }
-    backButton:setReferencePoint(display.TopLeftReferencePoint)
-    backButton.x, backButton.y = display.screenOriginX, display.screenOriginY
-    self.optionsMenuGroup:insert(backButton)
+        end, self.optionsMenuGroup)
 end
 
 function MainMenuScreen:hideOptionsMenu()
