@@ -107,7 +107,7 @@ local function eventPlayer1Fire()
 
     local commonAction = function()
         game.bullet = bullet_module.Bullet:new({game = game})
-        game.bullet:fireNBullets(cannonX, cannonY, game.controls1:getAngle(), "3", 10, 5)
+        game.bullet:fireNBullets(cannonX, cannonY, game.controls1:getAngle(), game.controls1.selectedGun)
         game.cameraState = "CANNONBALL_FOCUS"
     end
 
@@ -129,7 +129,7 @@ local function eventPlayer2Fire()
 
     local commonAction = function()
         game.bullet = bullet_module.Bullet:new({game = game})
-        game.bullet:fireNBullets(cannonX, cannonY, game.controls2:getAngle(), "3", 10, 5)
+        game.bullet:fireNBullets(cannonX, cannonY, game.controls2:getAngle(), game.controls2.selectedGun)
         game.cameraState = "CANNONBALL_FOCUS"
     end
 

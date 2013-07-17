@@ -6,25 +6,25 @@ screens = {
         levels = {
             {
                 file = "level1.json",
-                bulletImpulse = 57000,
+                bulletImpulse = 77000,
                 maxWindForce = 3,
                 minScaleFactor = -1
             },
             {
                 file = "level2.json",
-                bulletImpulse = 63000,
+                bulletImpulse = 83000,
                 maxWindForce = 3,
                 minScaleFactor = -1
             },
             {
                 file = "level3.json",
-                bulletImpulse = 65000,
+                bulletImpulse = 91000,
                 maxWindForce = 3,
                 minScaleFactor = 0.5
             },
             {
                 file = "level4.json",
-                bulletImpulse = 67000,
+                bulletImpulse = 91000,
                 maxWindForce = 3,
                 minScaleFactor = -1
             },
@@ -39,6 +39,25 @@ screens = {
                 bulletImpulse = 70000,
                 maxWindForce = 5,
                 minScaleFactor = -1
+            }
+        },
+        bullets = {
+            {
+                bulletName = "7",
+                count = 1,
+                dAngleInDegrees = 0
+            },
+            {
+                bulletName = "11",
+                count = 1,
+                dAngleInDegrees = 0
+
+            },
+            {
+                bulletName = "3",
+                count = 5,
+                dAngleInDegrees = 10
+
             }
         }
     }
