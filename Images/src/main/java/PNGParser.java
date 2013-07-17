@@ -11,7 +11,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PNGParser {
 
@@ -75,7 +77,7 @@ public class PNGParser {
 
     public static void main(String[] args) throws Exception {
         config = new PropertiesConfiguration("config.properties");
-        String[] imageFolders = config.getStringArray("images.resource.folders");
+        String[] imageFolders = config.getStringArray("images.resource.level.folders");
         String outputFolder = config.getString("images.resource.output.folder");
         for (String imageFolder : imageFolders) {
             System.out.println("=======================================");
@@ -115,18 +117,18 @@ public class PNGParser {
 
                 Level.Pixel[] row = new Level.Pixel[width];
                 for (int x = 0; x < width; x++) {
-                    int rgb = merged.getRGB(x, y);
-                    int alpha = (rgb >> 24) & 0xFF;
-                    int red =   (rgb >> 16) & 0xFF;
-                    int green = (rgb >>  8) & 0xFF;
-                    int blue =  (rgb      ) & 0xFF;
+                    RGBA rgb = getRGB(merged, x, y);
+                    int alpha = rgb.a;
+                    int red =   rgb.r;
+                    int green = rgb.g;
+                    int blue =  rgb.b;
 
                     if (alpha != 0) {
                         if (pixelsSkipFromTop == -1) {
                             pixelsSkipFromTop = y + 1;
                         }
                         int[] rgba = {red, green, blue, alpha};
-                        Level.Pixel pixel = new Level.Pixel(rgba, 4);
+                        Level.Pixel pixel = new Level.Pixel(rgba, 3);
                         row[x] = pixel;
                     } else {
                         row[x] = null; //to be sure ))
@@ -144,51 +146,46 @@ public class PNGParser {
             Level levelForJson = new Level(pixels, height, width, imageFolder, castle1, castle2, pixelsSkipFromTop);
             String pixelsJson = gson.toJson(levelForJson);
             FileUtils.writeStringToFile(new File(outputFolder + "/" + imageFolder + ".json"), pixelsJson);
+        }
 
-
-
-
-/*            String jsonString = gson.toJson(levelData);
-            FileUtils.writeStringToFile(new File(outputFolder + "/" + imageFolder + ".json"), jsonString);
-
-            BufferedImage image = ImageIO.read(levelFile);
-            int width = image.getWidth();
-            int height = image.getHeight();
-            int startY = -1;
-            List<Level.Pixel[]> rows = new ArrayList<Level.Pixel[]>(height);
-            for (int y = 0; y < height; y++) {
-
-                Level.Pixel[] row = new Level.Pixel[width];
-                for (int x = 0; x < width; x++) {
-                    int rgb = image.getRGB(x, y);
-                    int alpha = (rgb >> 24) & 0xFF;
-                    int red =   (rgb >> 16) & 0xFF;
-                    int green = (rgb >>  8) & 0xFF;
-                    int blue =  (rgb      ) & 0xFF;
-
-                    if (alpha != 0) {
-                        if (startY == -1) {
-                            startY = y + 1;
+        String bulletsFolder = config.getString("images.resource.bullet.folder");
+        System.out.println("=======================================");
+        System.out.println("processing bullet folder = " + bulletsFolder);
+        System.out.println("=======================================");
+        File bulletsFolderFile = new File("src/main/resources/" + bulletsFolder);
+        File[] listOfFiles = bulletsFolderFile.listFiles();
+        Map<String, Integer[][]> bulletsMap = new HashMap<String, Integer[][]>();
+        if (listOfFiles != null) {
+            for (File file : listOfFiles) {
+                if (file.getName().endsWith(EXTENSION)) {
+                    System.out.println("processing bullet file:  " + file.getName());
+                    BufferedImage bulletImage = ImageIO.read(file);
+                    int width = bulletImage.getWidth();
+                    int height = bulletImage.getHeight();
+                    Integer[][] bulletArray = new Integer[width][height];
+                    for (int x = 0; x < width; x++) {
+                        for (int y = 0; y < height; y++) {
+                            RGBA rgb = getRGB(bulletImage, x, y);
+                            int alpha = rgb.a;
+                            int red =   rgb.r;
+                            int green = rgb.g;
+                            int blue =  rgb.b;
+                            int health = 0;
+                            if (red == 255 && green == 255 && blue == 255 && alpha == 255) {
+                                health = 2;
+                            } else if (red == 0 && green == 0 && blue == 0 && alpha == 255) {
+                                health = 1;
+                            }
+                            bulletArray[x][y] = health;
                         }
-                        int[] rgba = {red, green, blue, alpha};
-                        Level.Pixel pixel = new Level.Pixel(rgba, 4);
-                        row[x] = pixel;
-                    } else {
-                        row[x] = null; //to be sure ))
                     }
-                }
-                if (startY != -1) {
-                    rows.add(row);
+                    bulletsMap.put(file.getName().replaceAll("." + EXTENSION, ""), bulletArray);
                 }
             }
-
-            Level.Pixel[][] pixels = rows.toArray(new Level.Pixel[rows.size()][]);
-
-
-            String pixelsJson = gson.toJson(pixels);
-            FileUtils.writeStringToFile(new File(outputFolder + "/test.json"), pixelsJson);*/
-
+            String bulletsJson = gson.toJson(bulletsMap);
+            FileUtils.writeStringToFile(new File(outputFolder + "/bullets.json"), bulletsJson);
         }
+
     }
 
     private static CastleCoordinates getCoordinates(BufferedImage image) throws IOException {
@@ -197,11 +194,11 @@ public class PNGParser {
         int height = image.getHeight();
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                int rgb = image.getRGB(x, y);
-                int alpha = (rgb >> 24) & 0xFF;
-                int red =   (rgb >> 16) & 0xFF;
-                int green = (rgb >>  8) & 0xFF;
-                int blue =  (rgb      ) & 0xFF;
+                RGBA rgb = getRGB(image, x, y);
+                int alpha = rgb.a;
+                int red =   rgb.r;
+                int green = rgb.g;
+                int blue =  rgb.b;
 
                 if (red == 255 && green == 0 && blue == 255 && alpha == 255) {
                     System.out.println("hey!");
@@ -228,33 +225,12 @@ public class PNGParser {
         return coordinates;
     }
 
-    private static void testRGB(BufferedImage image, int x, int y) {
-        int rgb = image.getRGB(265, 275);
+    private static RGBA getRGB(BufferedImage image, int x, int y) {
+        int rgb = image.getRGB(x, y);
         int alpha = (rgb >> 24) & 0xFF;
         int red =   (rgb >> 16) & 0xFF;
         int green = (rgb >>  8) & 0xFF;
         int blue =  (rgb      ) & 0xFF;
-        System.out.println("x=" + x + " y=" + y + " red = " + red + " green = " + green + " blue = " + blue + " alpha = " + alpha);
-    }
-
-    private static CastleData parseImage(File file, String name, int xCastle, int yCastle) throws IOException {
-        List<Integer> pixels = new ArrayList<Integer>(100000);
-        BufferedImage image = ImageIO.read(file); //todo catch exceptions?
-        int width = image.getWidth();
-        int height = image.getHeight();
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                int rgb = image.getRGB(x, y);
-                int alpha = (rgb >> 24) & 0xFF;
-                int red =   (rgb >> 16) & 0xFF;
-                int green = (rgb >>  8) & 0xFF;
-                int blue =  (rgb      ) & 0xFF;
-                pixels.add(red);
-                pixels.add(green);
-                pixels.add(blue);
-                pixels.add(alpha);
-            }
-        }
-        return new CastleData(height, width, xCastle, yCastle, name, pixels);
+        return new RGBA(red, green, blue, alpha);
     }
 }
