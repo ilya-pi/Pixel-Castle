@@ -60,7 +60,7 @@ function Bullet:fireNBullets(x, y, angleInDegrees, bulletName, count, dAngleInDe
         self.bullet:addEventListener("collision", self.bullet)
     end
 
-    local angleForStart = (count - 1) * dAngleInRadians / 2 + angleInRadians
+    local angleForStart = - ((count - 1) * dAngleInRadians / 2) + angleInRadians
 
     for i = 1, #self.pixels do
         local force = game.levelConfig.screens[1].levels[game.selectedLevel].bulletImpulse
