@@ -70,20 +70,55 @@ function Controls:new(o)
     o.fireButton.x, o.fireButton.y = (o.slidePad.width / 2 + padding + o.fireButton.width / 2) * scaleFactor, yControls
     o.group:insert(o.fireButton)
 
-    -- o.gunButton = widget.newButton{
-    --     width = 42,
-    --     height = 42,
-    --     defaultFile = "images/fire_button.png",
-    --     overFile = "images/fire_button_pressed.png",
-    --     id = "gunbtn",
-    --     label = "GUN",
-    --     font = "TrebuchetMS-Bold",
-    --     fontSize = 12,
-    --     labelColor = { default = { 255 }, over = { 0 } },
-    --     onRelease = o.onFire
-    -- }
-    -- o.gunButton.x, o.gunButton.y = (o.slidePad.width / 2 + padding + o.fireButton.width / 2) * scaleFactor, yControls - 42 - 3
-    -- o.group:insert(o.gunButton)    
+    local gunX = (o.slidePad.width / 2 + padding + o.fireButton.width / 2) * scaleFactor
+    local gunY = yControls - 42 - 3
+    local gunW = 42
+    o.guns = {}
+    o.openArmory = function()
+        o.gunBtn:removeSelf()
+        for i=1,3 do
+            local b = widget.newButton{
+                width = 42,
+                height = 42,
+                defaultFile = "images/fire_button.png",
+                overFile = "images/fire_button_pressed.png",
+                id = "gun" .. i,
+                label = "" .. i,
+                font = "TrebuchetMS-Bold",
+                fontSize = 12,
+                labelColor = { default = { 255 }, over = { 0 } },
+                onRelease = function()
+                    o.closeArmory(i)
+                end
+            }
+            o.group:insert(b)
+            b.x, b.y = gunX + (gunW + 7) * ( i - 1), gunY
+            o.guns[i] = b
+        end
+    end
+
+    o.closeArmory = function(gun)
+        for k,v in pairs(o.guns) do
+            v:removeSelf()
+        end
+        o.gunBtn = widget.newButton{
+            width = gunW,
+            height = 42,
+            defaultFile = "images/fire_button.png",
+            overFile = "images/fire_button_pressed.png",
+            id = "gunbtn",
+            label = "" .. gun,
+            font = "TrebuchetMS-Bold",
+            fontSize = 12,
+            labelColor = { default = { 255 }, over = { 0 } },
+            onRelease = o.openArmory
+        }
+        o.gunBtn.x, o.gunBtn.y = gunX, gunY
+        o.group:insert(o.gunBtn)
+        o.selectedGun = gun
+    end    
+
+    o.closeArmory(game.START_GUN)
 
     o.angleLine = display.newImage("images/castle_control/angle_stick.png")
     o.angleLine:scale(scaleFactor, scaleFactor)

@@ -269,6 +269,9 @@ function GameOverScreen:renderCampaign()
 end
 
 function GameOverScreen:dismiss()
-    timer.cancel(self.startTimer)
+    if self.startTimer ~= nil then
+        timer.cancel(self.startTimer)
+        self.startTimer = nil
+    end
     self.displayGroup:removeSelf()
 end
