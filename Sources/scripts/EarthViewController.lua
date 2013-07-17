@@ -190,10 +190,12 @@ function EarthViewController:calculateHit(physicsPixel, hit)
                 local tmpPixel = self.level.pixels[pixelY][pixelX]
                 tmpPixel.hl = tmpPixel.hl - power
                 if tmpPixel.hl <= 0 then
-                    timer.performWithDelay(10, function() 
-                                                    tmpPixel.physicsPixel.state = "removed"
-                                                    tmpPixel.physicsPixel:removeSelf()
-                                                    self.level.pixels[pixelY][pixelX] = nil
+                    timer.performWithDelay(10, function()
+                                                    if tmpPixel.physicsPixel ~= nil and tmpPixel.physicsPixel.state ~= "removed" then
+                                                        tmpPixel.physicsPixel.state = "removed"
+                                                        tmpPixel.physicsPixel:removeSelf()
+                                                        self.level.pixels[pixelY][pixelX] = nil
+                                                    end
                                                end
                     )
                 else

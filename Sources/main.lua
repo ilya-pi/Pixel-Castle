@@ -96,8 +96,6 @@ local function gameLoop()
     end
 end
 
-local impulse = 11
-
 local function cameraListener()
     print("move complete!")
 end
@@ -109,7 +107,7 @@ local function eventPlayer1Fire()
 
     local commonAction = function()
         game.bullet = bullet_module.Bullet:new({game = game})
-        game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls1:getAngle())), impulse * math.cos(math.rad(game.controls1:getAngle())))
+        game.bullet:fireNBullets(cannonX, cannonY, game.controls1:getAngle(), "3", 10, 1.5)
         game.cameraState = "CANNONBALL_FOCUS"
     end
 
@@ -131,7 +129,7 @@ local function eventPlayer2Fire()
 
     local commonAction = function()
         game.bullet = bullet_module.Bullet:new({game = game})
-        game.bullet:fireBullet(cannonX, cannonY, impulse * math.sin(math.rad(game.controls2:getAngle())), impulse * math.cos(math.rad(game.controls2:getAngle())))
+        game.bullet:fireNBullets(cannonX, cannonY, game.controls2:getAngle(), "3", 10, 1.5)
         game.cameraState = "CANNONBALL_FOCUS"
     end
 

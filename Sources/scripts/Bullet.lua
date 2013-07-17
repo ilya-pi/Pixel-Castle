@@ -2,20 +2,7 @@ module(..., package.seeall)
 
 local Memmory = require("scripts.util.Memmory")
 local imageHelper = require("scripts.util.Image")
-
---[[local hit = {
-    {0,0,1,1,1,0,0},
-    {0,1,2,3,2,1,0},
-    {1,2,3,3,3,2,1},
-    {1,3,3,3,3,3,1},
-    {1,2,3,3,3,2,1},
-    {0,1,2,3,2,1,0},
-    {0,0,1,1,1,0,0},
-}]]
-
 local bullets = imageHelper.loadImageData("data/bullets.json");
-
-local hit = bullets["11"]
 
 local fireSound = audio.loadSound("sound/fire.mp3")
 local hitSound = audio.loadSound("sound/hit.mp3")
@@ -34,6 +21,7 @@ function Bullet:new(o)
 end
 
 local function onCollision(self, event)
+    local hit = self.hit  --todo: here we should have access to Bullet.hit
     event.contact.isEnabled = false
     if (event.other.myName == "brick") then
         audio.play(hitSound)
@@ -44,91 +32,48 @@ local function onCollision(self, event)
             system.vibrate()
         end        
         self.state = "removed"
-        game.earth:calculateHit(event.other, hit)
+        game.earth:calculateHit(event.other, hit) --todo: here we should have access to Bullet.hit
     end
     return true
---[[    if event.other.myName == "brick" then
-        self:removeSelf()
-        event.other.myName = "n"
-        if game.vibration then
-            system.vibrate()
-        end
-        table.insert(Memmory.timerStash, timer.performWithDelay( 10, function()
-                physics.removeBody(event.other)
-                event.other.bodyType = "dynamic"
-                event.other:setLinearVelocity( 100, 100 )
-                -- event.other:applyTorque( 100 )
-                local that = event.other
-                --todo: do we need memmory management here?
-                table.insert(Memmory.timerStash, timer.performWithDelay(3000, function()
-                        display.remove(event.other)
-                        -- that:removeSelf()
-                    end))
-            end))
-        self.state = "removed"
-        event.other.state = "removed"
-    end]]
-    end
+end
 
-function Bullet:fireBullet(x, y, dx, dy)
+function Bullet:fireNBullets(x, y, angleInDegrees, bulletName, count, dAngleInDegrees)
     audio.play(fireSound)
+    self.hit = bullets[bulletName]
+    local angleInRadians = math.rad(angleInDegrees)
+    local dAngleInRadians = math.rad(dAngleInDegrees)
+    self.pixels = {}
 
-    self.bullet = display.newRect(x, y, 20, 20)
-    self.bullet.myName = "cannonball"
-    self.bullet.strokeWidth = 0
-    self.bullet:setFillColor(26, 55, 37)
-    game.world:insert(self.bullet)
-    Memmory.trackPhys(self.bullet); physics.addBody(self.bullet, { density = 100, friction = 10, bounce = 10})
+    for i = 1, count do
+        self.bullet = display.newRect(x, y, 20, 20)
+        self.bullet.myName = "cannonball"
+        self.bullet.hit = self.hit --todo: think how to store hit not in display object
+        self.bullet.strokeWidth = 0
+        self.bullet:setFillColor(26, 55, 37)
+        game.world:insert(self.bullet)
+        self.pixels[i] = self.bullet
+        Memmory.trackPhys(self.bullet); physics.addBody(self.bullet, { density = 100, friction = 10, bounce = 10, isSensor = true})
 
-    -- without this flag it still runs fine, and should not consume as much resources
-    -- self.bullet.isBullet = true
-    self.bullet.collision = onCollision
-    self.bullet:addEventListener("collision", self.bullet)
+        -- without this flag it still runs fine, and should not consume as much resources
+        -- self.bullet.isBullet = true
+        self.bullet.collision = onCollision
+        self.bullet:addEventListener("collision", self.bullet)
+    end
 
-    local force = game.levelConfig.screens[1].levels[game.selectedLevel].bulletImpulse
-    -- twenty downbelow is a magic number that enables to adjust rotation speed accordingly to the x velocity
-    self.bullet:applyTorque(math.floor(dx * force / 20))
-    self.bullet:applyForce(dx * force, -dy * force, self.bullet.x, self.bullet.y)
-    -- self.bullet:applyLinearImpulse(dx * force, -dy * force, self.bullet.x, self.bullet.y)
-end
+    local angleForStart = (count - 1) * dAngleInRadians / 2 + angleInRadians
 
-function Bullet:getX()
-    if self.bullet ~= nil then
-        return self.bullet.x
-    else
-        return nil
+    for i = 1, #self.pixels do
+        local force = game.levelConfig.screens[1].levels[game.selectedLevel].bulletImpulse
+        local currentAngle = angleForStart + (i - 1) * dAngleInRadians
+        local dx = force * math.sin(currentAngle)
+        local dy = force * math.cos(currentAngle)
+        -- twenty downbelow is a magic number that enables to adjust rotation speed accordingly to the x velocity
+        self.pixels[i]:applyTorque(math.floor(dx * force / 20))
+        self.pixels[i]:applyForce(dx, -dy, self.pixels[i].x, self.pixels[i].y)
     end
 end
 
-function Bullet:getY()
-    if self.bullet ~= nil then
-        return self.bullet.y
-    else
-        return nil
-    end
-end
 
-function Bullet:remove()
-    self.bullet = nil
-end
-
-function Bullet:isAlive()
-    if self.bullet ~= nil then
-        local x = self:getX()
-        local y = self:getY()
-        --todo: use screenOriginX and Y below?
-        if x ~= nil and y ~= nil and self:getX() < game.levelWidth * game.pixel and self:getX() > 0 and self:getY() < game.levelHeight * game.pixel then
-            return true
-        end
-    end
-
-    return false
-end
-
-
-
-
---[[ --todo: left this here for the probably bullet from 3 pieces
 function Bullet:getX()
     self.xCount = 0
     self.xSum = 0
@@ -180,4 +125,4 @@ function Bullet:isAlive()
     else
         return true
     end
-end]]
+end
