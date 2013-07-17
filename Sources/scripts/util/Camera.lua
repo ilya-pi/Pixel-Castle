@@ -80,16 +80,16 @@ local function calculateTouchY(desiredY, ratio)
     -- local topBorder = -(game.levelHeight * game.pixel * ratio - screenHeight - display.screenOriginY)
 --     return topBorder, topBorder, topBorder
     if (desiredY >= display.screenOriginY) then
-        print("case1 " .. display.screenOriginY)
+        --print("case1 " .. display.screenOriginY)
         return 2 * display.screenOriginY, 2 * display.screenOriginY, 2 * display.screenOriginY
     else
         local topBorder = -(game.levelHeight * game.pixel * ratio - screenHeight - 2 * display.screenOriginY)
         if (desiredY <= topBorder) then
-            print("case2 " .. topBorder)
+            --print("case2 " .. topBorder)
             return topBorder, topBorder, topBorder
         end
     end
-    print("case3 " .. desiredY)
+    --print("case3 " .. desiredY)
     return desiredY, desiredY, desiredY
 end
 

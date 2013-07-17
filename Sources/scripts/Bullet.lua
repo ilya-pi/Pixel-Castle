@@ -1,8 +1,9 @@
 module(..., package.seeall)
 
 local Memmory = require("scripts.util.Memmory")
+local imageHelper = require("scripts.util.Image")
 
-local hit = {
+--[[local hit = {
     {0,0,1,1,1,0,0},
     {0,1,2,3,2,1,0},
     {1,2,3,3,3,2,1},
@@ -10,18 +11,11 @@ local hit = {
     {1,2,3,3,3,2,1},
     {0,1,2,3,2,1,0},
     {0,0,1,1,1,0,0},
-}
+}]]
 
--- local hit = {
---     {0,0,1,1,1,0,0,1},
---     {0,1,2,3,2,1,0,1},
---     {1,2,3,3,3,2,1,1},
---     {1,3,3,3,3,3,1,1},
---     {1,2,3,3,3,2,1,1},
---     {0,1,2,3,2,1,0,1},
---     {0,0,1,1,1,0,0,1},
---     {0,0,1,1,1,0,0,1},
--- }
+local bullets = imageHelper.loadImageData("data/bullets.json");
+
+local hit = bullets["11"]
 
 local fireSound = audio.loadSound("sound/fire.mp3")
 local hitSound = audio.loadSound("sound/hit.mp3")

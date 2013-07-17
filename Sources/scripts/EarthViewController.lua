@@ -18,7 +18,7 @@ function EarthViewController:substitutePiece(xPiece, yPiece)
             for x = startX, startX + spriteWidthPixels - 1 do
                 if self.level.pixels[y] ~= nil and self.level.pixels[y][x] ~= nil then
                     local pixelData = self.level.pixels[y][x]
-                    if (pixelData[4] ~= 0) then
+                    if (pixelData[3] ~= 0) then
                         local left = piece.absoluteX + (x - startX) * game.pixel
                         local top = piece.absoluteY + (y - startY) * game.pixel
                         local myPixel = display.newRect(left, top, game.pixel, game.pixel)
@@ -31,7 +31,7 @@ function EarthViewController:substitutePiece(xPiece, yPiece)
                         game.world:insert(myPixel)
                         Memmory.trackPhys(myPixel); timer.performWithDelay(1, function() physics.addBody(myPixel, "static") end)
                         self.level.pixels[y][x].physicsPixel = myPixel
-                        self.level.pixels[y][x].hl = 3
+                        self.level.pixels[y][x].hl = 2
                     end
                 end
             end
@@ -50,8 +50,7 @@ function EarthViewController:checkPixels(startX, endX, startY, endY, substitueAl
     
     for y=startY, endY do
         for x=startX, endX do
-            
-            if self.level.pixels[y][x] ~= nil and self.level.pixels[y][x].hl == 4 then
+            if self.level.pixels[y] ~= nil and self.level.pixels[y][x] ~= nil and self.level.pixels[y][x].hl == 3 then
                 if substitueAll then
                     local xPiece = math.floor((x - 1) / spriteWidthPixels) + 1
                     local yPiece = math.floor((y - 1) / spriteWidthPixels) + 1
@@ -191,7 +190,6 @@ function EarthViewController:calculateHit(physicsPixel, hit)
                 local tmpPixel = self.level.pixels[pixelY][pixelX]
                 tmpPixel.hl = tmpPixel.hl - power
                 if tmpPixel.hl <= 0 then
-                --if power > 0 then
                     timer.performWithDelay(10, function() 
                                                     tmpPixel.physicsPixel.state = "removed"
                                                     tmpPixel.physicsPixel:removeSelf()
@@ -199,9 +197,6 @@ function EarthViewController:calculateHit(physicsPixel, hit)
                                                end
                     )
                 else
-                  local  dimmer = 4 - tmpPixel.hl
-                  local r, g, b = unpack(tmpPixel.rgba)
-                  -- tmpPixel.physicsPixel:setFillColor(r / dimmer, g / dimmer, b / dimmer, 255)
                   tmpPixel.physicsPixel:setFillColor(53, 93, 34, 255)
                 end
                     
