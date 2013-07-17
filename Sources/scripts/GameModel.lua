@@ -21,6 +21,7 @@ GameModel = {
     tint = false, -- whether to use tint or not, simply set false to eliminate it atm
     tintColor = {r = 255, g = 0, b = 255}, -- actuall tint color
 
+    SKY_SUBSTITUTION_COLOR = {r = 207, g = 229, b = 130},
     LEVEL_INTRO_DELAY = 3000
 }
 

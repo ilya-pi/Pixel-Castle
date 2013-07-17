@@ -269,15 +269,15 @@ function Camera:moveCamera()
 	elseif (game.cameraState == "FOCUSING") then
 		-- do nothing
     elseif game.cameraState == "OVERVIEW" then
-        local viewPortHeight = game.levelHeight * game.pixel - display.screenOriginY
-        if viewPortHeight < display.contentHeight - display.screenOriginY then
-            viewPortHeight = display.contentHeight - display.screenOriginY
-        end
-        self.ratio = screenHeight / viewPortHeight
+        -- local viewPortHeight = game.levelHeight * game.pixel - display.screenOriginY
+        -- if viewPortHeight < display.contentHeight - display.screenOriginY then
+        --     viewPortHeight = display.contentHeight - display.screenOriginY
+        -- end
+        -- self.ratio = screenHeight / viewPortHeight
 
-        if game.levelWidth * game.pixel * self.ratio < -2 * display.screenOriginX + display.contentWidth then
+        -- if game.levelWidth * game.pixel * self.ratio < -2 * display.screenOriginX + display.contentWidth then
             self.ratio = (-2 * display.screenOriginX + display.contentWidth) / (game.levelWidth * game.pixel)
-        end
+        -- end
 
         local properY = display.screenOriginY - (game.levelHeight * game.pixel * self.ratio - (display.contentHeight - 2 * display.screenOriginY))
         game.world.x, game.world.y = display.screenOriginX, properY
@@ -285,9 +285,19 @@ function Camera:moveCamera()
         game.world.xScale = self.ratio
         game.world.yScale = self.ratio
 
+        -- bgSubstitution.x, bgSubstitution.y = display.screenOriginX, display.screenOriginY
+        -- game.sky:insert(bgSubstitution)        
+        
         game.sky.x, game.sky.y = display.screenOriginX, properY
         game.sky.xScale = self.ratio
         game.sky.yScale = self.ratio
+
+        local bgSubstitution = display.newRect(
+            game.sky, 
+            0,  -- because the group itself is already at display.screenOriginX
+            display.screenOriginY / self.ratio - properY / self.ratio,  -- because sky is at properY position
+            (-2 * display.screenOriginX + display.contentWidth) / self.ratio, (properY - display.screenOriginY) / self.ratio)
+        bgSubstitution:setFillColor(game.SKY_SUBSTITUTION_COLOR.r, game.SKY_SUBSTITUTION_COLOR.g, game.SKY_SUBSTITUTION_COLOR.b)
 
         game.background.x, game.background.y = display.screenOriginX, properY
         game.background.xScale = self.ratio
