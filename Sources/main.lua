@@ -15,7 +15,7 @@ display.setDefault("minTextureFilter", "nearest")
 
 screenHeight = display.contentHeight - 2 * display.screenOriginY
 screenWidth = display.contentWidth - 2 * display.screenOriginX
-physics.setDrawMode( "hybrid" )
+-- physics.setDrawMode( "hybrid" )
 
 local Memmory = require("scripts.util.Memmory")
 local imageHelper = require("scripts.util.Image")
