@@ -37,11 +37,15 @@ local function onCollision(self, event)
     return true
 end
 
-function Bullet:fireNBullets(x, y, angleInDegrees, bulletName, count, dAngleInDegrees)
+function Bullet:fireNBullets(x, y, angleInDegrees, bulletNumber)
+    local bulletName = game.levelConfig.screens[1].bullets[bulletNumber].bulletName
+    local count = game.levelConfig.screens[1].bullets[bulletNumber].count
+    local dAngleInDegrees = game.levelConfig.screens[1].bullets[bulletNumber].dAngleInDegrees
     audio.play(fireSound)
     self.hit = bullets[bulletName]
     local angleInRadians = math.rad(angleInDegrees)
     local dAngleInRadians = math.rad(dAngleInDegrees)
+    local force = game.levelConfig.screens[1].levels[game.selectedLevel].bulletImpulse
     self.pixels = {}
 
     for i = 1, count do
@@ -56,6 +60,7 @@ function Bullet:fireNBullets(x, y, angleInDegrees, bulletName, count, dAngleInDe
 
         -- without this flag it still runs fine, and should not consume as much resources
         -- self.bullet.isBullet = true
+        self.bullet.linearDamping = 0.2 --implements air tension
         self.bullet.collision = onCollision
         self.bullet:addEventListener("collision", self.bullet)
     end
@@ -63,7 +68,7 @@ function Bullet:fireNBullets(x, y, angleInDegrees, bulletName, count, dAngleInDe
     local angleForStart = - ((count - 1) * dAngleInRadians / 2) + angleInRadians
 
     for i = 1, #self.pixels do
-        local force = game.levelConfig.screens[1].levels[game.selectedLevel].bulletImpulse
+
         local currentAngle = angleForStart + (i - 1) * dAngleInRadians
         local dx = force * math.sin(currentAngle)
         local dy = force * math.cos(currentAngle)
@@ -71,10 +76,35 @@ function Bullet:fireNBullets(x, y, angleInDegrees, bulletName, count, dAngleInDe
         self.pixels[i]:applyTorque(math.floor(dx * force / 20))
         self.pixels[i]:applyForce(dx, -dy, self.pixels[i].x, self.pixels[i].y)
     end
+
+    self.cameraAim = display.newRect(x, y, 20, 20) --todo: make bullets size bigger and smaller depending on hit
+    self.cameraAim.myName = "camera_aim"
+    self.cameraAim:setFillColor(255, 255, 255, 0)
+    game.world:insert(self.cameraAim)
+    Memmory.trackPhys(self.cameraAim); physics.addBody(self.cameraAim, { density = 100, friction = 10, bounce = 10, isSensor = true})
+    self.cameraAim.linearDamping = 0.2 --implements air tension
+    self.cameraAim:applyForce(force * math.sin(angleInRadians), -force * math.cos(angleInRadians), self.cameraAim.x, self.cameraAim.y)
+
+end
+
+function Bullet:getX()
+    if self.pixels ~= nil and self:isAlive() and self.cameraAim ~= nil then
+        return self.cameraAim.x
+    else
+        return nil
+    end
+end
+
+function Bullet:getY()
+    if self.pixels ~= nil and self:isAlive() and self.cameraAim ~= nil then
+        return self.cameraAim.y
+    else
+        return nil
+    end
 end
 
 
-function Bullet:getX()
+--[[function Bullet:getX()
     self.xCount = 0
     self.xSum = 0
     for i, v in ipairs(self.pixels) do --todo: room for optimization: do not use "ipairs"
@@ -104,25 +134,27 @@ function Bullet:getY()
     else
         return nil
     end
-end
+end]]
 
 function Bullet:remove()
     for i, v in ipairs(self.pixels) do
         self.pixels[i] = nil
     end
+    if self.cameraAim ~= nil then
+        self.cameraAim = nil
+    end
 end
 
 function Bullet:isAlive()
-    local atleastOnePixel = false
     for i, v in ipairs(self.pixels) do
-        if (v.state ~= "removed") then
-            atleastOnePixel = true
-            break
+        if v.state ~= "removed" and
+           not (v.x > self.game.levelWidth * self.game.pixel or v.x < 0 or v.y > self.game.levelHeight * self.game.pixel) then
+            return true
         end
     end
-    if ((not atleastOnePixel) or self:getX() > self.game.levelWidth * self.game.pixel or self:getX() < 0 or self:getY() > self.game.levelHeight * self.game.pixel) then
-        return false
-    else
-        return true
+
+    if self.cameraAim ~= nil then
+        self.cameraAim = nil
     end
+    return false
 end
