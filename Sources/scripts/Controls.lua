@@ -1,6 +1,7 @@
 module(..., package.seeall)
 
 local widget = require("widget")
+local Memmory = require("scripts.util.Memmory")
 
 Controls = {}
 
@@ -58,8 +59,8 @@ function Controls:new(o)
     o.fireButton = widget.newButton{
         width = 42,
         height = 42,
-        defaultFile = "images/fire_button.png",
-        overFile = "images/fire_button_pressed.png",
+        defaultFile = "images/castle_control/fire_button.png",
+        overFile = "images/castle_control/fire_button_pressed.png",
         id = "firebtn",
         label = "FIRE",
         font = "TrebuchetMS-Bold",
@@ -71,19 +72,27 @@ function Controls:new(o)
     o.group:insert(o.fireButton)
 
     local gunX = (o.slidePad.width / 2 + padding + o.fireButton.width / 2) * scaleFactor
-    local gunY = yControls - 42 - 3
+    local gunY = yControls - 42 - 4
     local gunW = 42
+    o.selectedGun = 1
     o.guns = {}
+    local overdo = 15
     o.openArmory = function()
         o.gunBtn:removeSelf()
         for i=1,3 do
+            local bImage
+            if o.selectedGun == i then 
+                bImage = "images/castle_control/weapon" .. i .. "_pressed.png"
+            else 
+                bImage = "images/castle_control/weapon" .. i .. ".png"
+            end
             local b = widget.newButton{
                 width = 42,
                 height = 42,
-                defaultFile = "images/fire_button.png",
-                overFile = "images/fire_button_pressed.png",
+                defaultFile = bImage,
+                overFile = "images/castle_control/weapon" .. i .. "_pressed.png",
                 id = "gun" .. i,
-                label = "" .. i,
+                label = "",
                 font = "TrebuchetMS-Bold",
                 fontSize = 12,
                 labelColor = { default = { 255 }, over = { 0 } },
@@ -92,7 +101,10 @@ function Controls:new(o)
                 end
             }
             o.group:insert(b)
-            b.x, b.y = gunX + (gunW + 7) * ( i - 1), gunY
+            b.x, b.y = gunX, gunY
+            transition.to(b,{x = gunX + (gunW + 7) * ( i - 1) + overdo, transition = easing.inExpo, time = 100, onComplete = function()
+                transition.to(b, {x = b.x - overdo, time = 50})
+                end})
             o.guns[i] = b
         end
     end
@@ -104,10 +116,10 @@ function Controls:new(o)
         o.gunBtn = widget.newButton{
             width = gunW,
             height = 42,
-            defaultFile = "images/fire_button.png",
-            overFile = "images/fire_button_pressed.png",
+            defaultFile = "images/castle_control/weapon" .. gun .. "_pressed.png",
+            overFile = "images/castle_control/weapon" .. gun .. ".png",
             id = "gunbtn",
-            label = "" .. gun,
+            label = "",
             font = "TrebuchetMS-Bold",
             fontSize = 12,
             labelColor = { default = { 255 }, over = { 0 } },
