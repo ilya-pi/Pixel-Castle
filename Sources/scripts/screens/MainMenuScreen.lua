@@ -42,8 +42,7 @@ function MainMenuScreen:render()
     end, 0)
 
     local overlay = display.newRect(display.screenOriginX, display.screenOriginY, display.contentWidth - 2 * display.screenOriginX, display.contentHeight - 2 * display.screenOriginY)
-    local g = graphics.newGradient({ 236, 0, 140, 150 }, { 0, 114, 88, 175 }, "down")
-    overlay:setFillColor(g)
+    overlay:setFillColor(game.MAIN_GRADIENT)
     self.displayGroup:insert(overlay)
 end
 
@@ -208,24 +207,25 @@ function MainMenuScreen:showOptionsMenu()
     self.optionsMenuGroup = display.newGroup()
     self.displayGroup:insert(self.optionsMenuGroup)
 
-    local bg = display.newImageRect("images/button.png", 2 * display.contentWidth / 3, display.contentHeight / 2)
+    local width = (-2 * display.screenOriginX + display.contentWidth)
+    local height = -2 * display.screenOriginY + display.contentHeight
+
+    local viewWidth = 2 * width / 3
+    local viewHeight = height / 2
+    local xOffset = display.screenOriginX + (width - viewWidth) / 2
+    local yOffset = display.screenOriginY + height / 4
+    local padding = 25
+    local lineH = viewHeight / 8
+
+    customUI.text("Options", display.contentWidth / 2, 50 + display.screenOriginY, 25, self.optionsMenuGroup)
+
+    local bg = display.newImageRect("images/button.png", viewWidth, viewHeight)
     self.optionsMenuGroup:insert(bg)
-    bg:setReferencePoint(display.CenterReferencePoint)
-    bg.x, bg.y = display.contentWidth / 2, display.contentHeight / 2
+    bg:setReferencePoint(display.TopLeftReferencePoint)
+    bg.x, bg.y = xOffset, yOffset
 
-    customUI.text("Vibration", display.contentWidth / 6 + 20, display.contentHeight * (1 / 4 + 1/3), 21, self.optionsMenuGroup, display.TopLeftReferencePoint)
-
-    local astroSwitch = customUI.AstroSwitch:new("images/toggle_on.png", "images/toggle_off.png", "images/toggle_transition.png", 
-        display.contentWidth - display.contentWidth / 6 - 75, display.contentHeight * (1 / 4 + 1/3) + 20
-        , display.CenterReferencePoint, 106, 31, true, function(isOn)
-            self.game.vibration = isOn
-            if isOn then
-                system.vibrate()
-            end
-        end, self.optionsMenuGroup)
-
-    customUI.text("SFX volume", display.contentWidth / 6 + 20, display.contentHeight * (1 / 4 + 1/6) + 5, 21, self.optionsMenuGroup, display.TopLeftReferencePoint)
-    self.optionsMenuGroup:insert(customUI.slider(display.contentWidth - display.contentWidth / 6 - 166, display.contentHeight * (1 / 4 + 1/6), 150, "sfxVolumeSlider",
+    customUI.text("BGM volume", xOffset + padding, yOffset + 1 * lineH, 19, self.optionsMenuGroup, display.TopLeftReferencePoint)
+    self.optionsMenuGroup:insert(customUI.slider(xOffset + viewWidth - padding, yOffset + 1 * lineH, 150, "sfxVolumeSlider",
         self.game.sfxVolume,
         function(event)
             local slider = event.target
@@ -233,8 +233,8 @@ function MainMenuScreen:showOptionsMenu()
             self.game.sfxVolume = value
         end))
 
-    customUI.text("BGM volume", display.contentWidth / 6 + 20, display.contentHeight / 4, 21, self.optionsMenuGroup, display.TopLeftReferencePoint)
-    self.optionsMenuGroup:insert(customUI.slider(display.contentWidth - display.contentWidth / 6 - 166, display.contentHeight / 4 + 5, 150, "bgmVolumeSlider",
+    customUI.text("SFX volume", xOffset + padding, yOffset + 3 * lineH, 19, self.optionsMenuGroup, display.TopLeftReferencePoint)
+    self.optionsMenuGroup:insert(customUI.slider(xOffset + viewWidth - padding, yOffset + 3 * lineH, 150, "bgmVolumeSlider",
         self.game.bgmVolume,
         function(event)
             local slider = event.target
@@ -242,12 +242,20 @@ function MainMenuScreen:showOptionsMenu()
             self.game.bgmVolume = value
         end))
 
+    customUI.text("Vibration", xOffset + padding, yOffset + 5 * lineH, 19, self.optionsMenuGroup, display.TopLeftReferencePoint)
+    local astroSwitch = customUI.AstroSwitch:new("images/toggle_on.png", "images/toggle_off.png", "images/toggle_transition.png", 
+        xOffset + viewWidth - padding, yOffset + 5 * lineH
+        , display.TopRightReferencePoint, 106, 31, true, function(isOn)
+            self.game.vibration = isOn
+            if isOn then
+                system.vibrate()
+            end
+        end, self.optionsMenuGroup)    
+
     customUI.button(170, 40, "credits_id", "Credits", function(event)
             self.game:goto("CREDITS")
             return true
-        end, self.optionsMenuGroup, display.contentWidth / 2, 3 * display.contentHeight / 4 + 30)
-
-    customUI.text("Options", display.contentWidth / 2, 50 + display.screenOriginY, 25, self.optionsMenuGroup)
+        end, self.optionsMenuGroup, display.contentWidth / 2, yOffset + viewHeight + 1.5 * padding)
 
     customUI.backBtn(function(event)
             self.game:goto("MAINMENU")
@@ -272,7 +280,7 @@ function MainMenuScreen:showCredits()
     local xOffset = display.screenOriginX + (width - viewWidth) / 2
     local yOffset = display.screenOriginY + height / 4
     local padding = 25
-    local lineH = viewHeight / 8
+    local lineH = viewHeight / 7
 
     customUI.text("Credits", display.contentWidth / 2, 50 + display.screenOriginY, 25, self.creditsGroup)
 
@@ -288,23 +296,29 @@ function MainMenuScreen:showCredits()
     customUI.text("Sergey Belyakov", xOffset + viewWidth - padding, yOffset + 2 * lineH, 19, self.creditsGroup, display.TopRightReferencePoint)
     customUI.text("Rodrigo Maselli", xOffset + viewWidth - padding, yOffset + 4 * lineH, 19, self.creditsGroup, display.TopRightReferencePoint)
 
-    local website = widget.newButton{
-        width = 260,
-        height = 40,
-        defaultFile = "images/button.png",
-        overFile = "images/button_over.png",
-        id = "websitebtnid",
-        label = "Astroberries website",
-        font = "TrebuchetMS-Bold",
-        fontSize = 19,
-        labelColor = { default = { 255 }, over = { 0 } },
-        onRelease = function(event)
+
+    customUI.button(260, 40, "websitebtnid", "Website", function(event)
             system.openURL("http://ilyapimenov.com")
             return true
-        end
-    }
-    website.x, website.y = display.contentWidth / 2, yOffset + viewHeight + 1.5 * padding
-    self.creditsGroup:insert(website)
+        end, self.creditsGroup, display.contentWidth / 2, yOffset + viewHeight + 1.5 * padding)
+
+    -- local website = widget.newButton{
+    --     width = 260,
+    --     height = 40,
+    --     defaultFile = "images/button.png",
+    --     overFile = "images/button_over.png",
+    --     id = "websitebtnid",
+    --     label = "Astroberries website",
+    --     font = "TrebuchetMS-Bold",
+    --     fontSize = 19,
+    --     labelColor = { default = { 255 }, over = { 0 } },
+    --     onRelease = function(event)
+    --         system.openURL("http://ilyapimenov.com")
+    --         return true
+    --     end
+    -- }
+    -- website.x, website.y = display.contentWidth / 2, yOffset + viewHeight + 1.5 * padding
+    -- self.creditsGroup:insert(website)
 
     local backButton = widget.newButton{
         width = 60,

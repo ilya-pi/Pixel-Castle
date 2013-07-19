@@ -21,6 +21,9 @@ GameModel = {
     tint = false, -- whether to use tint or not, simply set false to eliminate it atm
     tintColor = {r = 255, g = 0, b = 255}, -- actuall tint color
 
+    -- old gradient: graphics.newGradient({ 236, 0, 140, 150 }, { 0, 114, 88, 175 }, "down")
+    MAIN_GRADIENT = graphics.newGradient({ 236, 0, 140, 150 }, { 255, 25, 170, 75 }, "down"),
+
     START_GUN = 1, -- 2, 3; 4 - "troll gun"
     SKY_SUBSTITUTION_COLOR = {r = 207, g = 229, b = 130},
     LEVEL_INTRO_DELAY = 3000

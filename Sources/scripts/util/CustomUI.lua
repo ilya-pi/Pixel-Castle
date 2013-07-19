@@ -245,12 +245,12 @@ local sliderSheetOptions = {
 }
 local sliderSheet = graphics.newImageSheet( "images/slider_sheet.png", sliderSheetOptions )
 
-function slider(left, top, width, id, initial, handler)
+function slider(left, top, width, id, initial, handler)    
     return widget.newSlider{
-        top = top,
-        left = left,
+        top = top - 5, -- magic top offset
+        left = left - width,
         id = id,
-        width = width,        
+        width = width,
         leftFrame = 1,
         middleFrame = 3,
         rightFrame = 3,
@@ -265,3 +265,4 @@ function slider(left, top, width, id, initial, handler)
         value = initial
     }
 end
+

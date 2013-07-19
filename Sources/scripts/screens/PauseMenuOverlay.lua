@@ -49,8 +49,7 @@ function PauseMenuOverlay:renderPauseScreen()
     self.alphaRect = display.newRect(0, 0, displayWidth, displayHeight)
     --self.alphaRect.alpha = 0
     self.alphaRect:setReferencePoint(display.CenterReferencePoint)
-    local g = graphics.newGradient({ 236, 0, 140, 150 }, { 0, 114, 88, 175 }, "down")
-    self.alphaRect:setFillColor(g)
+    self.alphaRect:setFillColor(game.MAIN_GRADIENT)
     self.alphaRect.x, self.alphaRect.y = display.contentWidth / 2, display.contentHeight / 2
     self.pauseOverlayGroup:insert(self.alphaRect)
 
