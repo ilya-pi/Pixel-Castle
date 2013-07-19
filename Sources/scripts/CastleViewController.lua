@@ -24,6 +24,7 @@ function CastleViewController:render(physics, world, game) --todo remove redunda
     self.leftX = self.castleData.x * game.pixel
     self.rightX = (self.castleData.x + self.castleData.width) * game.pixel
     self.topY = (self.castleData.y + 1) * game.pixel
+    self.bottomY = (self.castleData.y + 1 + self.castleData.height) * game.pixel
 
     self.totalHealth = self:health()
     self.width = self.castleData.width * game.pixel
