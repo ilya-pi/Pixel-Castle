@@ -41,15 +41,16 @@ function Bullet:fireNBullets(x, y, angleInDegrees, bulletNumber)
     local bulletName = game.levelConfig.screens[1].bullets[bulletNumber].bulletName
     local count = game.levelConfig.screens[1].bullets[bulletNumber].count
     local dAngleInDegrees = game.levelConfig.screens[1].bullets[bulletNumber].dAngleInDegrees
+    local bulletSize = game.levelConfig.screens[1].bullets[bulletNumber].size
     audio.play(fireSound)
     self.hit = bullets[bulletName]
     local angleInRadians = math.rad(angleInDegrees)
     local dAngleInRadians = math.rad(dAngleInDegrees)
-    local force = game.levelConfig.screens[1].levels[game.selectedLevel].bulletImpulse
+    local force = game.levelConfig.screens[1].levels[game.selectedLevel].bulletSpeed
     self.pixels = {}
 
     for i = 1, count do
-        self.bullet = display.newRect(x, y, 20, 20)
+        self.bullet = display.newRect(x, y, bulletSize, bulletSize)
         self.bullet.myName = "cannonball"
         self.bullet.hit = self.hit --todo: think how to store hit not in display object
         self.bullet.strokeWidth = 0
@@ -60,7 +61,7 @@ function Bullet:fireNBullets(x, y, angleInDegrees, bulletNumber)
 
         -- without this flag it still runs fine, and should not consume as much resources
         -- self.bullet.isBullet = true
-        self.bullet.linearDamping = 0.2 --implements air tension
+        --self.bullet.linearDamping = 0.2 --implements air tension (disable cos it's easy to calculate parabola without it)
         self.bullet.collision = onCollision
         self.bullet:addEventListener("collision", self.bullet)
     end
@@ -74,7 +75,9 @@ function Bullet:fireNBullets(x, y, angleInDegrees, bulletNumber)
         local dy = force * math.cos(currentAngle)
         -- twenty downbelow is a magic number that enables to adjust rotation speed accordingly to the x velocity
         self.pixels[i]:applyTorque(math.floor(dx * force / 20))
-        self.pixels[i]:applyForce(dx, -dy, self.pixels[i].x, self.pixels[i].y)
+        --self.pixels[i]:applyForce(dx, -dy, self.pixels[i].x, self.pixels[i].y)
+        self.pixels[i]:setLinearVelocity(dx, -dy)
+
     end
 
     self.cameraAim = display.newRect(x, y, 20, 20) --todo: make bullets size bigger and smaller depending on hit
@@ -87,7 +90,7 @@ function Bullet:fireNBullets(x, y, angleInDegrees, bulletNumber)
 
 end
 
-function Bullet:getX()
+--[[function Bullet:getX()
     if self.pixels ~= nil and self:isAlive() and self.cameraAim ~= nil then
         return self.cameraAim.x
     else
@@ -101,10 +104,10 @@ function Bullet:getY()
     else
         return nil
     end
-end
+end]]
 
 
---[[function Bullet:getX()
+function Bullet:getX()
     self.xCount = 0
     self.xSum = 0
     for i, v in ipairs(self.pixels) do --todo: room for optimization: do not use "ipairs"
@@ -134,7 +137,7 @@ function Bullet:getY()
     else
         return nil
     end
-end]]
+end
 
 function Bullet:remove()
     for i, v in ipairs(self.pixels) do

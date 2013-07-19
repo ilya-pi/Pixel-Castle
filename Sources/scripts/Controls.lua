@@ -18,6 +18,11 @@ function Controls:setCoordinates()
 
     self.angleText.text = self.angle .. "°"
     self.angleLine.rotation = self.angle
+
+    if self.name == "left" then
+        self:drawParabola()
+    end
+
 end
 
 -- Constructor
@@ -26,6 +31,8 @@ function Controls:new(o)
     setmetatable(o, self)
     self.__index = self
 
+    o.speed = game.levelConfig.screens[1].levels[game.selectedLevel].bulletSpeed
+    o.pixels = {}
     --creating objects
     o.group = display.newGroup()
 
@@ -169,6 +176,25 @@ function Controls:render()
     self:calculateCoordinates()
     self:setCoordinates()
     self.group:toFront()
+end
+
+function Controls:drawParabola()
+    local speed = self.speed * 0.183 --magic number picked manually
+    local x = 0
+    local y = 0
+    local angleInRadians = math.rad(self.angle - (self.angle - 45) * 2)
+    for x = -self.x, game.levelWidth * game.pixel, 20 do
+        y =  -(x * math.tan(angleInRadians) - (game_gravity * x * x / (2 * speed * speed * math.cos(angleInRadians) * math.cos(angleInRadians)) ))
+
+        if self.pixels[x] == nil then
+            local pix = display.newRect(x, y, 5, 5)
+            pix:setFillColor(255, 0, 0)
+            self.pixels[x] = pix
+            game.world:insert(pix)
+        end
+        self.pixels[x].x = x + self.x
+        self.pixels[x].y = y + self.y
+    end
 end
 
 function Controls:hide()

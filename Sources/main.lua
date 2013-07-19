@@ -9,7 +9,8 @@ physics = require("physics")
 --physics.setVelocityIterations( 6 )
 physics.start()
 -- physics.setTimeStep(0.0004)
-physics.setGravity(0, 9.8)
+game_gravity = 9.8
+physics.setGravity(0, game_gravity)
 display.setDefault("magTextureFilter", "nearest")
 display.setDefault("minTextureFilter", "nearest")
 
@@ -269,7 +270,8 @@ local function startGame()
                 game:goto("BULLET1")
             end
             return true
-        end})
+        end, name = "left"})
+
     game.controls2 = controls_module.Controls:new({ angle = -45, x = game.castle2:cannonX(), y = game.castle2:cannonY(), 
         onFire = function(event)
             if event.phase == "ended" then
