@@ -20,7 +20,7 @@ function Controls:setCoordinates()
     self.angleLine.rotation = self.angle
 
     if self.name == "left" then
-        self:drawParabola()
+        self:drawParabolaWind()
     end
 
 end
@@ -33,6 +33,7 @@ function Controls:new(o)
 
     o.speed = game.levelConfig.screens[1].levels[game.selectedLevel].bulletSpeed
     o.pixels = {}
+    o.pixelsW = {}
     --creating objects
     o.group = display.newGroup()
 
@@ -178,22 +179,29 @@ function Controls:render()
     self.group:toFront()
 end
 
-function Controls:drawParabola()
-    local speed = self.speed * 0.183 --magic number picked manually
-    local x = 0
-    local y = 0
+function Controls:drawParabolaWind()
     local angleInRadians = math.rad(self.angle - (self.angle - 45) * 2)
-    for x = -self.x, game.levelWidth * game.pixel, 20 do
-        y =  -(x * math.tan(angleInRadians) - (game_gravity * x * x / (2 * speed * speed * math.cos(angleInRadians) * math.cos(angleInRadians)) ))
+    local speed = self.speed * 0.184 --magic number picked manually
+    local xV = speed * math.cos(angleInRadians)
+    local yV = -speed * math.sin(angleInRadians)
+    local xA = game.wind.physicsSpeed
+    local yA = game_gravity
 
-        if self.pixels[x] == nil then
+    local x0 = self.x
+    local y0 = self.y
+
+    for t = 0, 35, 0.4 do
+        local x = x0 + xV * t + xA * t * t / 2
+        local y = y0 + yV * t + yA * t * t / 2
+
+        if self.pixelsW[t] == nil then
             local pix = display.newRect(x, y, 5, 5)
             pix:setFillColor(255, 0, 0)
-            self.pixels[x] = pix
+            self.pixelsW[t] = pix
             game.world:insert(pix)
         end
-        self.pixels[x].x = x + self.x
-        self.pixels[x].y = y + self.y
+        self.pixelsW[t].x = x
+        self.pixelsW[t].y = y
     end
 end
 

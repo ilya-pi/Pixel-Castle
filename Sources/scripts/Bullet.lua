@@ -42,6 +42,8 @@ function Bullet:fireNBullets(x, y, angleInDegrees, bulletNumber)
     local count = game.levelConfig.screens[1].bullets[bulletNumber].count
     local dAngleInDegrees = game.levelConfig.screens[1].bullets[bulletNumber].dAngleInDegrees
     local bulletSize = game.levelConfig.screens[1].bullets[bulletNumber].size
+    y = y - bulletSize
+    x = x - bulletSize / 2
     audio.play(fireSound)
     self.hit = bullets[bulletName]
     local angleInRadians = math.rad(angleInDegrees)
