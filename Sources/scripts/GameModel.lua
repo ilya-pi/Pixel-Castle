@@ -21,6 +21,8 @@ GameModel = {
     tint = false, -- whether to use tint or not, simply set false to eliminate it atm
     tintColor = {r = 255, g = 0, b = 255}, -- actuall tint color
 
+    DEAD_PIXEL_STAY_TIME = 1000,
+
     -- old gradient: graphics.newGradient({ 236, 0, 140, 150 }, { 0, 114, 88, 175 }, "down")
     MAIN_GRADIENT = graphics.newGradient({ 236, 0, 140, 150 }, { 255, 25, 170, 75 }, "down"),
 
