@@ -29,6 +29,7 @@ local camera_module = require("scripts.util.Camera")
 local controls_module = require("scripts.Controls")
 local bullet_module = require("scripts.Bullet")
 local wind_module = require("scripts.Wind")
+local ai_module = require("scripts.AI")
 
 local gameover_module = require("scripts.screens.GameOverScreen")
 local mainmenu_module = require("scripts.screens.MainMenuScreen")
@@ -79,6 +80,7 @@ local function gameLoop()
             -- game.controls2:render()            
         elseif game.mode == "campaign" then
             -- todo implement proper AI here
+            game.controls2.angle = game.ai:calculateAngle()
             game:goto("BULLET2")
         end
     elseif (game.state.name == "MOVE_TO_P1") then
@@ -200,6 +202,7 @@ local function cleanup()
 
     game.controls1 = nil
     game.controls2 = nil
+    game.ai = nil
 
     display.remove(game.sky)
     display.remove(game.background)
@@ -283,6 +286,7 @@ local function startGame()
     game.controls2:render()
     game.controls1:hide()
     game.controls2:hide()
+    game.ai = ai_module.AI:new()
 
     Runtime:addEventListener("enterFrame", game)
 
