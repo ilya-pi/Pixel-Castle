@@ -241,9 +241,9 @@ function Camera:moveCamera()
 
             local bulletMargin
             if game.state.name == "BULLET1" then
-                bulletMargin = -display.screenOriginX - 100
+                bulletMargin = -display.screenOriginX - 100 --todo bullet at the center !!! delete only after #95 is closed
             else
-                bulletMargin = -screenWidth - display.screenOriginX + 100
+                bulletMargin = -screenWidth - display.screenOriginX + 100 --todo bullet at the center !!! delete only after #95 is closed
             end
 
             local worldX, backgroundX, skyX = calculateTouchX(-game.bullet:getX() * self.ratio - bulletMargin, self.ratio)  --todo: Sergey Belyakov get rid of jumps when shooting
