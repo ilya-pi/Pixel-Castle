@@ -181,6 +181,7 @@ function EarthViewController:calculateHit(physicsPixel, hit)
     local dx = (#hit - 1) / 2
     --local dx = 10
     self:checkPixels(x - dx, x + dx, y - dx, y + dx, true)
+    print("before")
     for hitX=-dx, dx do
         for hitY=-dx, dx do
             local pixelY = hitY + y
@@ -197,10 +198,12 @@ function EarthViewController:calculateHit(physicsPixel, hit)
                                                         -- tmpPixel.physicsPixel:removeSelf()
                                                         -- todo make body type
                                                         -- todo ilya: reafctor these hacks to a separate method
-                                                        tmpPixel.physicsPixel.bodyType = "dynamic"
+                                                        -- tmpPixel.physicsPixel.bodyType = "dynamic"
                                                         -- tmpPixel.physicsPixel.isSensor = true
 
-                                                        tmpPixel.physicsPixel:setLinearVelocity(1000, 1000)
+                                                        tmpPixel.physicsPixel.bodyType = "kinematic"
+
+                                                        tmpPixel.physicsPixel:setLinearVelocity(math.random(-200, 200), - math.random(500, 750))
                                                         timer.performWithDelay(game.DEAD_PIXEL_STAY_TIME, function()
                                                             tmpPixel.physicsPixel:removeSelf()
                                                             end)
@@ -216,6 +219,7 @@ function EarthViewController:calculateHit(physicsPixel, hit)
             end
         end
     end
+    print("end")
     
     self:checkPixels(x - dx - 2, x + dx + 2, y - dx - 2, y + dx + 2, false)
 end
