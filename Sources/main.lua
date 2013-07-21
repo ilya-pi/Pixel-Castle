@@ -9,6 +9,7 @@ physics = require("physics")
 --physics.setVelocityIterations( 6 )
 physics.start()
 -- physics.setTimeStep(0.0004)
+physics.setTimeStep(0.04)
 game_gravity = 9.8
 physics.setGravity(0, game_gravity)
 display.setDefault("magTextureFilter", "nearest")
@@ -457,13 +458,13 @@ local function turnP2off()
 end
 
 local function hit1()
-    timer.performWithDelay(1000, function()
+    timer.performWithDelay(game.HIT_SHOW_DELAY, function()
         game:goto("MOVE_TO_P2")
     end)    
 end
 
 local function hit2()
-    timer.performWithDelay(1000, function()
+    timer.performWithDelay(game.HIT_SHOW_DELAY, function()
         game:goto("MOVE_TO_P1")
     end)    
 end

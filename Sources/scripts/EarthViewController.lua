@@ -197,7 +197,9 @@ function EarthViewController:calculateHit(physicsPixel, hit)
                                                         -- tmpPixel.physicsPixel:removeSelf()
                                                         -- todo make body type
                                                         -- todo ilya: reafctor these hacks to a separate method
-                                                        tmpPixel.physicsPixel.bodyType = "sensor"
+                                                        tmpPixel.physicsPixel.bodyType = "dynamic"
+                                                        -- tmpPixel.physicsPixel.isSensor = true
+
                                                         tmpPixel.physicsPixel:setLinearVelocity(1000, 1000)
                                                         timer.performWithDelay(game.DEAD_PIXEL_STAY_TIME, function()
                                                             tmpPixel.physicsPixel:removeSelf()
