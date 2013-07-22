@@ -9,7 +9,7 @@ physics = require("physics")
 --physics.setVelocityIterations( 6 )
 physics.start()
 -- physics.setTimeStep(0.0004)
-physics.setTimeStep(0.04)
+physics.setTimeStep(0.03)
 game_gravity = 9.8
 physics.setGravity(0, game_gravity)
 display.setDefault("magTextureFilter", "nearest")

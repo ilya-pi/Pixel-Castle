@@ -76,8 +76,7 @@ function Bullet:fireNBullets(x, y, angleInDegrees, bulletNumber)
         local dx = force * math.sin(currentAngle)
         local dy = force * math.cos(currentAngle)
         -- twenty downbelow is a magic number that enables to adjust rotation speed accordingly to the x velocity
-        self.pixels[i]:applyTorque(dx * force * 100000)
-        -- self.pixels[i]:applyTorque(1000)
+        self.pixels[i]:applyTorque(dx * 2)
         --self.pixels[i]:applyForce(dx, -dy, self.pixels[i].x, self.pixels[i].y)
         self.pixels[i]:setLinearVelocity(dx, -dy)
 
