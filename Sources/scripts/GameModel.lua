@@ -21,6 +21,9 @@ GameModel = {
     tint = false, -- whether to use tint or not, simply set false to eliminate it atm
     tintColor = {r = 255, g = 0, b = 255}, -- actuall tint color
 
+    DAMPING = 1.5,
+    D_DAMPING = 1.3,
+
     DEAD_PIXEL_STAY_TIME = 2000,
     HIT_SHOW_DELAY = 2000,
 

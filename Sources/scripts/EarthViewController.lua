@@ -174,7 +174,29 @@ function EarthViewController:render(physics)
     game.castle2:render(physics, game.world, game)
 end
 
-function EarthViewController:calculateHit(physicsPixel, hit) 
+function processCollisionNRemove(body, xV, yV)
+    body.bodyType = "dynamic"
+    body.isSensor = true
+
+    -- tmpPixel.physicsPixel.bodyType = "kinematic"
+
+    -- body:setLinearVelocity(math.random(-200, 200), - math.random(500, 750))
+    -- body:setLinearVelocity(math.random(-100, 100), - math.random(100, 250))
+    local aX = xV / game.DAMPING
+    local aY = yV / game.DAMPING
+    local aDX = math.random(- math.abs(aX), math.abs(aX)) / game.D_DAMPING
+    local aDY = math.random(- math.abs(aY), math.abs(aY)) / game.D_DAMPING
+    body:setLinearVelocity(-(aX + aDX), -(aY + aDY))
+    transition.to(body, {alpha = 0, time = game.DEAD_PIXEL_STAY_TIME, transition = easing.inExpo, onComplete = function()
+        body:removeSelf()
+        end})
+
+    -- timer.performWithDelay(game.DEAD_PIXEL_STAY_TIME, function()
+    --     body:removeSelf()    
+    -- end)
+end
+
+function EarthViewController:calculateHit(physicsPixel, hit, xV, yV) 
     print("bullet size " .. #hit)
     local x = physicsPixel.pX
     local y = physicsPixel.pY
@@ -195,18 +217,7 @@ function EarthViewController:calculateHit(physicsPixel, hit)
                                                     if tmpPixel.physicsPixel ~= nil and tmpPixel.physicsPixel.state ~= "removed" then
                                                         tmpPixel.physicsPixel.state = "removed"
                                                         
-                                                        -- tmpPixel.physicsPixel:removeSelf()
-                                                        -- todo make body type
-                                                        -- todo ilya: reafctor these hacks to a separate method
-                                                        -- tmpPixel.physicsPixel.bodyType = "dynamic"
-                                                        -- tmpPixel.physicsPixel.isSensor = true
-
-                                                        tmpPixel.physicsPixel.bodyType = "kinematic"
-
-                                                        tmpPixel.physicsPixel:setLinearVelocity(math.random(-200, 200), - math.random(500, 750))
-                                                        timer.performWithDelay(game.DEAD_PIXEL_STAY_TIME, function()
-                                                            tmpPixel.physicsPixel:removeSelf()
-                                                            end)
+                                                        processCollisionNRemove(tmpPixel.physicsPixel, xV, yV)
 
                                                         self.level.pixels[pixelY][pixelX] = nil
                                                     end

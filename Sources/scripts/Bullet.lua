@@ -22,17 +22,19 @@ end
 
 local function onCollision(self, event)
     local hit = self.hit  --todo: here we should have access to Bullet.hit
-    event.contact.isEnabled = false
+    event.contact.isEnabled = false    
     if (event.other.myName == "brick") then
+        local xV, yV = self:getLinearVelocity()
+        game.earth:calculateHit(event.other, hit, xV, yV) --todo: here we should have access to Bullet.hit        
+
         audio.play(hitSound)
-        self.bodyType = "static"
+        -- self.bodyType = "static"
         self:removeSelf()
         --event.other:removeSelf()
         if game.vibration then
             system.vibrate()
         end        
         self.state = "removed"
-        game.earth:calculateHit(event.other, hit) --todo: here we should have access to Bullet.hit
     end
     return true
 end

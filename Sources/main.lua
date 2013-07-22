@@ -4,12 +4,20 @@ display.setStatusBar(display.HiddenStatusBar)
 local widget = require("widget")
 
 physics = require("physics")
---todo: play with the following properties to increase performance
---physics.setPositionIterations( 16 )
---physics.setVelocityIterations( 6 )
+--todo Sergey: play with the following properties to increase performance
+-- physics.setPositionIterations( 16 )
+-- physics.setVelocityIterations( 6 )
 physics.start()
--- physics.setTimeStep(0.0004)
-physics.setTimeStep(0.03)
+
+--[[
+From the Corona SDK: 
+
+Value of physics "time step" in seconds. Pass 0 to get an approximate time-based physics simulation (the 
+error will be the desired frame interval, e.g. 1/30 sec). Pass -1 to get default behavior (frame-based).
+
+Hence we have 60 frames per sec, 150% times faster will be exactly (1 / 60) * 1.5 = 0.025
+]]
+physics.setTimeStep(0.025)
 game_gravity = 9.8
 physics.setGravity(0, game_gravity)
 display.setDefault("magTextureFilter", "nearest")
