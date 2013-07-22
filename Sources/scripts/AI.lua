@@ -1,5 +1,13 @@
 module(..., package.seeall)
 
+local function calculateWrongAngle(correctAngle)
+    local random = math.random(-4, 4)
+    if random < 0 then random = random - 5 end
+    if random > 0 then random = random + 5 end
+    if random == 0 then random = -10 end
+    return correctAngle + random
+end
+
 AI = {}
 
 -- Constructor
@@ -19,27 +27,58 @@ function AI:new(o)
     o.enemyTopY = game.castle1.topY
     o.enemyBottomY = game.castle1.bottomY
 
-   print(o.enemyLeftX .. " " .. o.enemyRightX .. " | " .. o.enemyTopY .. " " .. o.enemyBottomY)
+    o.firstRealTry = 4
+    o.currentTry = 0
+    o.accuracyPercentage = 0.8
+   --print(o.enemyLeftX .. " " .. o.enemyRightX .. " | " .. o.enemyTopY .. " " .. o.enemyBottomY)
 
     return o
 end
 
 function AI:calculateAngle()
+    self.xA = game.wind.physicsSpeed
+    self.currentTry = self.currentTry + 1
     for angle = 90, -90, -1 do
-        local angleInRadians = math.rad(angle - (angle - 45) * 2)
-        self.xV = self.speed * math.cos(angleInRadians)
-        self.yV = -self.speed * math.sin(angleInRadians)
-
-        local t = 50
-        while t > 0 do
-            local x = self.x0 + self.xV * t + self.xA * t * t / 2
-            local y = self.y0 + self.yV * t + self.yA * t * t / 2
-            if x > self.enemyLeftX and x < self.enemyRightX and y > self.enemyTopY and y < self.enemyBottomY then
-                print("angle found!!!!!!!!!!!!!!! " .. angle)
-                return angle
+        local finalAngle = angle
+        if self:checkAngle(angle) then
+            if self:checkAngle(angle - 1) then
+                finalAngle = angle - 1
             end
-            t = t - 0.1
+            if (self.currentTry < self.firstRealTry) then
+                print("!!!!!!!!!!!!!!!!!!!! trying to miss")
+                return calculateWrongAngle(finalAngle)
+            else
+                local random = math.random()
+                if random > self.accuracyPercentage then
+                    print("!!!!!!!!!!!!!!!!!!!! trying to miss")
+                    return calculateWrongAngle(finalAngle)
+                else
+                    print("!!!!!!!!!!!!!!!!!!!! trying to hit")
+                    return finalAngle
+                end
+            end
         end
     end
-    return -45 --todo: substitute later. we return this value if didn't find any real
+    print("!!!!!!!!!!!!!!!!!!!! default")
+    return -45 --todo: substitute later. we return this value if didn't find any real value
 end
+
+function AI:checkAngle(angle)
+    local angleInRadians = math.rad(angle - (angle - 45) * 2)
+    self.xV = self.speed * math.cos(angleInRadians)
+    self.yV = -self.speed * math.sin(angleInRadians)
+
+    local t = 50
+    while t > 0 do
+        local x = self.x0 + self.xV * t + self.xA * t * t / 2
+        local y = self.y0 + self.yV * t + self.yA * t * t / 2
+        if x > self.enemyLeftX and x < self.enemyRightX and y > self.enemyTopY and y < self.enemyBottomY then
+            --print("angle found!!!!!!!!!!!!!!! " .. angle)
+            return true
+        end
+        t = t - 0.1
+    end
+    return false
+end
+
+

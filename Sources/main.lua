@@ -88,7 +88,6 @@ local function gameLoop()
         if game.mode == "versus" then
             -- game.controls2:render()            
         elseif game.mode == "campaign" then
-            -- todo implement proper AI here
             game.controls2.angle = game.ai:calculateAngle()
             game:goto("BULLET2")
         end

@@ -59,7 +59,7 @@ screens = {
                 bulletName = "3",
                 count = 5,
                 size = 10,
-                dAngleInDegrees = 10
+                dAngleInDegrees = 2
 
             }
         }

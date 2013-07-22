@@ -19,9 +19,11 @@ function Controls:setCoordinates()
     self.angleText.text = self.angle .. "°"
     self.angleLine.rotation = self.angle
 
+--[[
     if self.name == "left" then
         self:drawParabolaWind()
     end
+]]
 
 end
 
