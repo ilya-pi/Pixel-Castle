@@ -247,7 +247,7 @@ function Camera:moveCamera()
             end
 
             local worldX, backgroundX, skyX = calculateTouchX(-game.bullet:getX() * self.ratio - bulletMargin, self.ratio)  --todo: Sergey Belyakov get rid of jumps when shooting
-            local worldY, backgroundY, skyY = calculateTouchY(-game.bullet:getY() * self.ratio, self.ratio)
+            local worldY, backgroundY, skyY = calculateTouchY(-game.bullet:getY() * self.ratio + 100, self.ratio)
             --            print("VP " .. viewPortHeight .. "; bullet x=" .. -game.bullet:getX() .. ", y=" .. -game.bullet:getY() .. "; bottom " .. -(game.levelHeight * game.pixel * self.ratio - screenHeight - display.screenOriginY))
 
 			game.world.x = worldX

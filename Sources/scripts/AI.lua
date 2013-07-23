@@ -1,10 +1,9 @@
 module(..., package.seeall)
 
 local function calculateWrongAngle(correctAngle)
-    local random = math.random(-4, 4)
-    if random < 0 then random = random - 5 end
-    if random > 0 then random = random + 5 end
-    if random == 0 then random = -10 end
+    local random = math.random(-2, 2)
+    if random < 0 then random = random - 3 end
+    if random > 0 then random = random + 3 end
     return correctAngle + random
 end
 
@@ -17,6 +16,7 @@ function AI:new(o)
     self.__index = self
 
     o.speed = game.levelConfig.screens[1].levels[game.selectedLevel].bulletSpeed  * 0.184 --magic number picked manually
+    o.windList = {}
     o.xA = game.wind.physicsSpeed
     o.yA = game_gravity
     o.x0 = game.controls2.x
@@ -36,6 +36,7 @@ function AI:new(o)
 end
 
 function AI:calculateAngle()
+    table.insert(self.windList, game.wind.speed)
     self.xA = game.wind.physicsSpeed
     self.currentTry = self.currentTry + 1
     for angle = 90, -90, -1 do
@@ -45,12 +46,17 @@ function AI:calculateAngle()
                 finalAngle = angle - 1
             end
             if (self.currentTry < self.firstRealTry) then
-                print("!!!!!!!!!!!!!!!!!!!! trying to miss")
+                print("!!!!!!!!!!!!!!!!!!!! trying to miss first " .. self.firstRealTry .. " tryes")
                 return calculateWrongAngle(finalAngle)
             else
+                if self.windList[#self.windList] == self.windList[#self.windList - 1] then
+                    print("!!!!!!!!!!!!!!!!!!!! trying to hit because wind is the same")
+                    return finalAngle
+                end
+
                 local random = math.random()
                 if random > self.accuracyPercentage then
-                    print("!!!!!!!!!!!!!!!!!!!! trying to miss")
+                    print("!!!!!!!!!!!!!!!!!!!! trying to miss because of accuracy")
                     return calculateWrongAngle(finalAngle)
                 else
                     print("!!!!!!!!!!!!!!!!!!!! trying to hit")
@@ -59,7 +65,7 @@ function AI:calculateAngle()
             end
         end
     end
-    print("!!!!!!!!!!!!!!!!!!!! default")
+    print("!!!!!!!!!!!!!!!!!!!! default angle")
     return -45 --todo: substitute later. we return this value if didn't find any real value
 end
 

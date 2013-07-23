@@ -45,7 +45,7 @@ function Wind:update()
     self.speed = self.speed - math.random(-2, 2)
     if self.speed < -5 then self.speed = -5 end
     if self.speed > 5 then self.speed = 5 end
-    --self.speed = -5
+    --self.speed = -5 --todo: testing purpose
     self.physicsSpeed = game.levelConfig.screens[1].levels[game.selectedLevel].maxWindForce / 5 * self.speed
     physics.setGravity(self.physicsSpeed, 9.8)
 
