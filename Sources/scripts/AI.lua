@@ -4,6 +4,7 @@ local function calculateWrongAngle(correctAngle)
     local random = math.random(-2, 2)
     if random < 0 then random = random - 3 end
     if random > 0 then random = random + 3 end
+    if random == 0 then random = 3 end
     return correctAngle + random
 end
 
