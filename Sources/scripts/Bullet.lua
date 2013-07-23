@@ -52,6 +52,7 @@ function Bullet:fireNBullets(x, y, angleInDegrees, bulletNumber)
     local dAngleInRadians = math.rad(dAngleInDegrees)
     local force = game.levelConfig.screens[1].levels[game.selectedLevel].bulletSpeed
     self.pixels = {}
+    self.pointers = {}
 
     for i = 1, count do
         self.bullet = display.newRect(x, y, bulletSize, bulletSize)
@@ -65,15 +66,19 @@ function Bullet:fireNBullets(x, y, angleInDegrees, bulletNumber)
 
         -- without this flag it still runs fine, and should not consume as much resources
         -- self.bullet.isBullet = true
-        --self.bullet.linearDamping = 0.2 --implements air tension (disable cos it's easy to calculate parabola without it)
         self.bullet.collision = onCollision
         self.bullet:addEventListener("collision", self.bullet)
+
+        --add pointers
+        self.pointers[i] = display.newRect(x, display.screenOriginY, 20, 20)
+        self.pointers[i]:setFillColor(255, 0, 0)
+        game.world:insert(self.pointers[i])
+
     end
 
     local angleForStart = - ((count - 1) * dAngleInRadians / 2) + angleInRadians
 
     for i = 1, #self.pixels do
-
         local currentAngle = angleForStart + (i - 1) * dAngleInRadians
         local dx = force * math.sin(currentAngle)
         local dy = force * math.cos(currentAngle)
@@ -84,12 +89,11 @@ function Bullet:fireNBullets(x, y, angleInDegrees, bulletNumber)
 
     end
 
-    self.cameraAim = display.newRect(x, y, 20, 20) --todo: make bullets size bigger and smaller depending on hit
+    self.cameraAim = display.newRect(x, y, 20, 20)
     self.cameraAim.myName = "camera_aim"
     self.cameraAim:setFillColor(255, 255, 255, 0)
     game.world:insert(self.cameraAim)
     Memmory.trackPhys(self.cameraAim); physics.addBody(self.cameraAim, { density = 100, friction = 10, bounce = 10, isSensor = true})
-    self.cameraAim.linearDamping = 0.2 --implements air tension
     self.cameraAim:applyForce(force * math.sin(angleInRadians), -force * math.cos(angleInRadians), self.cameraAim.x, self.cameraAim.y)
 
 end
@@ -118,6 +122,12 @@ function Bullet:getX()
         if (v ~= nil and v.state ~= "removed") then
             self.xCount = self.xCount + 1
             self.xSum = self.xSum + v.x
+            if self.pointers[i] ~= nil then self.pointers[i].x = v.x end
+        else
+            if self.pointers[i] ~= nil then
+                self.pointers[i]:removeSelf()
+                self.pointers[i] = nil
+            end
         end
     end
     if (self.xCount ~= 0) then
@@ -146,6 +156,10 @@ end
 function Bullet:remove()
     for i, v in ipairs(self.pixels) do
         self.pixels[i] = nil
+        if self.pointers[i] ~= nil then
+            self.pointers[i]:removeSelf()
+            self.pointers[i] = nil
+        end
     end
     if self.cameraAim ~= nil then
         self.cameraAim = nil
