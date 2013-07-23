@@ -266,6 +266,7 @@ local function startGame()
 
     game.wind = wind_module.Wind:new({ x = 1, y = 1, game = game.game })
     game.wind:update()
+    game.wind:hide()
 
     game.levelWidth = game.level_map.levelWidth
     game.levelHeight = game.level_map.levelHeight
@@ -318,6 +319,7 @@ end
 
 local function gameOver()
     pauseMenuOverlay:dismissButton()
+    game.wind:dismiss()
     if game.mode == "versus" then
         gameOverScreen:renderVs()
     elseif game.mode == "campaign" then
@@ -443,25 +445,33 @@ local function kickoffLevel()
 end
 
 local function turnP1()
+    pauseMenuOverlay:hidePauseButton()
+    game.wind:hide()
     turnOverlay:render()
     timer.performWithDelay(1000, function()
             game:goto("P1")
         end)
 end
 
+local function turnP1off()
+    turnOverlay:dismiss()
+    game.wind:show()
+    pauseMenuOverlay:showPauseButton()
+end
+
 local function turnP2()
+    game.wind:hide()
+    pauseMenuOverlay:hidePauseButton()
     turnOverlay:render()
     timer.performWithDelay(500, function()
             game:goto("P2")
         end)
 end
 
-local function turnP1off()
-    turnOverlay:dismiss()
-end
-
 local function turnP2off()
     turnOverlay:dismiss()
+    game.wind:show()
+    pauseMenuOverlay:showPauseButton()
 end
 
 local function hit1()

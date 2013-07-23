@@ -41,6 +41,18 @@ function Wind:new (o)
     return o
 end
 
+function Wind:hide()
+    self.group.isVisible = false
+end
+
+function Wind:show()
+    self.group.isVisible = true
+end
+
+function Wind:dismiss()
+    self.group:removeSelf()
+end
+
 function Wind:update()
     self.speed = self.speed - math.random(-2, 2)
     if self.speed < -5 then self.speed = -5 end

@@ -7,7 +7,7 @@ local customUI = require("scripts.util.CustomUI")
 PauseMenuOverlay = {}
 
 -- Constructor
-function PauseMenuOverlay:new (o)
+function PauseMenuOverlay:new(o)
     o = o or {}   -- create object if user does not provide one
     setmetatable(o, self)
     self.__index = self
@@ -38,6 +38,14 @@ end
 function PauseMenuOverlay:dismissButton()
     self.pauseButton:removeSelf()
     self.pauseButton = nil
+end
+
+function PauseMenuOverlay:hidePauseButton()
+    self.pauseButton.isVisible = false
+end
+
+function PauseMenuOverlay:showPauseButton()
+    self.pauseButton.isVisible = true
 end
 
 function PauseMenuOverlay:renderPauseScreen()
