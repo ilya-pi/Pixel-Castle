@@ -226,14 +226,8 @@ end
 
 local function startGame()
     game.sky = display.newGroup()
-    game.sky.x = 0
-    game.sky.y = 0
     game.background = display.newGroup()
-    game.background.x = 0
-    game.background.y = 0
     game.world = display.newGroup()
-    game.world.x = 0
-    game.world.y = 0
 
     -- add loading screen
     local loading = display.newGroup()
