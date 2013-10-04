@@ -355,6 +355,7 @@ end
 local function tutorial()
     mainMenuScreen:dismiss()
     startGame()
+    physics.pause()
     tutorialScreen:render()
     game.cameraState = "OVERVIEW"
 end
@@ -362,6 +363,7 @@ end
 local function startGameFromTutorial()
     game.mode = "campaign"
     game.cameraState = "CASTLE1_FOCUS"
+    physics.start()
     tutorialScreen:dismiss()
     pauseMenuOverlay:renderButton()
     game.controls1:show()
@@ -418,6 +420,8 @@ local function pause()
     pauseMenuOverlay:renderPauseScreen()
     physics.pause()
     timer.pause(Memmory.timerStash.gameLoopTimer)
+
+    Memmory.monitorMem()
 end
 
 local function unpause()

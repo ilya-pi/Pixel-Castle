@@ -12,6 +12,9 @@ function monitorMem()
 
     local textMem = system.getInfo( "textureMemoryUsed" ) / 1000000
     print( "TexMem:   " .. textMem )
+
+    local myText = display.newText("MemUsage: " .. collectgarbage("count") .. " TexMem: " .. (system.getInfo( "textureMemoryUsed" ) / 1000000), 0, 0, display.contentWidth, display.contentHeight * 0.5, native.systemFont, 16)
+    myText:setTextColor(255, 255, 255)
 end
 
 function cancelAllTimers()
