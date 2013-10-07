@@ -43,18 +43,8 @@ public class MainScreen implements Screen {
 
         Texture backSpriteTexture = new Texture(Gdx.files.internal("main/castle_splash.png"));
         backSpriteTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        backSprite = new Sprite(backSpriteTexture, 0, 0, 64, 64);
-        Gdx.app.log("fuck", "image " + backSpriteTexture.getWidth() + " " + backSpriteTexture.getHeight());
-        Gdx.app.log("fuck", "view " + stage.getWidth() + " " + stage.getHeight());
-        float backGroundRatio = backSpriteTexture.getWidth() / backSpriteTexture.getHeight();
+        backSprite = new Sprite(backSpriteTexture, 0, 0, backSpriteTexture.getWidth(), backSpriteTexture.getHeight());
         float scale = stage.getHeight() / backSpriteTexture.getHeight();
-
-
-/*
-        backSprite.setScale(yScale, yScale);
-        backSprite.setSize(stage.getWidth(), stage.getHeight());
-*/
-        Gdx.app.log("fuck", "calc " + backSpriteTexture.getWidth() * scale + " " + stage.getHeight());
         backSprite.setBounds(0, 0, backSpriteTexture.getWidth() * scale, stage.getHeight());
 
         this.skin = new Skin();
