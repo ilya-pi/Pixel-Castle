@@ -15,5 +15,5 @@ public interface Bullet {
 
     public boolean isAlive();
 
-    void fire(OrthographicCamera camera, World world, float impulseX, float impulseY, float x, float y);
+    void fire();
 }

@@ -1,6 +1,7 @@
 package com.astroberries.core.bullets;
 
 import com.astroberries.core.GameUserData;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -13,11 +14,28 @@ public class SingleBullet implements Bullet {
     static final float BULLET_SIZE = 2;
     static final float BULLET_DENSITY = 0.3f;
 
-    Body bulletBody;
-    BodyDef bulletBodyDef = new BodyDef();
+    private Body bulletBody;
+    private BodyDef bulletBodyDef;
+
+    private final Camera camera;
+    private final World world;
+    private final float impulseX;
+    private final float impulseY;
+    private final float x;
+    private final float y;
+
+    public SingleBullet(Camera camera, World world, float impulseX, float impulseY, float x, float y) {
+        this.camera = camera;
+        this.world = world;
+        this.impulseX = impulseX;
+        this.impulseY = impulseY;
+        this.x = x;
+        this.y = y;
+    }
 
     @Override
-    public void fire(OrthographicCamera camera, World world, float impulseX, float impulseY, float x, float y) {
+    public void fire() {
+        bulletBodyDef = new BodyDef();
         bulletBodyDef.type = BodyDef.BodyType.DynamicBody;
         Vector3 unprojected = new Vector3(x, y, 0);
         camera.unproject(unprojected);
@@ -69,10 +87,12 @@ public class SingleBullet implements Bullet {
 
     @Override
     public void dispose() {
+        ((GameUserData) bulletBody.getUserData()).isFlaggedForDelete = true;
+        bulletBody = null;
     }
 
     @Override
     public boolean isAlive() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return bulletBody != null;
     }
 }

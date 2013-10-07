@@ -78,15 +78,15 @@ public class GameScreen implements Screen {
         debugRenderer = new Box2DDebugRenderer();
 
 
-        bulletPixmap = new Pixmap(Gdx.files.internal("bullet.png"));
+        bulletPixmap = new Pixmap(Gdx.files.internal("bullets/11.png"));
         Pixmap.setBlending(Pixmap.Blending.None);
-        levelPixmap = new Pixmap(Gdx.files.internal("level.png"));
+        levelPixmap = new Pixmap(Gdx.files.internal("levels/01/level.png"));
         levelWidth = levelPixmap.getWidth();
         levelHeight = levelPixmap.getHeight();
         transparentPixmap = new Pixmap(Gdx.files.internal("transparent.png"));
         level = new Texture(levelPixmap);
-        background = new Texture(Gdx.files.internal("background.png"));
-        sky = new Texture(Gdx.files.internal("sky.png"));
+        background = new Texture(Gdx.files.internal("levels/01/background.png"));
+        sky = new Texture(Gdx.files.internal("levels/01/sky.png"));
         bricks = new Body[levelWidth][levelHeight];
 
         createPhysicsObjects(0, 0, levelWidth, levelHeight);
@@ -102,8 +102,8 @@ public class GameScreen implements Screen {
             public boolean tap(float x, float y, int count, int button) {
                 if (bullet == null || !bullet.isAlive()) {
                     //todo: create bullet instance
-                    bullet = new SingleBullet();
-                    bullet.fire(camera, world, 200, 200, x, y);
+                    bullet = new SingleBullet(camera, world, 200, 200, x, y);
+                    bullet.fire();
                 }
                 return true;
             }
@@ -158,7 +158,7 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-//        camera.zoom = 0.4f;
+        //camera.zoom = 0.4f;
         if (bullet != null) {
             camera.position.y =  bullet.getCoordinates().y;
             camera.position.x =  bullet.getCoordinates().x;
@@ -188,6 +188,13 @@ public class GameScreen implements Screen {
         world.step(1 / 30f, 6, 2);
 
         shapeRenderer.setProjectionMatrix(camera.combined); //todo: is it necessary?
+        if (bullet != null) {
+            if (bullet.getCoordinates().x < 0 || bullet.getCoordinates().x > levelWidth || bullet.getCoordinates().y < 0) {
+                Gdx.app.log("bullet:", "destroy bullet!!");
+                bullet.dispose();
+                bullet = null;
+            }
+        }
         if (bullet != null) {
             bullet.render(shapeRenderer);
         }
@@ -343,10 +350,17 @@ public class GameScreen implements Screen {
         sky.dispose();
         level.dispose();
         levelPixmap.dispose();
-/* todo: clean bodies?
+        Array<Body> bodies = new Array<Body>();
+        world.getBodies(bodies);
         for (Body body : bodies) {
+            if (body != null) {
+                GameUserData data = (GameUserData) body.getUserData();
+                if (data != null) {
+                    world.destroyBody(body);
+                    body.setUserData(null);
+                }
+            }
         }
-*/
     }
 
 }
