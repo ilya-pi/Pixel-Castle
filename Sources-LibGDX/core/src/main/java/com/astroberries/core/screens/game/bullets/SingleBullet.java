@@ -1,4 +1,4 @@
-package com.astroberries.core.bullets;
+package com.astroberries.core.screens.game.bullets;
 
 import com.astroberries.core.screens.game.GameUserData;
 import com.badlogic.gdx.graphics.Camera;

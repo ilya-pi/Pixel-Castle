@@ -1,12 +1,40 @@
-
-
-levels:
-    - name: Who first?
-      castle1: castle01.png
-      castle2: castle02.png
-    - name: Windy weather
-      castle1: castle03.png
-      castle2: castle04.png
-    - name: Try to reach me.
-      castle1: castle05.png
-      castle2: castle06.png
+{
+  "sets": [
+    {
+      "name": "First set",
+      "number": 1,
+      "levels": [
+        {
+          "name": "Who first?",
+          "path": "000",
+          "number": 1,
+          "castle1": {
+            "image": "castle001.png",
+            "x": 12,
+            "y": 248
+          },
+          "castle2": {
+            "image": "castle002.png",
+            "x": 201,
+            "y": 249
+          }
+        },
+        {
+          "name": "Windy weather",
+          "number": 2,
+          "path": "002",
+          "castle1": {
+            "image": "castle003.png",
+            "x": 12,
+            "y": 53
+          },
+          "castle2": {
+            "image": "castle004.png",
+            "x": 128,
+            "y": 53
+          }
+        }
+      ]
+    }
+  ]
+}

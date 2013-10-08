@@ -82,7 +82,7 @@ public class MainScreen implements Screen {
         button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new GameScreen(game));
+                game.setScreen(new GameScreen(game, 0, 0)); //todo: here we should set level and set number (set is a group of levels displayed on screen)
                 self.dispose();
             }
         });

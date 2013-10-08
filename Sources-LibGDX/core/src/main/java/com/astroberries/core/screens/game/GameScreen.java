@@ -1,8 +1,12 @@
 package com.astroberries.core.screens.game;
 
 import com.astroberries.core.CastleGame;
-import com.astroberries.core.bullets.Bullet;
-import com.astroberries.core.bullets.SingleBullet;
+import com.astroberries.core.config.GameCastle;
+import com.astroberries.core.config.GameConfig;
+import com.astroberries.core.config.GameLevel;
+import com.astroberries.core.config.GameSet;
+import com.astroberries.core.screens.game.bullets.Bullet;
+import com.astroberries.core.screens.game.bullets.SingleBullet;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
@@ -12,6 +16,9 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+
+import java.util.List;
 
 public class GameScreen implements Screen {
 
@@ -46,6 +53,8 @@ public class GameScreen implements Screen {
     private final Pixmap levelPixmap;
     private final Pixmap transparentPixmap;
     private final Pixmap bulletPixmap;
+    private final Pixmap castle1Pixmap;
+    private final Pixmap castle2Pixmap;
 
     private Bullet bullet;
 
@@ -66,7 +75,7 @@ public class GameScreen implements Screen {
     private CheckRectangle checkRectangle;
 
     //todo: split init to different functions
-    public GameScreen(CastleGame game) {
+    public GameScreen(CastleGame game, int setNumber, int levelNumber) {
         this.game = game;
         camera = new OrthographicCamera();
         world = new World(new Vector2(0, -20), true); //todo: explain magic numbers
@@ -74,16 +83,26 @@ public class GameScreen implements Screen {
         shapeRenderer = new ShapeRenderer();
         debugRenderer = new Box2DDebugRenderer();
 
+        Json json = new Json();
+        GameConfig config = json.fromJson(GameConfig.class, Gdx.files.internal("configuration.json"));
+
+        GameLevel gameLevelConfig = config.getSets().get(setNumber).getLevels().get(levelNumber);
 
         bulletPixmap = new Pixmap(Gdx.files.internal("bullets/11.png"));
         Pixmap.setBlending(Pixmap.Blending.None);
-        levelPixmap = new Pixmap(Gdx.files.internal("levels/001/level.png"));
+        levelPixmap = new Pixmap(Gdx.files.internal("levels/"+ gameLevelConfig.getPath() +"/level.png"));
+        castle1Pixmap = new Pixmap(Gdx.files.internal("castles/" + gameLevelConfig.getCastle1().getImage()));
+        castle2Pixmap = new Pixmap(Gdx.files.internal("castles/" + gameLevelConfig.getCastle2().getImage()));
         levelWidth = levelPixmap.getWidth();
         levelHeight = levelPixmap.getHeight();
+
+        levelPixmap.drawPixmap(castle1Pixmap, gameLevelConfig.getCastle1().getX(), gameLevelConfig.getCastle1().getY() - castle1Pixmap.getHeight());
+        levelPixmap.drawPixmap(castle2Pixmap, gameLevelConfig.getCastle2().getX(), gameLevelConfig.getCastle2().getY() - castle2Pixmap.getHeight());
+
         transparentPixmap = new Pixmap(Gdx.files.internal("transparent.png"));
         level = new Texture(levelPixmap);
-        background = new Texture(Gdx.files.internal("levels/001/background.png"));
-        sky = new Texture(Gdx.files.internal("levels/001/sky.png"));
+        background = new Texture(Gdx.files.internal("levels/" + gameLevelConfig.getPath() + "/background.png"));
+        sky = new Texture(Gdx.files.internal("levels/" + gameLevelConfig.getPath() + "/sky.png"));
         bricks = new Body[levelWidth][levelHeight];
 
         createPhysicsObjects(0, 0, levelWidth, levelHeight);
