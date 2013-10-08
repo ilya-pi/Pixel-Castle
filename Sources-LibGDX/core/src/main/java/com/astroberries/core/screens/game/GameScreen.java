@@ -1,10 +1,8 @@
 package com.astroberries.core.screens.game;
 
 import com.astroberries.core.CastleGame;
-import com.astroberries.core.config.GameCastle;
 import com.astroberries.core.config.GameConfig;
 import com.astroberries.core.config.GameLevel;
-import com.astroberries.core.config.GameSet;
 import com.astroberries.core.screens.game.bullets.Bullet;
 import com.astroberries.core.screens.game.bullets.SingleBullet;
 import com.badlogic.gdx.Gdx;
@@ -13,12 +11,12 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
-
-import java.util.List;
 
 public class GameScreen implements Screen {
 
@@ -28,13 +26,14 @@ public class GameScreen implements Screen {
 */
 
     static final float BRICK_SIZE = 0.5f;
-    static final float BULLET_SIZE = 2;
+    static final float CANNON_PADDING = 4;
 
     final private CastleGame game;
     final private OrthographicCamera camera;
     final private World world;
     private ShapeRenderer shapeRenderer;
     private Box2DDebugRenderer debugRenderer;
+    private Matrix4 fixedPosition = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
     private int displayWidth;
     private int displayHeight;
@@ -55,6 +54,14 @@ public class GameScreen implements Screen {
     private final Pixmap bulletPixmap;
     private final Pixmap castle1Pixmap;
     private final Pixmap castle2Pixmap;
+
+    private final float castle1centerX;
+    private final float castle1centerY;
+
+    private final float castle1bulletX;
+    private final float castle1bulletY;
+    private final float castle2bulletX;
+    private final float castle2bulletY;
 
     private Bullet bullet;
 
@@ -96,6 +103,13 @@ public class GameScreen implements Screen {
         levelWidth = levelPixmap.getWidth();
         levelHeight = levelPixmap.getHeight();
 
+        castle1bulletX = gameLevelConfig.getCastle1().getX() + castle1Pixmap.getWidth() + CANNON_PADDING;
+        castle2bulletX = gameLevelConfig.getCastle2().getX() - CANNON_PADDING;
+        castle1bulletY = levelHeight - (gameLevelConfig.getCastle1().getY() - castle1Pixmap.getHeight()) + CANNON_PADDING;
+        castle2bulletY = levelHeight - (gameLevelConfig.getCastle2().getY() - castle2Pixmap.getHeight()) + CANNON_PADDING;
+        castle1centerX = gameLevelConfig.getCastle1().getX() + castle1Pixmap.getWidth() / 2;
+        castle1centerY = gameLevelConfig.getCastle1().getY() + castle1Pixmap.getHeight() / 2;
+
         levelPixmap.drawPixmap(castle1Pixmap, gameLevelConfig.getCastle1().getX(), gameLevelConfig.getCastle1().getY() - castle1Pixmap.getHeight());
         levelPixmap.drawPixmap(castle2Pixmap, gameLevelConfig.getCastle2().getX(), gameLevelConfig.getCastle2().getY() - castle2Pixmap.getHeight());
 
@@ -116,8 +130,24 @@ public class GameScreen implements Screen {
 
             @Override
             public boolean tap(float x, float y, int count, int button) {
+/*
+                todo: dig here
+                Vector3 unprojected = new Vector3(x, y, 0);
+                camera.unproject(unprojected);
+                if (unprojected.x < castle1bulletX && unprojected.y < castle1bulletY) {
+                    Gdx.app.log("tap", " " + x + " " + y);
+                    Gdx.app.log("tap unprojected ", " " + unprojected.x + " " + unprojected.y);
+                    if (bullet == null || !bullet.isAlive()) {
+                        //bullet = new SingleBullet(camera, world, 200, 200, x, y);
+                        bullet = new SingleBullet(camera, world, 200, 200, castle1bulletX, castle1bulletY);
+                        bullet.fire();
+                    }
+                }
+*/
+
                 if (bullet == null || !bullet.isAlive()) {
-                    bullet = new SingleBullet(camera, world, 200, 200, x, y);
+                    //bullet = new SingleBullet(camera, world, 200, 200, x, y);
+                    bullet = new SingleBullet(camera, world, 200, 200, castle1bulletX, castle1bulletY);
                     bullet.fire();
                 }
                 return true;
@@ -198,7 +228,12 @@ public class GameScreen implements Screen {
         game.spriteBatch.draw(sky, camera.position.x * 0.6f - levelWidth / 2f * 0.6f, 0);
         game.spriteBatch.draw(background, camera.position.x * 0.4f - levelWidth / 2f * 0.4f, 0);
         game.spriteBatch.draw(level, 0, 0);
+
+        //todo: only need it for debug
+        game.spriteBatch.setProjectionMatrix(fixedPosition);
         font.draw(game.spriteBatch, "fps: " + Gdx.graphics.getFramesPerSecond(), 20, 30);
+        //todo: end only need it for debug
+
         game.spriteBatch.end();
 
         world.step(1 / 30f, 6, 2);
