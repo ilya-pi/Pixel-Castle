@@ -1,9 +1,6 @@
-package com.astroberries.core.screens;
+package com.astroberries.core.screens.game;
 
-import com.astroberries.core.BulletContactListener;
 import com.astroberries.core.CastleGame;
-import com.astroberries.core.CheckRectangle;
-import com.astroberries.core.GameUserData;
 import com.astroberries.core.bullets.Bullet;
 import com.astroberries.core.bullets.SingleBullet;
 import com.badlogic.gdx.Gdx;
@@ -72,7 +69,7 @@ public class GameScreen implements Screen {
     public GameScreen(CastleGame game) {
         this.game = game;
         camera = new OrthographicCamera();
-        world = new World(new Vector2(0, -20), true);
+        world = new World(new Vector2(0, -20), true); //todo: explain magic numbers
         world.setContactListener(new BulletContactListener(this));
         shapeRenderer = new ShapeRenderer();
         debugRenderer = new Box2DDebugRenderer();
@@ -80,13 +77,13 @@ public class GameScreen implements Screen {
 
         bulletPixmap = new Pixmap(Gdx.files.internal("bullets/11.png"));
         Pixmap.setBlending(Pixmap.Blending.None);
-        levelPixmap = new Pixmap(Gdx.files.internal("levels/01/level.png"));
+        levelPixmap = new Pixmap(Gdx.files.internal("levels/001/level.png"));
         levelWidth = levelPixmap.getWidth();
         levelHeight = levelPixmap.getHeight();
         transparentPixmap = new Pixmap(Gdx.files.internal("transparent.png"));
         level = new Texture(levelPixmap);
-        background = new Texture(Gdx.files.internal("levels/01/background.png"));
-        sky = new Texture(Gdx.files.internal("levels/01/sky.png"));
+        background = new Texture(Gdx.files.internal("levels/001/background.png"));
+        sky = new Texture(Gdx.files.internal("levels/001/sky.png"));
         bricks = new Body[levelWidth][levelHeight];
 
         createPhysicsObjects(0, 0, levelWidth, levelHeight);
@@ -101,7 +98,6 @@ public class GameScreen implements Screen {
             @Override
             public boolean tap(float x, float y, int count, int button) {
                 if (bullet == null || !bullet.isAlive()) {
-                    //todo: create bullet instance
                     bullet = new SingleBullet(camera, world, 200, 200, x, y);
                     bullet.fire();
                 }
@@ -149,6 +145,7 @@ public class GameScreen implements Screen {
 
             @Override
             public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+                //todo: implement this method rather then zoom to let user drag and zoom at the same time
                 return false;
             }
         }));
@@ -190,7 +187,7 @@ public class GameScreen implements Screen {
         shapeRenderer.setProjectionMatrix(camera.combined); //todo: is it necessary?
         if (bullet != null) {
             if (bullet.getCoordinates().x < 0 || bullet.getCoordinates().x > levelWidth || bullet.getCoordinates().y < 0) {
-                Gdx.app.log("bullet:", "destroy bullet!!");
+                //Gdx.app.log("bullet:", "destroy bullet!!");
                 bullet.dispose();
                 bullet = null;
             }

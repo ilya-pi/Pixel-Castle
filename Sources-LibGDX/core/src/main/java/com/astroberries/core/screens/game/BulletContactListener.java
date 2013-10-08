@@ -1,6 +1,5 @@
-package com.astroberries.core;
+package com.astroberries.core.screens.game;
 
-import com.astroberries.core.screens.GameScreen;
 import com.badlogic.gdx.physics.box2d.*;
 
 public class BulletContactListener implements ContactListener {

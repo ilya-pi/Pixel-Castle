@@ -1,8 +1,7 @@
 package com.astroberries.core.bullets;
 
-import com.astroberries.core.GameUserData;
+import com.astroberries.core.screens.game.GameUserData;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
