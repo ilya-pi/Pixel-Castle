@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Timer;
 
 public class GameScreen implements Screen {
 
@@ -29,12 +30,11 @@ public class GameScreen implements Screen {
     static final float BRICK_SIZE = 0.5f;
     static final float CANNON_PADDING = 4;
 
-    final private CastleGame game;
-    final private OrthographicCamera camera;
-    final private World world;
-    private ShapeRenderer shapeRenderer;
+    private final CastleGame game;
+    private final OrthographicCamera camera;
+    private final World world;
     private Box2DDebugRenderer debugRenderer;
-    private Matrix4 fixedPosition = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    private final Matrix4 fixedPosition = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
     private int displayWidth;
     private int displayHeight;
@@ -65,7 +65,7 @@ public class GameScreen implements Screen {
     private final float castle2bulletY;
 
     private boolean drawAim = false;
-    private Vector3 unprojectedEnd = new Vector3(200, 200, 0);
+    private Vector3 unprojectedEnd = new Vector3(0, 0, 0);
 
     private Bullet bullet;
 
@@ -93,7 +93,7 @@ public class GameScreen implements Screen {
         camera = new OrthographicCamera();
         world = new World(new Vector2(0, -20), true); //todo: explain magic numbers
         world.setContactListener(new BulletContactListener(this));
-        shapeRenderer = new ShapeRenderer();
+
         debugRenderer = new Box2DDebugRenderer();
 
         Json json = new Json();
@@ -127,6 +127,13 @@ public class GameScreen implements Screen {
 
         createPhysicsObjects(0, 0, levelWidth, levelHeight);
 
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                sweepDeadBodies();
+            }
+        }, 5, 5);
+
 
         Gdx.input.setInputProcessor(new GestureDetector(new GestureDetector.GestureListener() {
             @Override
@@ -143,14 +150,6 @@ public class GameScreen implements Screen {
 
             @Override
             public boolean tap(float x, float y, int count, int button) {
-
-/*
-                if (bullet == null || !bullet.isAlive()) {
-                    //bullet = new SingleBullet(camera, world, 200, 200, x, y);
-                    bullet = new SingleBullet(camera, world, 200, 200, castle1bulletX, castle1bulletY);
-                    bullet.fire();
-                }
-*/
                 return false;
             }
 
@@ -263,15 +262,16 @@ public class GameScreen implements Screen {
 
         if (drawAim) {
             game.shapeRenderer.setProjectionMatrix(camera.combined);
+            game.shapeRenderer.identity();
             game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             game.shapeRenderer.line(castle1centerX, castle1centerY, unprojectedEnd.x, unprojectedEnd.y, Color.CYAN, Color.BLACK);
             game.shapeRenderer.end();
         }
 
 
-        world.step(1 / 30f, 6, 2);
+        world.step(1 / 30f, 6, 2); //todo: play with this values
 
-        shapeRenderer.setProjectionMatrix(camera.combined); //todo: is it necessary?
+        game.shapeRenderer.setProjectionMatrix(camera.combined); //todo: is it necessary?
         if (bullet != null) {
             if (bullet.getCoordinates().x < 0 || bullet.getCoordinates().x > levelWidth || bullet.getCoordinates().y < 0) {
                 //Gdx.app.log("bullet:", "destroy bullet!!");
@@ -280,9 +280,8 @@ public class GameScreen implements Screen {
             }
         }
         if (bullet != null) {
-            bullet.render(shapeRenderer);
+            bullet.render(game.shapeRenderer);
         }
-        sweepDeadBodies();
         if (checkRectangle != null && !checkRectangle.checked) {
             createPhysicsObjects(checkRectangle.startX, checkRectangle.startY, checkRectangle.endX, checkRectangle.endY);
             checkRectangle.checked = true;
@@ -291,7 +290,7 @@ public class GameScreen implements Screen {
 
     }
 
-    public void sweepDeadBodies() {
+    private void sweepDeadBodies() {
         Array<Body> bodies = new Array<Body>();
         world.getBodies(bodies);
         for (Body body : bodies) {
