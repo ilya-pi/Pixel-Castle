@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -63,7 +64,12 @@ public class GameScreen implements Screen {
     private final float castle2bulletX;
     private final float castle2bulletY;
 
+    private boolean drawAim = false;
+    private Vector3 unprojectedEnd = new Vector3(200, 200, 0);
+
     private Bullet bullet;
+
+    private final GameLevel gameLevelConfig;
 
 /*
     private Body bulletBody;
@@ -93,7 +99,7 @@ public class GameScreen implements Screen {
         Json json = new Json();
         GameConfig config = json.fromJson(GameConfig.class, Gdx.files.internal("configuration.json"));
 
-        GameLevel gameLevelConfig = config.getSets().get(setNumber).getLevels().get(levelNumber);
+        gameLevelConfig = config.getSets().get(setNumber).getLevels().get(levelNumber);
 
         bulletPixmap = new Pixmap(Gdx.files.internal("bullets/11.png"));
         Pixmap.setBlending(Pixmap.Blending.None);
@@ -108,7 +114,7 @@ public class GameScreen implements Screen {
         castle1bulletY = levelHeight - (gameLevelConfig.getCastle1().getY() - castle1Pixmap.getHeight()) + CANNON_PADDING;
         castle2bulletY = levelHeight - (gameLevelConfig.getCastle2().getY() - castle2Pixmap.getHeight()) + CANNON_PADDING;
         castle1centerX = gameLevelConfig.getCastle1().getX() + castle1Pixmap.getWidth() / 2;
-        castle1centerY = gameLevelConfig.getCastle1().getY() + castle1Pixmap.getHeight() / 2;
+        castle1centerY = levelHeight - (gameLevelConfig.getCastle1().getY() - castle1Pixmap.getHeight() / 2);
 
         levelPixmap.drawPixmap(castle1Pixmap, gameLevelConfig.getCastle1().getX(), gameLevelConfig.getCastle1().getY() - castle1Pixmap.getHeight());
         levelPixmap.drawPixmap(castle2Pixmap, gameLevelConfig.getCastle2().getX(), gameLevelConfig.getCastle2().getY() - castle2Pixmap.getHeight());
@@ -125,32 +131,27 @@ public class GameScreen implements Screen {
         Gdx.input.setInputProcessor(new GestureDetector(new GestureDetector.GestureListener() {
             @Override
             public boolean touchDown(float x, float y, int pointer, int button) {
+                Vector3 unprojectedStart = new Vector3(x, y, 0);
+                camera.unproject(unprojectedStart);
+                //Gdx.app.log("touches", "pan " + x + " " + y);
+                if (unprojectedStart.x < castle1bulletX && unprojectedStart.y < castle1bulletY) {
+                    drawAim = true;
+                    return false;
+                }
                 return false;
             }
 
             @Override
             public boolean tap(float x, float y, int count, int button) {
-/*
-                todo: dig here
-                Vector3 unprojected = new Vector3(x, y, 0);
-                camera.unproject(unprojected);
-                if (unprojected.x < castle1bulletX && unprojected.y < castle1bulletY) {
-                    Gdx.app.log("tap", " " + x + " " + y);
-                    Gdx.app.log("tap unprojected ", " " + unprojected.x + " " + unprojected.y);
-                    if (bullet == null || !bullet.isAlive()) {
-                        //bullet = new SingleBullet(camera, world, 200, 200, x, y);
-                        bullet = new SingleBullet(camera, world, 200, 200, castle1bulletX, castle1bulletY);
-                        bullet.fire();
-                    }
-                }
-*/
 
+/*
                 if (bullet == null || !bullet.isAlive()) {
                     //bullet = new SingleBullet(camera, world, 200, 200, x, y);
                     bullet = new SingleBullet(camera, world, 200, 200, castle1bulletX, castle1bulletY);
                     bullet.fire();
                 }
-                return true;
+*/
+                return false;
             }
 
             @Override
@@ -166,12 +167,35 @@ public class GameScreen implements Screen {
             @Override
             public boolean pan(float x, float y, float deltaX, float deltaY) {
                 //Gdx.app.log("camera", " " + deltaX + " " + deltaY);
-                camera.translate(-deltaX * camera.zoom * scrollRatio, deltaY * camera.zoom * scrollRatio);
-                return true;
+                if (drawAim) {
+                    unprojectedEnd.x = x + deltaX;
+                    unprojectedEnd.y = y + deltaY;
+                    //Gdx.app.log("touches", "pan " + unprojectedEnd.x + " " + unprojectedEnd.y);
+                    camera.unproject(unprojectedEnd);
+                    return true;
+                } else {
+                    camera.translate(-deltaX * camera.zoom * scrollRatio, deltaY * camera.zoom * scrollRatio);
+                    return true;
+                }
             }
 
             @Override
             public boolean panStop(float x, float y, int pointer, int button) {
+                Gdx.app.log("touches", "pan stop" + x + " " + y);
+                if (drawAim && (bullet == null || !bullet.isAlive())) {
+                    unprojectedEnd.x = x;
+                    unprojectedEnd.y = y;
+                    //Gdx.app.log("touches", "pan " + unprojectedEnd.x + " " + unprojectedEnd.y);
+                    camera.unproject(unprojectedEnd);
+
+                    float angle = MathUtils.atan2(unprojectedEnd.y - castle1centerY, unprojectedEnd.x - castle1centerX);
+                    int impulse = gameLevelConfig.getImpulse();
+
+                    bullet = new SingleBullet(camera, world, angle, impulse, castle1bulletX, castle1bulletY);
+                    bullet.fire();
+                    drawAim = false;
+                    return true;
+                }
                 return false;
             }
 
@@ -229,12 +253,21 @@ public class GameScreen implements Screen {
         game.spriteBatch.draw(background, camera.position.x * 0.4f - levelWidth / 2f * 0.4f, 0);
         game.spriteBatch.draw(level, 0, 0);
 
+
         //todo: only need it for debug
         game.spriteBatch.setProjectionMatrix(fixedPosition);
         font.draw(game.spriteBatch, "fps: " + Gdx.graphics.getFramesPerSecond(), 20, 30);
         //todo: end only need it for debug
 
         game.spriteBatch.end();
+
+        if (drawAim) {
+            game.shapeRenderer.setProjectionMatrix(camera.combined);
+            game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            game.shapeRenderer.line(castle1centerX, castle1centerY, unprojectedEnd.x, unprojectedEnd.y, Color.CYAN, Color.BLACK);
+            game.shapeRenderer.end();
+        }
+
 
         world.step(1 / 30f, 6, 2);
 

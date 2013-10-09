@@ -5,8 +5,17 @@ public class GameLevel {
     private String name;
     private String path;
     private int number;
+    private int impulse;
     private GameCastle castle1;
     private GameCastle castle2;
+
+    public int getImpulse() {
+        return impulse;
+    }
+
+    public void setImpulse(int impulse) {
+        this.impulse = impulse;
+    }
 
     public String getPath() {
         return path;

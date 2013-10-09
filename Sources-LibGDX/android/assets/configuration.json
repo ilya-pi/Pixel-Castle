@@ -8,6 +8,7 @@
           "name": "Who first?",
           "path": "000",
           "number": 1,
+          "impulse": 40000,
           "castle1": {
             "image": "castle001.png",
             "x": 12,
@@ -22,6 +23,7 @@
         {
           "name": "Windy weather",
           "number": 2,
+          "impulse": 40000,
           "path": "002",
           "castle1": {
             "image": "castle003.png",

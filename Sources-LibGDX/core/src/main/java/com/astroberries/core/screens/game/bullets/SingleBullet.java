@@ -23,11 +23,11 @@ public class SingleBullet implements Bullet {
     private final float x;
     private final float y;
 
-    public SingleBullet(Camera camera, World world, float impulseX, float impulseY, float x, float y) {
+    public SingleBullet(Camera camera, World world, float angle, int impulse, float x, float y) {
         this.camera = camera;
         this.world = world;
-        this.impulseX = impulseX;
-        this.impulseY = impulseY;
+        this.impulseX = impulse * MathUtils.cos(angle);
+        this.impulseY = impulse * MathUtils.sin(angle);
         this.x = x;
         this.y = y;
     }
