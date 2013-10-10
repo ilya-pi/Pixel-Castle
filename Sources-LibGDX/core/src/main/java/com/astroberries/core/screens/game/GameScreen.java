@@ -65,6 +65,7 @@ public class GameScreen implements Screen {
     private final float castle2bulletY;
 
     private boolean drawAim = false;
+    private boolean sweepBodyes = false;
     private Vector3 unprojectedEnd = new Vector3(0, 0, 0);
 
     private Bullet bullet;
@@ -126,14 +127,6 @@ public class GameScreen implements Screen {
         bricks = new Body[levelWidth][levelHeight];
 
         createPhysicsObjects(0, 0, levelWidth, levelHeight);
-
-        Timer.schedule(new Timer.Task() {
-            @Override
-            public void run() {
-                sweepDeadBodies();
-            }
-        }, 5, 5);
-
 
         Gdx.input.setInputProcessor(new GestureDetector(new GestureDetector.GestureListener() {
             @Override
@@ -271,12 +264,17 @@ public class GameScreen implements Screen {
 
         world.step(1 / 30f, 6, 2); //todo: play with this values
 
+        if (sweepBodyes) {
+            sweepDeadBodies();
+        }
+
         game.shapeRenderer.setProjectionMatrix(camera.combined); //todo: is it necessary?
         if (bullet != null) {
             if (bullet.getCoordinates().x < 0 || bullet.getCoordinates().x > levelWidth || bullet.getCoordinates().y < 0) {
                 //Gdx.app.log("bullet:", "destroy bullet!!");
                 bullet.dispose();
                 bullet = null;
+                sweepBodyes = true;
             }
         }
         if (bullet != null) {
@@ -307,6 +305,7 @@ public class GameScreen implements Screen {
                 }
             }
         }
+        sweepBodyes = false;
         //Gdx.app.log("brick obj:","finished");
     }
 
@@ -399,6 +398,7 @@ public class GameScreen implements Screen {
         }
         level = new Texture(levelPixmap);
         checkRectangle = new CheckRectangle(startX - 1, startY - 1, endX + 1, endY + 1);
+        sweepBodyes = true;
     }
 
     @Override
