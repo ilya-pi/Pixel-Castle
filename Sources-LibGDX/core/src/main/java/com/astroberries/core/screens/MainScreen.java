@@ -1,7 +1,7 @@
 package com.astroberries.core.screens;
 
 import com.astroberries.core.CastleGame;
-import com.astroberries.core.screens.game.GameScreen;
+import com.astroberries.core.state.GameStates;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -32,11 +32,18 @@ public class MainScreen implements Screen {
 //    private final Texture background;
 //    private ShapeRenderer shapeRenderer = new ShapeRenderer();
 
-    final private MainScreen self;
+    private static MainScreen instance;
 
-    public MainScreen(final CastleGame game) {
-        this.self = this;
+    public static MainScreen geCreate(CastleGame game) {
+        if (MainScreen.instance == null) {
+            synchronized (MainScreen.class) {
+                MainScreen.instance = new MainScreen(game);
+            }
+        }
+        return MainScreen.instance;
+    }
 
+    private MainScreen(final CastleGame game) {
         this.game = game;
 
         this.stage = new Stage();
@@ -82,8 +89,7 @@ public class MainScreen implements Screen {
         button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new GameScreen(game, 0, 0)); //todo: here we should set level and set number (set is a group of levels displayed on screen)
-                self.dispose();
+                game.getStateMachine().to(GameStates.SINGLE_PLAYER);
             }
         });
 
@@ -103,7 +109,7 @@ public class MainScreen implements Screen {
             scrollTimer = 0.0f;
         }
         backSprite.setU(scrollTimer);
-        backSprite.setU2(scrollTimer+1);
+        backSprite.setU2(scrollTimer + 1);
         game.spriteBatch.begin();
         backSprite.draw(game.spriteBatch);
         game.spriteBatch.end();
