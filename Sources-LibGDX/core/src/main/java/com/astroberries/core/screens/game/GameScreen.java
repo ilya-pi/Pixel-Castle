@@ -5,6 +5,10 @@ import com.astroberries.core.config.GameConfig;
 import com.astroberries.core.config.GameLevel;
 import com.astroberries.core.screens.game.bullets.Bullet;
 import com.astroberries.core.screens.game.bullets.SingleBullet;
+import com.astroberries.core.screens.game.level.CheckRectangle;
+import com.astroberries.core.screens.game.physics.BulletContactListener;
+import com.astroberries.core.screens.game.physics.GameUserData;
+import com.astroberries.core.screens.game.physics.PhysicsManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
@@ -18,7 +22,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.Timer;
 
 public class GameScreen implements Screen {
 
@@ -27,7 +30,7 @@ public class GameScreen implements Screen {
     static final float BOX_TO_WORLD = 100f;
 */
 
-    static final float BRICK_SIZE = 0.5f;
+
     static final float CANNON_PADDING = 4;
 
     private final CastleGame game;
@@ -50,7 +53,7 @@ public class GameScreen implements Screen {
     private Texture level;
     private final Texture background;
     private final Texture sky;
-    private final Pixmap levelPixmap;
+
     private final Pixmap transparentPixmap;
     private final Pixmap bulletPixmap;
     private final Pixmap castle1Pixmap;
@@ -65,35 +68,30 @@ public class GameScreen implements Screen {
     private final float castle2bulletY;
 
     private boolean drawAim = false;
-    private boolean sweepBodyes = false;
     private Vector3 unprojectedEnd = new Vector3(0, 0, 0);
 
     private Bullet bullet;
 
     private final GameLevel gameLevelConfig;
 
+    private final PhysicsManager physicsManager;
+
 /*
     private Body bulletBody;
     final public ArrayList<Body> bullets = new ArrayList<Body>();
 */
 
-    private final Body[][] bricks;
-
     private float lastInitialDistance = 0;
     private float lastCameraZoom = 1;
     private float newCameraZoom = 1;
 
-    private float currentAlpha;
-    private float tmpAlpha;
-
-    private CheckRectangle checkRectangle;
 
     //todo: split init to different functions
     public GameScreen(CastleGame game, int setNumber, int levelNumber) {
         this.game = game;
         camera = new OrthographicCamera();
         world = new World(new Vector2(0, -20), true); //todo: explain magic numbers
-        world.setContactListener(new BulletContactListener(this));
+
 
         debugRenderer = new Box2DDebugRenderer();
 
@@ -102,13 +100,15 @@ public class GameScreen implements Screen {
 
         gameLevelConfig = config.getSets().get(setNumber).getLevels().get(levelNumber);
 
-        bulletPixmap = new Pixmap(Gdx.files.internal("bullets/11.png"));
+
         Pixmap.setBlending(Pixmap.Blending.None);
-        levelPixmap = new Pixmap(Gdx.files.internal("levels/"+ gameLevelConfig.getPath() +"/level.png"));
+        Pixmap levelPixmap = new Pixmap(Gdx.files.internal("levels/"+ gameLevelConfig.getPath() +"/level.png"));
         castle1Pixmap = new Pixmap(Gdx.files.internal("castles/" + gameLevelConfig.getCastle1().getImage()));
         castle2Pixmap = new Pixmap(Gdx.files.internal("castles/" + gameLevelConfig.getCastle2().getImage()));
         levelWidth = levelPixmap.getWidth();
         levelHeight = levelPixmap.getHeight();
+
+
 
         castle1bulletX = gameLevelConfig.getCastle1().getX() + castle1Pixmap.getWidth() + CANNON_PADDING;
         castle2bulletX = gameLevelConfig.getCastle2().getX() - CANNON_PADDING;
@@ -124,9 +124,14 @@ public class GameScreen implements Screen {
         level = new Texture(levelPixmap);
         background = new Texture(Gdx.files.internal("levels/" + gameLevelConfig.getPath() + "/background.png"));
         sky = new Texture(Gdx.files.internal("levels/" + gameLevelConfig.getPath() + "/sky.png"));
-        bricks = new Body[levelWidth][levelHeight];
 
-        createPhysicsObjects(0, 0, levelWidth, levelHeight);
+        physicsManager = new PhysicsManager(world, levelPixmap, level);
+        physicsManager.addRectToCheckPhysicsObjectsCreation(new CheckRectangle(0, 0, levelWidth, levelHeight));
+        physicsManager.createPhysicsObjects();
+
+        bulletPixmap = new Pixmap(Gdx.files.internal("bullets/11.png"));
+        world.setContactListener(new BulletContactListener(physicsManager, bulletPixmap)); //todo: set bulletPixmap to bullet
+
 
         Gdx.input.setInputProcessor(new GestureDetector(new GestureDetector.GestureListener() {
             @Override
@@ -264,141 +269,28 @@ public class GameScreen implements Screen {
 
         world.step(1 / 30f, 6, 2); //todo: play with this values
 
-        if (sweepBodyes) {
-            sweepDeadBodies();
-        }
 
         game.shapeRenderer.setProjectionMatrix(camera.combined); //todo: is it necessary?
+
+        //todo: refactor mess regarding bullet
         if (bullet != null) {
-            if (bullet.getCoordinates().x < 0 || bullet.getCoordinates().x > levelWidth || bullet.getCoordinates().y < 0) {
-                //Gdx.app.log("bullet:", "destroy bullet!!");
+            if (!bullet.isAlive() || bullet.getCoordinates().x < 0 || bullet.getCoordinates().x > levelWidth || bullet.getCoordinates().y < 0) {
+                Gdx.app.log("bullet:", "destroy bullet!!");
                 bullet.dispose();
                 bullet = null;
-                sweepBodyes = true;
+                physicsManager.sweepBodyes = true;
             }
         }
         if (bullet != null) {
             bullet.render(game.shapeRenderer);
         }
-        if (checkRectangle != null && !checkRectangle.checked) {
-            createPhysicsObjects(checkRectangle.startX, checkRectangle.startY, checkRectangle.endX, checkRectangle.endY);
-            checkRectangle.checked = true;
-        }
+
+        physicsManager.sweepDeadBodies(); //todo: sweep bodies should be only after this mess with bullet which is bad. Refactor.
+        physicsManager.createPhysicsObjects();
+
+
         //debugRenderer.render(world, camera.combined);
 
-    }
-
-    private void sweepDeadBodies() {
-        Array<Body> bodies = new Array<Body>();
-        world.getBodies(bodies);
-        for (Body body : bodies) {
-            if (body != null) {
-                GameUserData data = (GameUserData) body.getUserData();
-                if (data != null && data.position != null && data.position.y == 247f) {
-                    //Gdx.app.log("brick obj:", data.position.x + " " + data.position.y + " " + data.isFlaggedForDelete);
-                }
-                if (data != null && data.isFlaggedForDelete) {
-                    //Gdx.app.log("bricks to del:", "!!!!!!" /*data.position.x + " " + data.position.y*/);
-                    world.destroyBody(body);
-                    body.setUserData(null);
-                    body = null;
-                }
-            }
-        }
-        sweepBodyes = false;
-        //Gdx.app.log("brick obj:","finished");
-    }
-
-    private void createPhysicsObjects(int xStart, int yStart, int endX, int endY) {
-        for (int x = xStart; x < endX; x++) {
-            for (int y = yStart; y < endY; y++) {
-                //todo: instead of new Color() use the following:
-/*                int value = pixmap.getPixel(x, y);
-                int R = ((value & 0xff000000) >>> 24);
-                int G = ((value & 0x00ff0000) >>> 16);
-                int B = ((value & 0x0000ff00) >>> 8);
-                int A = ((value & 0x000000ff));*/
-                currentAlpha = new Color(levelPixmap.getPixel(x, y)).a;
-                if (currentAlpha != 0f && bricks[x][y] == null) {
-                    boolean stop = false;
-                    int yInternal = y - 1; //todo: remove bottom and side lines of bodies
-                    while (yInternal <= y + 1 && !stop) {
-                        int xInternal = x - 1;
-                        while (xInternal <= x + 1 && !stop) {
-                            tmpAlpha = new Color(levelPixmap.getPixel(xInternal, yInternal)).a;
-                            if (tmpAlpha == 0f) {
-                                BodyDef groundBodyDef = new BodyDef();
-                                groundBodyDef.type = BodyDef.BodyType.StaticBody;
-                                groundBodyDef.position.set(new Vector2(x + BRICK_SIZE, levelHeight - y - BRICK_SIZE));
-                                Body groundBody = world.createBody(groundBodyDef);
-                                groundBody.setUserData(GameUserData.createBrickData(x, y));
-                                bricks[x][y] = groundBody;
-                                PolygonShape groundBox = new PolygonShape();
-                                groundBox.setAsBox(BRICK_SIZE, BRICK_SIZE);
-                                groundBody.createFixture(groundBox, 0.0f);
-                                groundBox.dispose();
-                                //Gdx.app.log("bricks", "created " + x + " " + y);
-
-                                stop = true;
-                            }
-                            xInternal++;
-                        }
-                        yInternal++;
-                    }
-                }
-            }
-        }
-    }
-
-    public void calculateHit(GameUserData bulletData, GameUserData brickData) {
-        if (bullet != null) {
-            bullet.dispose();
-            bullet = null;
-        }
-        bulletData.isFlaggedForDelete = true;
-
-        int hitX = (int) brickData.position.x;
-        int hitY = (int) brickData.position.y;
-        int dx = (bulletPixmap.getWidth() - 1) / 2;
-        int dy = (bulletPixmap.getHeight() - 1) / 2;
-
-        int startX = hitX - dx;
-        int endX = hitX + dx;
-        int startY = hitY - dy;
-        int endY = hitY + dy;
-
-        int writeColor = 0;
-        for (int x = 0; x <= bulletPixmap.getWidth(); x++) {
-            for (int y = 0; y <= bulletPixmap.getHeight(); y++) {
-                Color color = new Color(bulletPixmap.getPixel(x, y));
-                //Gdx.app.log("pixel", color.a + "");
-                if (color.a != 0f) {
-                    int pixelX = x - dx + hitX;
-                    int pixelY = y - dy + hitY;
-                    if (pixelX < bricks.length && pixelY < bricks[1].length && pixelX >= 0 && pixelY >= 0) {
-                        Body tmpBrick = bricks[pixelX][pixelY];
-                        if (tmpBrick != null) {
-                            //Gdx.app.log("pixel", "!!!!!! " + pixelX + " " + pixelY);
-                            ((GameUserData) tmpBrick.getUserData()).isFlaggedForDelete = true;
-                            bricks[pixelX][pixelY] = null;
-                        }
-
-                        if ((new Color(levelPixmap.getPixel(pixelX, pixelY)).a != 0f)) {
-                            if (color.r == 0f && color.g == 0f && color.b == 0f) {
-                                writeColor = Color.rgba8888(52 / 255f, 93 / 255f, 33 / 255f, 1);
-                            } else {
-                                writeColor = Color.rgba8888(0, 0, 0, 0);
-                            }
-
-                            levelPixmap.drawPixel(pixelX, pixelY, writeColor);
-                        }
-                    }
-                }
-            }
-        }
-        level = new Texture(levelPixmap);
-        checkRectangle = new CheckRectangle(startX - 1, startY - 1, endX + 1, endY + 1);
-        sweepBodyes = true;
     }
 
     @Override
@@ -432,7 +324,8 @@ public class GameScreen implements Screen {
         background.dispose();
         sky.dispose();
         level.dispose();
-        levelPixmap.dispose();
+        physicsManager.dispose();
+
         Array<Body> bodies = new Array<Body>();
         world.getBodies(bodies);
         for (Body body : bodies) {
@@ -444,6 +337,7 @@ public class GameScreen implements Screen {
                 }
             }
         }
+        world.dispose();
     }
 
 }

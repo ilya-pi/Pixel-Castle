@@ -1,4 +1,4 @@
-package com.astroberries.core.screens.game;
+package com.astroberries.core.screens.game.level;
 
 public class CheckRectangle {
 

@@ -1,6 +1,6 @@
 package com.astroberries.core.screens.game.bullets;
 
-import com.astroberries.core.screens.game.GameUserData;
+import com.astroberries.core.screens.game.physics.GameUserData;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -92,6 +92,6 @@ public class SingleBullet implements Bullet {
 
     @Override
     public boolean isAlive() {
-        return bulletBody != null;
+        return bulletBody != null && !((GameUserData) bulletBody.getUserData()).isFlaggedForDelete; //todo: performance?
     }
 }

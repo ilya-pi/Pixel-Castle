@@ -1,4 +1,4 @@
-package com.astroberries.core.screens.game;
+package com.astroberries.core.screens.game.physics;
 
 import com.badlogic.gdx.math.Vector2;
 

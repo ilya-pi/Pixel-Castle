@@ -1,13 +1,17 @@
-package com.astroberries.core.screens.game;
+package com.astroberries.core.screens.game.physics;
 
+import com.astroberries.core.screens.game.GameScreen;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.physics.box2d.*;
 
 public class BulletContactListener implements ContactListener {
 
-    GameScreen gameScreen;
+    private final PhysicsManager physicsManager;
+    private final Pixmap bulletPixmap;
 
-    public BulletContactListener(GameScreen gameScreen) {
-        this.gameScreen = gameScreen;
+    public BulletContactListener(PhysicsManager physicsManager, Pixmap bulletPixmap) {
+        this.bulletPixmap = bulletPixmap;
+        this.physicsManager = physicsManager;
     }
 
     @Override
@@ -23,11 +27,11 @@ public class BulletContactListener implements ContactListener {
             if (d1.type == GameUserData.Type.BRICK && d2.type == GameUserData.Type.BULLET) {
                 //1 - brick
                 //2 - bullet
-                gameScreen.calculateHit(d2, d1);
+                physicsManager.calculateHit(d2, d1, bulletPixmap);
             } else if (d2.type == GameUserData.Type.BRICK && d1.type == GameUserData.Type.BULLET) {
                 //1 - bullet
                 //2 - brick
-                gameScreen.calculateHit(d1, d2);
+                physicsManager.calculateHit(d1, d2, bulletPixmap);
             } else {
                 //do nothing
             }
