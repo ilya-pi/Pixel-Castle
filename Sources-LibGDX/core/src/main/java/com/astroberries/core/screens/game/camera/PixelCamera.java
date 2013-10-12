@@ -34,10 +34,6 @@ public class PixelCamera extends OrthographicCamera {
         super(viewportWidth, viewportHeight);
     }
 
-    public PixelCamera(float viewportWidth, float viewportHeight, float diamondAngle) {
-        super(viewportWidth, viewportHeight, diamondAngle);
-    }
-
     public void to(CameraState target, Float _transitionCompleteTime) {
         this.transitionStartPoint = this.position;
         this.transitionZoomStart = this.zoom;

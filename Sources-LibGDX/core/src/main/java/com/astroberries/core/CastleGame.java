@@ -53,9 +53,7 @@ public class CastleGame extends Game {
         };
         GameState nil = new GameState(GameStates.NIL,
                 asMap(
-                        e(GameStates.MAINMENU, asList(new TransitionAction[]{
-                                nil2MainMenu
-                        }))
+                        e(GameStates.MAINMENU, asList(nil2MainMenu))
                 ));
 
         TransitionAction mainMenu2ChooseGame = new TransitionAction() {
@@ -89,12 +87,8 @@ public class CastleGame extends Game {
         };
         GameState mainMenu = new GameState(GameStates.MAINMENU,
                 asMap(
-                        e(GameStates.CHOOSE_GAME, asList(new TransitionAction[]{
-                                mainMenu2ChooseGame, commonAction
-                        })),
-                        e(GameStates.LEVEL_OVERVIEW, asList(new TransitionAction[]{
-                                mainMenu2Overview,
-                        }))
+                        e(GameStates.CHOOSE_GAME, asList(mainMenu2ChooseGame, commonAction)),
+                        e(GameStates.LEVEL_OVERVIEW, asList(mainMenu2Overview))
                 ));
 
         TransitionAction levelIntro2Player1 = new TransitionAction() {
@@ -105,9 +99,7 @@ public class CastleGame extends Game {
         };
         GameState player1 = new GameState(GameStates.LEVEL_OVERVIEW,
                 asMap(
-                        e(GameStates.PLAYER1, asList(new TransitionAction[]{
-                                levelIntro2Player1
-                        }))
+                        e(GameStates.PLAYER1, asList(levelIntro2Player1))
                 ));
 
         return new GameStateMachine(nil);
