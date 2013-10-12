@@ -1,7 +1,9 @@
 package com.astroberries.core;
 
+import com.astroberries.core.config.GlobalGameConfig;
 import com.astroberries.core.screens.MainScreen;
 import com.astroberries.core.screens.game.GameScreen;
+import com.astroberries.core.screens.game.camera.PixelCamera;
 import com.astroberries.core.state.GameState;
 import com.astroberries.core.state.GameStateMachine;
 import com.astroberries.core.state.GameStates;
@@ -9,6 +11,9 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.astroberries.core.state.GameState.TransitionAction;
 import static com.astroberries.core.state.util.MapUtils.asMap;
@@ -23,7 +28,7 @@ public class CastleGame extends Game {
 
     private GameStateMachine stateMachine;
 
-    private static CastleGame INSTANCE;
+    public static CastleGame INSTANCE;
 
     public CastleGame() {
         super();
@@ -59,11 +64,20 @@ public class CastleGame extends Game {
                 System.out.println("type safety my ass ;D");
             }
         };
-        TransitionAction mainMenu2SinglePlayer = new TransitionAction() {
+        TransitionAction mainMenu2Overview = new TransitionAction() {
             @Override
             protected void doAction() {
                 //todo: here we should set level and set number (set is a group of levels displayed on screen)
-                CastleGame.INSTANCE.setScreen(new GameScreen(CastleGame.INSTANCE, 0, 0));
+                GameScreen gameScreen = GameScreen.geCreate(CastleGame.INSTANCE, 0, 0);
+                CastleGame.INSTANCE.setScreen(gameScreen);
+                gameScreen.camera.to(PixelCamera.CameraState.OVERVIEW, null);
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        CastleGame.INSTANCE.getStateMachine().to(GameStates.PLAYER1);
+                    }
+                }, GlobalGameConfig.LEVEL_INTRO_TIMEOUT);
+
                 MainScreen.geCreate(CastleGame.INSTANCE).dispose();
             }
         };
@@ -78,8 +92,21 @@ public class CastleGame extends Game {
                         e(GameStates.CHOOSE_GAME, asList(new TransitionAction[]{
                                 mainMenu2ChooseGame, commonAction
                         })),
-                        e(GameStates.SINGLE_PLAYER, asList(new TransitionAction[]{
-                                mainMenu2SinglePlayer
+                        e(GameStates.LEVEL_OVERVIEW, asList(new TransitionAction[]{
+                                mainMenu2Overview,
+                        }))
+                ));
+
+        TransitionAction levelIntro2Player1 = new TransitionAction() {
+            @Override
+            protected void doAction() {
+                GameScreen.geCreate().camera.to(PixelCamera.CameraState.CASTLE1, null);
+            }
+        };
+        GameState player1 = new GameState(GameStates.LEVEL_OVERVIEW,
+                asMap(
+                        e(GameStates.PLAYER1, asList(new TransitionAction[]{
+                                levelIntro2Player1
                         }))
                 ));
 

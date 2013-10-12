@@ -5,5 +5,7 @@ package com.astroberries.core.state;
  */
 public enum GameStates {
 
-    NIL, MAINMENU, CHOOSE_GAME, SINGLE_PLAYER, MULTIPLAYER, PAUSE;
+    NIL, MAINMENU, CHOOSE_GAME, MULTIPLAYER, PAUSE,
+
+    LEVEL_OVERVIEW, PLAYER1;
 }

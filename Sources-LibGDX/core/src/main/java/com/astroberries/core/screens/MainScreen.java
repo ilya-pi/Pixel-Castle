@@ -89,7 +89,7 @@ public class MainScreen implements Screen {
         button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.getStateMachine().to(GameStates.SINGLE_PLAYER);
+                game.getStateMachine().to(GameStates.LEVEL_OVERVIEW);
             }
         });
 

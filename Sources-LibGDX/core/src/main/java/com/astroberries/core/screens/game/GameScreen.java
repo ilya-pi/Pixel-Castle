@@ -5,13 +5,18 @@ import com.astroberries.core.config.GameConfig;
 import com.astroberries.core.config.GameLevel;
 import com.astroberries.core.screens.game.bullets.Bullet;
 import com.astroberries.core.screens.game.bullets.SingleBullet;
+import com.astroberries.core.screens.game.camera.PixelCamera;
 import com.astroberries.core.screens.game.level.CheckRectangle;
 import com.astroberries.core.screens.game.physics.BulletContactListener;
 import com.astroberries.core.screens.game.physics.GameUserData;
 import com.astroberries.core.screens.game.physics.PhysicsManager;
+import com.astroberries.core.state.GameStates;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
@@ -19,7 +24,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 
@@ -34,16 +41,18 @@ public class GameScreen implements Screen {
     static final float CANNON_PADDING = 4;
 
     private final CastleGame game;
-    private final OrthographicCamera camera;
+    public final PixelCamera camera;
     private final World world;
     private Box2DDebugRenderer debugRenderer;
     private final Matrix4 fixedPosition = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
     private int displayWidth;
     private int displayHeight;
-    private int levelHeight;
-    private int levelWidth;
-    private float viewPortHeight;
+
+    public int levelHeight;
+    public int levelWidth;
+
+    public float viewPortHeight;
     private float scrollRatio;
 
     BitmapFont font = new BitmapFont(Gdx.files.internal("arial-15.fnt"), false);
@@ -59,8 +68,8 @@ public class GameScreen implements Screen {
     private final Pixmap castle1Pixmap;
     private final Pixmap castle2Pixmap;
 
-    private final float castle1centerX;
-    private final float castle1centerY;
+    public final float castle1centerX;
+    public final float castle1centerY;
 
     private final float castle1bulletX;
     private final float castle1bulletY;
@@ -70,7 +79,7 @@ public class GameScreen implements Screen {
     private boolean drawAim = false;
     private Vector3 unprojectedEnd = new Vector3(0, 0, 0);
 
-    private Bullet bullet;
+    public Bullet bullet;
 
     private final GameLevel gameLevelConfig;
 
@@ -85,11 +94,29 @@ public class GameScreen implements Screen {
     private float lastCameraZoom = 1;
     private float newCameraZoom = 1;
 
+    private static GameScreen instance;
+
+    public static GameScreen geCreate(CastleGame game, int setNumber, int levelNumber) {
+        if (GameScreen.instance == null) {
+            synchronized (GameScreen.class) {
+                GameScreen.instance = new GameScreen(game, setNumber, levelNumber);
+            }
+        }
+        return GameScreen.instance;
+    }
+
+    public static GameScreen geCreate() {
+        if (GameScreen.instance == null) {
+            throw new Error(String.format("Cannot geCreate %s, should've been initializes prior " +
+                    "to method calling with null parametres", GameScreen.class.getName()));
+        }
+        return GameScreen.instance;
+    }
 
     //todo: split init to different functions
-    public GameScreen(CastleGame game, int setNumber, int levelNumber) {
+    private GameScreen(CastleGame game, int setNumber, int levelNumber) {
         this.game = game;
-        camera = new OrthographicCamera();
+        camera = new PixelCamera();
         world = new World(new Vector2(0, -20), true); //todo: explain magic numbers
 
 
@@ -102,12 +129,11 @@ public class GameScreen implements Screen {
 
 
         Pixmap.setBlending(Pixmap.Blending.None);
-        Pixmap levelPixmap = new Pixmap(Gdx.files.internal("levels/"+ gameLevelConfig.getPath() +"/level.png"));
+        Pixmap levelPixmap = new Pixmap(Gdx.files.internal("levels/" + gameLevelConfig.getPath() + "/level.png"));
         castle1Pixmap = new Pixmap(Gdx.files.internal("castles/" + gameLevelConfig.getCastle1().getImage()));
         castle2Pixmap = new Pixmap(Gdx.files.internal("castles/" + gameLevelConfig.getCastle2().getImage()));
         levelWidth = levelPixmap.getWidth();
         levelHeight = levelPixmap.getHeight();
-
 
 
         castle1bulletX = gameLevelConfig.getCastle1().getX() + castle1Pixmap.getWidth() + CANNON_PADDING;
@@ -189,6 +215,7 @@ public class GameScreen implements Screen {
                     int impulse = gameLevelConfig.getImpulse();
 
                     bullet = new SingleBullet(camera, world, angle, impulse, castle1bulletX, castle1bulletY);
+                    camera.to(PixelCamera.CameraState.BULLET, null); //todo: move to the state machine transition
                     bullet.fire();
                     drawAim = false;
                     return true;
@@ -225,24 +252,7 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-        //camera.zoom = 0.4f;
-        if (bullet != null) {
-            camera.position.y =  bullet.getCoordinates().y;
-            camera.position.x =  bullet.getCoordinates().x;
-        }
-        if (camera.position.y > levelHeight - (viewPortHeight / 2f) * camera.zoom) {
-            camera.position.y = levelHeight - (viewPortHeight / 2f) * camera.zoom;
-        }
-        if (camera.position.y < (viewPortHeight / 2f) * camera.zoom) {
-            camera.position.y = viewPortHeight / 2f * camera.zoom;
-        }
-        if (camera.position.x > levelWidth - (levelWidth / 2f) * camera.zoom) {
-            camera.position.x = levelWidth - (levelWidth / 2f) * camera.zoom;
-        }
-        if (camera.position.x < levelWidth / 2f * camera.zoom) {
-            camera.position.x = levelWidth / 2f * camera.zoom;
-        }
-        camera.update();
+        camera.handle();
 
         game.spriteBatch.setProjectionMatrix(camera.combined);
         game.spriteBatch.begin();
