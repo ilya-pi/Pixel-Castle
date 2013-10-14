@@ -1,7 +1,7 @@
 package com.astroberries.core;
 
 import com.astroberries.core.config.GlobalGameConfig;
-import com.astroberries.core.screens.MainScreen;
+import com.astroberries.core.screens.mainmenu.MainScreen;
 import com.astroberries.core.screens.game.GameScreen;
 import com.astroberries.core.screens.game.camera.PixelCamera;
 import com.astroberries.core.state.GameState;
