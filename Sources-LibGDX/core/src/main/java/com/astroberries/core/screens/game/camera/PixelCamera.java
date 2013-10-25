@@ -4,7 +4,6 @@ import com.astroberries.core.config.GlobalGameConfig;
 import com.astroberries.core.screens.game.GameScreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
 
 import static com.astroberries.core.config.GlobalGameConfig.DEFAULT_ANIMATION_METHOD;
@@ -28,10 +27,6 @@ public class PixelCamera extends OrthographicCamera {
 
     public PixelCamera() {
         super();
-    }
-
-    public PixelCamera(float viewportWidth, float viewportHeight) {
-        super(viewportWidth, viewportHeight);
     }
 
     public void to(CameraState target, Float _transitionCompleteTime) {
@@ -73,15 +68,15 @@ public class PixelCamera extends OrthographicCamera {
                 transitionTime += Gdx.graphics.getDeltaTime();
 
                 if (transitionTime > transitionCompleteTime) {
-                    this.position.x = GameScreen.geCreate().castle1centerX;
-                    this.position.y = GameScreen.geCreate().castle1centerY;
+                    this.position.x = GameScreen.geCreate().castle1.getCenter().x;
+                    this.position.y = GameScreen.geCreate().castle1.getCenter().y;
                     this.zoom = GlobalGameConfig.LEVEL_ZOOM;
                     this.setFree();
                 } else {
                     this.position.x = DEFAULT_ANIMATION_METHOD.apply(this.transitionStartPoint.x,
-                            gameScreen.castle1centerX, (transitionTime / transitionCompleteTime));
+                            gameScreen.castle1.getCenter().x, (transitionTime / transitionCompleteTime));
                     this.position.y = DEFAULT_ANIMATION_METHOD.apply(this.transitionStartPoint.y,
-                            gameScreen.castle1centerY, (transitionTime / transitionCompleteTime));
+                            gameScreen.castle1.getCenter().y, (transitionTime / transitionCompleteTime));
                     this.zoom = DEFAULT_ANIMATION_METHOD.apply(this.transitionZoomStart,
                             GlobalGameConfig.LEVEL_ZOOM, (transitionTime / transitionCompleteTime));
                 }

@@ -6,6 +6,7 @@ import com.astroberries.core.config.GameLevel;
 import com.astroberries.core.screens.game.bullets.Bullet;
 import com.astroberries.core.screens.game.bullets.SingleBullet;
 import com.astroberries.core.screens.game.camera.PixelCamera;
+import com.astroberries.core.screens.game.castle.Castle;
 import com.astroberries.core.screens.game.level.CheckRectangle;
 import com.astroberries.core.screens.game.physics.BulletContactListener;
 import com.astroberries.core.screens.game.physics.GameUserData;
@@ -43,6 +44,9 @@ public class GameScreen implements Screen {
     private final CastleGame game;
     public final PixelCamera camera;
     private final World world;
+    public final Castle castle1;
+    public final Castle castle2;
+
     private Box2DDebugRenderer debugRenderer;
     private final Matrix4 fixedPosition = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -65,16 +69,6 @@ public class GameScreen implements Screen {
 
     private final Pixmap transparentPixmap;
     private final Pixmap bulletPixmap;
-    private final Pixmap castle1Pixmap;
-    private final Pixmap castle2Pixmap;
-
-    public final float castle1centerX;
-    public final float castle1centerY;
-
-    private final float castle1bulletX;
-    private final float castle1bulletY;
-    private final float castle2bulletX;
-    private final float castle2bulletY;
 
     private boolean drawAim = false;
     private Vector3 unprojectedEnd = new Vector3(0, 0, 0);
@@ -130,21 +124,15 @@ public class GameScreen implements Screen {
 
         Pixmap.setBlending(Pixmap.Blending.None);
         Pixmap levelPixmap = new Pixmap(Gdx.files.internal("levels/" + gameLevelConfig.getPath() + "/level.png"));
-        castle1Pixmap = new Pixmap(Gdx.files.internal("castles/" + gameLevelConfig.getCastle1().getImage()));
-        castle2Pixmap = new Pixmap(Gdx.files.internal("castles/" + gameLevelConfig.getCastle2().getImage()));
         levelWidth = levelPixmap.getWidth();
         levelHeight = levelPixmap.getHeight();
 
+        castle1 = new Castle(gameLevelConfig.getCastle1(), levelWidth, levelHeight);
+        castle2 = new Castle(gameLevelConfig.getCastle2(), levelWidth, levelHeight);
 
-        castle1bulletX = gameLevelConfig.getCastle1().getX() + castle1Pixmap.getWidth() + CANNON_PADDING;
-        castle2bulletX = gameLevelConfig.getCastle2().getX() - CANNON_PADDING;
-        castle1bulletY = levelHeight - (gameLevelConfig.getCastle1().getY() - castle1Pixmap.getHeight()) + CANNON_PADDING;
-        castle2bulletY = levelHeight - (gameLevelConfig.getCastle2().getY() - castle2Pixmap.getHeight()) + CANNON_PADDING;
-        castle1centerX = gameLevelConfig.getCastle1().getX() + castle1Pixmap.getWidth() / 2;
-        castle1centerY = levelHeight - (gameLevelConfig.getCastle1().getY() - castle1Pixmap.getHeight() / 2);
 
-        levelPixmap.drawPixmap(castle1Pixmap, gameLevelConfig.getCastle1().getX(), gameLevelConfig.getCastle1().getY() - castle1Pixmap.getHeight());
-        levelPixmap.drawPixmap(castle2Pixmap, gameLevelConfig.getCastle2().getX(), gameLevelConfig.getCastle2().getY() - castle2Pixmap.getHeight());
+        levelPixmap.drawPixmap(castle1.getCastlePixmap(), gameLevelConfig.getCastle1().getX(), gameLevelConfig.getCastle1().getY() - castle1.getCastlePixmap().getHeight());
+        levelPixmap.drawPixmap(castle2.getCastlePixmap(), gameLevelConfig.getCastle2().getX(), gameLevelConfig.getCastle2().getY() - castle2.getCastlePixmap().getHeight());
 
         transparentPixmap = new Pixmap(Gdx.files.internal("transparent.png"));
         level = new Texture(levelPixmap);
@@ -165,7 +153,7 @@ public class GameScreen implements Screen {
                 Vector3 unprojectedStart = new Vector3(x, y, 0);
                 camera.unproject(unprojectedStart);
                 //Gdx.app.log("touches", "pan " + x + " " + y);
-                if (unprojectedStart.x < castle1bulletX && unprojectedStart.y < castle1bulletY) {
+                if (unprojectedStart.x < castle1.getCannon().x && unprojectedStart.y < castle1.getCannon().y) {
                     drawAim = true;
                     return false;
                 }
@@ -211,10 +199,10 @@ public class GameScreen implements Screen {
                     //Gdx.app.log("touches", "pan " + unprojectedEnd.x + " " + unprojectedEnd.y);
                     camera.unproject(unprojectedEnd);
 
-                    float angle = MathUtils.atan2(unprojectedEnd.y - castle1centerY, unprojectedEnd.x - castle1centerX);
+                    float angle = MathUtils.atan2(unprojectedEnd.y - castle1.getCenter().y, unprojectedEnd.x - castle1.getCenter().x);
                     int impulse = gameLevelConfig.getImpulse();
 
-                    bullet = new SingleBullet(camera, world, angle, impulse, castle1bulletX, castle1bulletY);
+                    bullet = new SingleBullet(camera, world, angle, impulse, castle1.getCannon().x, castle1.getCannon().y);
                     camera.to(PixelCamera.CameraState.BULLET, null); //todo: move to the state machine transition
                     bullet.fire();
                     drawAim = false;
@@ -272,7 +260,7 @@ public class GameScreen implements Screen {
             game.shapeRenderer.setProjectionMatrix(camera.combined);
             game.shapeRenderer.identity();
             game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-            game.shapeRenderer.line(castle1centerX, castle1centerY, unprojectedEnd.x, unprojectedEnd.y, Color.CYAN, Color.BLACK);
+            game.shapeRenderer.line(castle1.getCenter().x, castle1.getCenter().y, unprojectedEnd.x, unprojectedEnd.y, Color.CYAN, Color.BLACK);
             game.shapeRenderer.end();
         }
 
