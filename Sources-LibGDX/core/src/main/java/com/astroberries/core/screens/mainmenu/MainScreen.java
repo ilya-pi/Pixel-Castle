@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 public class MainScreen implements Screen {
 
@@ -69,7 +70,8 @@ public class MainScreen implements Screen {
         overlay.setBounds(0, 0, bgTexture.getWidth() * scale, stage.getHeight());
 
         this.subScreen = new MainMenuSubScreen(skin, game);
-//        this.subScreen.getTable().debug();
+//        this.subScreen = new SelectLevelSubScreen(skin, game);
+        this.subScreen.getTable().debug();
 
         stage.addActor(this.subScreen.getTable());
     }
@@ -99,7 +101,7 @@ public class MainScreen implements Screen {
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
-//        Table.drawDebug(stage);
+        Table.drawDebug(stage);
     }
 
     @Override
