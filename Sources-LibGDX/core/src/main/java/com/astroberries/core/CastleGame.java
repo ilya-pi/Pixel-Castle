@@ -25,6 +25,7 @@ public class CastleGame extends Game {
 
     public SpriteBatch spriteBatch;
     public ShapeRenderer shapeRenderer;
+    private GameScreen gameScreen;
 
     private StateMachine stateMachine;
 
@@ -60,7 +61,7 @@ public class CastleGame extends Game {
             @Override
             public void execute() {
                 //todo: here we should set level and set number (set is a group of levels displayed on screen)
-                GameScreen gameScreen = GameScreen.geCreate(CastleGame.INSTANCE, 0, 0);
+                gameScreen = GameScreen.geCreate(CastleGame.INSTANCE, 0, 0);
                 CastleGame.INSTANCE.setScreen(gameScreen);
                 gameScreen.camera.to(PixelCamera.CameraState.OVERVIEW, null);
                 new Timer().schedule(new TimerTask() {
@@ -79,7 +80,12 @@ public class CastleGame extends Game {
                 GameScreen.geCreate().camera.to(PixelCamera.CameraState.CASTLE1, null);
             }
         };
-        Transition player1ToBullet1 = new Transition() {
+        Transition player1ToAiming1 = new Transition() {
+            @Override
+            public void execute() {
+            }
+        };
+        Transition aiming1ToBullet1 = new Transition() {
             @Override
             public void execute() {
             }
@@ -105,8 +111,10 @@ public class CastleGame extends Game {
                 .from(MAINMENU).to(CHOOSE_GAME).with()
                 .to(LEVEL_OVERVIEW).with(mainMenuToOverview)
                 .from(LEVEL_OVERVIEW).to(PLAYER1).with(levelOverviewToPlayer1)
-                .from(PLAYER1).to(BULLET1).with(player1ToBullet1)
+                .from(PLAYER1).to(AIMING1).with(player1ToAiming1)
+                .from(AIMING1).to(BULLET1).with(aiming1ToBullet1)
                 .from(BULLET1).to(PLAYER2).with(bullet1ToPlayer2)
+                              .to(PLAYER1).with(levelOverviewToPlayer1) //todo: remove (just for testing purposes)
                 .from(PLAYER2).to(BULLET2).with(player2ToBullet2)
                 .from(BULLET2).to(PLAYER1).with(bullet2ToPlayer1)
                 .build();

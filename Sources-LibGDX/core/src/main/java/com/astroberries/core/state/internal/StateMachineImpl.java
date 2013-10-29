@@ -25,9 +25,14 @@ public class StateMachineImpl implements StateMachine {
     }
 
     @Override
+    public StateName getCurrentState() {
+        return currentState;
+    }
+
+    @Override
     public void transitionTo(StateName toState) {
         if (!states.get(currentState).isToStateExist(toState)) {
-            throw new IllegalStateException("states set already contains state: " + toState);
+            throw new IllegalStateException("state from: " + currentState + " doesn't have state to: " + toState);
         }
         for (Transition transition : states.get(currentState).getTransitions(toState)) {
             transition.execute();

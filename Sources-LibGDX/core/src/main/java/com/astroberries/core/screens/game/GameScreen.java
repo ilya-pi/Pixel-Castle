@@ -11,6 +11,7 @@ import com.astroberries.core.screens.game.level.CheckRectangle;
 import com.astroberries.core.screens.game.physics.BulletContactListener;
 import com.astroberries.core.screens.game.physics.GameUserData;
 import com.astroberries.core.screens.game.physics.PhysicsManager;
+import com.astroberries.core.state.StateName;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -69,7 +70,6 @@ public class GameScreen implements Screen {
     private final Pixmap transparentPixmap;
     private final Pixmap bulletPixmap;
 
-    private boolean drawAim = false;
     private Vector3 unprojectedEnd = new Vector3(0, 0, 0);
 
     public Bullet bullet;
@@ -107,7 +107,7 @@ public class GameScreen implements Screen {
     }
 
     //todo: split init to different functions
-    private GameScreen(CastleGame game, int setNumber, int levelNumber) {
+    private GameScreen(final CastleGame game, int setNumber, int levelNumber) {
         this.game = game;
         camera = new PixelCamera();
         world = new World(new Vector2(0, -20), true); //todo: explain magic numbers
@@ -153,7 +153,9 @@ public class GameScreen implements Screen {
                 camera.unproject(unprojectedStart);
                 //Gdx.app.log("touches", "pan " + x + " " + y);
                 if (unprojectedStart.x < castle1.getCannon().x && unprojectedStart.y < castle1.getCannon().y) {
-                    drawAim = true;
+                    if (game.getStateMachine().getCurrentState() == StateName.PLAYER1) {
+                        game.getStateMachine().transitionTo(StateName.AIMING1);
+                    }
                     return false;
                 }
                 return false;
@@ -177,7 +179,7 @@ public class GameScreen implements Screen {
             @Override
             public boolean pan(float x, float y, float deltaX, float deltaY) {
                 //Gdx.app.log("camera", " " + deltaX + " " + deltaY);
-                if (drawAim) {
+                if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
                     unprojectedEnd.x = x + deltaX;
                     unprojectedEnd.y = y + deltaY;
                     //Gdx.app.log("touches", "pan " + unprojectedEnd.x + " " + unprojectedEnd.y);
@@ -192,7 +194,7 @@ public class GameScreen implements Screen {
             @Override
             public boolean panStop(float x, float y, int pointer, int button) {
                 Gdx.app.log("touches", "pan stop" + x + " " + y);
-                if (drawAim && (bullet == null || !bullet.isAlive())) {
+                if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
                     unprojectedEnd.x = x;
                     unprojectedEnd.y = y;
                     //Gdx.app.log("touches", "pan " + unprojectedEnd.x + " " + unprojectedEnd.y);
@@ -204,7 +206,7 @@ public class GameScreen implements Screen {
                     bullet = new SingleBullet(camera, world, angle, impulse, castle1.getCannon().x, castle1.getCannon().y);
                     camera.to(PixelCamera.CameraState.BULLET, null); //todo: move to the state machine transition
                     bullet.fire();
-                    drawAim = false;
+                    game.getStateMachine().transitionTo(StateName.BULLET1);
                     return true;
                 }
                 return false;
@@ -255,7 +257,7 @@ public class GameScreen implements Screen {
 
         game.spriteBatch.end();
 
-        if (drawAim) {
+        if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
             game.shapeRenderer.setProjectionMatrix(camera.combined);
             game.shapeRenderer.identity();
             game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -276,6 +278,7 @@ public class GameScreen implements Screen {
                 bullet.dispose();
                 bullet = null;
                 physicsManager.sweepBodyes = true;
+                game.getStateMachine().transitionTo(StateName.PLAYER1);
             }
         }
         if (bullet != null) {
