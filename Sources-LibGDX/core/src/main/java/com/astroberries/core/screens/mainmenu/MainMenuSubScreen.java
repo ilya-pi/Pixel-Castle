@@ -1,7 +1,6 @@
 package com.astroberries.core.screens.mainmenu;
 
 import com.astroberries.core.CastleGame;
-import com.astroberries.core.state.GameStates;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -10,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.astroberries.core.state.StateName;
 
 public class MainMenuSubScreen extends AbstractSubScreen {
 
@@ -28,7 +28,7 @@ public class MainMenuSubScreen extends AbstractSubScreen {
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.getStateMachine().to(GameStates.LEVEL_OVERVIEW);
+                game.getStateMachine().transitionTo(StateName.LEVEL_OVERVIEW);
             }
         });
 
