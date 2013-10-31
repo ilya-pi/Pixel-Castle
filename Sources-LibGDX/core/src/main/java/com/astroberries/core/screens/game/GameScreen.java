@@ -204,6 +204,7 @@ public class GameScreen implements Screen {
             @Override
             public boolean panStop(float x, float y, int pointer, int button) {
                 //Gdx.app.log("touches", "pan stop" + x + " " + y);
+                //todo: create method fire in Castle class
                 if (game.getStateMachine().getCurrentState() == StateName.AIMING1 || game.getStateMachine().getCurrentState() == StateName.AIMING2) {
                     unprojectedEnd.x = x;
                     unprojectedEnd.y = y;

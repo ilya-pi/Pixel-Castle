@@ -113,7 +113,6 @@ public class CastleGame extends Game {
                 .from(PLAYER1).to(AIMING1).with(player1ToAiming1)
                 .from(AIMING1).to(BULLET1).with(aiming1ToBullet1)
                 .from(BULLET1).to(CAMERA_MOVING_TO_PLAYER_2).with(toCastle2)
-                              //.to(CAMERA_MOVING).with(toCastle1) //todo: remove (just for testing purposes)
                 .from(CAMERA_MOVING_TO_PLAYER_2).to(PLAYER2).with()
                 .from(PLAYER2).to(AIMING2).with(player2ToAiming2)
                 .from(AIMING2).to(BULLET2).with(aiming2ToBullet2)

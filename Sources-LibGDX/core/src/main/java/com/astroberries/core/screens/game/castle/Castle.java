@@ -25,7 +25,7 @@ public class Castle {
         if (location == Location.LEFT) {
             cannonX = castleConfig.getX() + castlePixmap.getWidth() + CANNON_PADDING;
         } else {
-            cannonX = castleConfig.getX() + castlePixmap.getWidth() - CANNON_PADDING;
+            cannonX = castleConfig.getX() - CANNON_PADDING;
         }
 
         float centerX = castleConfig.getX() + castlePixmap.getWidth() / 2;
