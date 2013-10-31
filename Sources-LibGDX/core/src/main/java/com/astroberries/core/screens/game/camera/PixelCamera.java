@@ -1,7 +1,9 @@
 package com.astroberries.core.screens.game.camera;
 
+import com.astroberries.core.CastleGame;
 import com.astroberries.core.config.GlobalGameConfig;
 import com.astroberries.core.screens.game.GameScreen;
+import com.astroberries.core.state.StateName;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
@@ -18,6 +20,7 @@ public class PixelCamera extends OrthographicCamera {
     private float transitionZoomStart = 0f;
 
     private CameraState state = CameraState.FREE;
+    private StateName stateOnFinish = null;
 
     public static enum CameraState {
         OVERVIEW, CASTLE1, BULLET, CASTLE2,
@@ -29,10 +32,11 @@ public class PixelCamera extends OrthographicCamera {
         super();
     }
 
-    public void to(CameraState target, Float _transitionCompleteTime) {
+    public void to(CameraState target, Float _transitionCompleteTime, StateName stateOnFinish) {
         this.transitionStartPoint = this.position;
         this.transitionZoomStart = this.zoom;
         this.transitionTime = 0f;
+        this.stateOnFinish = stateOnFinish;
         if (_transitionCompleteTime != null) {
             transitionCompleteTime = _transitionCompleteTime;
         } else {
@@ -71,6 +75,9 @@ public class PixelCamera extends OrthographicCamera {
                     this.position.x = GameScreen.geCreate().castle1.getCenter().x;
                     this.position.y = GameScreen.geCreate().castle1.getCenter().y;
                     this.zoom = GlobalGameConfig.LEVEL_ZOOM;
+                    if (stateOnFinish != null) {
+                        CastleGame.INSTANCE.getStateMachine().transitionTo(stateOnFinish);
+                    }
                     this.setFree();
                 } else {
                     this.position.x = DEFAULT_ANIMATION_METHOD.apply(this.transitionStartPoint.x,
@@ -88,6 +95,25 @@ public class PixelCamera extends OrthographicCamera {
                 }
                 break;
             case CASTLE2:
+                //todo: remove duplication
+                transitionTime += Gdx.graphics.getDeltaTime();
+
+                if (transitionTime > transitionCompleteTime) {
+                    this.position.x = GameScreen.geCreate().castle2.getCenter().x;
+                    this.position.y = GameScreen.geCreate().castle2.getCenter().y;
+                    this.zoom = GlobalGameConfig.LEVEL_ZOOM;
+                    if (stateOnFinish != null) {
+                        CastleGame.INSTANCE.getStateMachine().transitionTo(stateOnFinish);
+                    }
+                    this.setFree();
+                } else {
+                    this.position.x = DEFAULT_ANIMATION_METHOD.apply(this.transitionStartPoint.x,
+                            gameScreen.castle2.getCenter().x, (transitionTime / transitionCompleteTime));
+                    this.position.y = DEFAULT_ANIMATION_METHOD.apply(this.transitionStartPoint.y,
+                            gameScreen.castle2.getCenter().y, (transitionTime / transitionCompleteTime));
+                    this.zoom = DEFAULT_ANIMATION_METHOD.apply(this.transitionZoomStart,
+                            GlobalGameConfig.LEVEL_ZOOM, (transitionTime / transitionCompleteTime));
+                }
                 break;
             case FREE:
                 break;

@@ -17,7 +17,6 @@ public class MainMenuSubScreen extends AbstractSubScreen {
     public static final String PLAY_BUTTON_CAPTION = "Play";
     public static final String OPTIONS_BUTTON_CAPTION = "Options";
     private Table table = new Table();
-    ;
 
     public MainMenuSubScreen(final Skin skin, final CastleGame game) {
 

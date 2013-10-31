@@ -13,17 +13,26 @@ public class Castle {
     private final Vector2 center;
     private final Pixmap castlePixmap;
 
-    public Castle(GameCastle castleConfig, int levelWidth, int levelHeight) {
+    public static enum Location {
+        LEFT, RIGHT
+    }
+
+    public Castle(GameCastle castleConfig, int levelWidth, int levelHeight, Location location) {
         castlePixmap = new Pixmap(Gdx.files.internal("castles/" + castleConfig.getImage()));
 
-        float cannonX = castleConfig.getX() + castlePixmap.getWidth() + CANNON_PADDING;
         float cannonY = levelHeight - (castleConfig.getY() - castlePixmap.getHeight()) + CANNON_PADDING;
+        float cannonX;
+        if (location == Location.LEFT) {
+            cannonX = castleConfig.getX() + castlePixmap.getWidth() + CANNON_PADDING;
+        } else {
+            cannonX = castleConfig.getX() + castlePixmap.getWidth() - CANNON_PADDING;
+        }
+
         float centerX = castleConfig.getX() + castlePixmap.getWidth() / 2;
         float centerY = levelHeight - (castleConfig.getY() - castlePixmap.getHeight() / 2);
 
         cannon = new Vector2(cannonX, cannonY);
         center = new Vector2(centerX, centerY);
-
     }
 
     public Vector2 getCannon() {

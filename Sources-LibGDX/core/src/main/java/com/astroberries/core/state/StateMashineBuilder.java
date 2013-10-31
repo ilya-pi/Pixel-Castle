@@ -11,7 +11,7 @@ public class StateMashineBuilder {
 
     private StateName tmpFromState = null;
     private StateName tmpToState = null;
-    private Map<StateName, Set<Transition>> tmpToStates = null;
+    private Map<StateName, LinkedList<Transition>> tmpToStates = null;
 
     private static enum Operation {
         START, FROM, TO, WITH
@@ -47,7 +47,7 @@ public class StateMashineBuilder {
             throw new IllegalStateException("from .. (to .. with)+");
         }
 
-        tmpToStates.put(tmpToState, new HashSet<>(Arrays.asList(transitions)));
+        tmpToStates.put(tmpToState, new LinkedList<>(Arrays.asList(transitions)));
         lastOp = Operation.WITH;
         return this;
     }

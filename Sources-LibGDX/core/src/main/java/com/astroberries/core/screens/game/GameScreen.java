@@ -3,6 +3,7 @@ package com.astroberries.core.screens.game;
 import com.astroberries.core.CastleGame;
 import com.astroberries.core.config.GameConfig;
 import com.astroberries.core.config.GameLevel;
+import com.astroberries.core.config.GlobalGameConfig;
 import com.astroberries.core.screens.game.bullets.Bullet;
 import com.astroberries.core.screens.game.bullets.SingleBullet;
 import com.astroberries.core.screens.game.camera.PixelCamera;
@@ -11,7 +12,9 @@ import com.astroberries.core.screens.game.level.CheckRectangle;
 import com.astroberries.core.screens.game.physics.BulletContactListener;
 import com.astroberries.core.screens.game.physics.GameUserData;
 import com.astroberries.core.screens.game.physics.PhysicsManager;
+import com.astroberries.core.screens.mainmenu.MainScreen;
 import com.astroberries.core.state.StateName;
+import com.astroberries.core.state.Transition;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -30,6 +33,9 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GameScreen implements Screen {
 
@@ -126,9 +132,8 @@ public class GameScreen implements Screen {
         levelWidth = levelPixmap.getWidth();
         levelHeight = levelPixmap.getHeight();
 
-        castle1 = new Castle(gameLevelConfig.getCastle1(), levelWidth, levelHeight);
-        castle2 = new Castle(gameLevelConfig.getCastle2(), levelWidth, levelHeight);
-
+        castle1 = new Castle(gameLevelConfig.getCastle1(), levelWidth, levelHeight, Castle.Location.LEFT);
+        castle2 = new Castle(gameLevelConfig.getCastle2(), levelWidth, levelHeight,  Castle.Location.RIGHT);
 
         levelPixmap.drawPixmap(castle1.getCastlePixmap(), gameLevelConfig.getCastle1().getX(), gameLevelConfig.getCastle1().getY() - castle1.getCastlePixmap().getHeight());
         levelPixmap.drawPixmap(castle2.getCastlePixmap(), gameLevelConfig.getCastle2().getX(), gameLevelConfig.getCastle2().getY() - castle2.getCastlePixmap().getHeight());
@@ -151,13 +156,18 @@ public class GameScreen implements Screen {
             public boolean touchDown(float x, float y, int pointer, int button) {
                 Vector3 unprojectedStart = new Vector3(x, y, 0);
                 camera.unproject(unprojectedStart);
-                //Gdx.app.log("touches", "pan " + x + " " + y);
-                if (unprojectedStart.x < castle1.getCannon().x && unprojectedStart.y < castle1.getCannon().y) {
-                    if (game.getStateMachine().getCurrentState() == StateName.PLAYER1) {
-                        game.getStateMachine().transitionTo(StateName.AIMING1);
-                    }
+                Gdx.app.log("touches", "pan " + unprojectedStart.x + " " + unprojectedStart.y);
+                Gdx.app.log("touches", "castle one " + castle1.getCannon().x + " " + castle1.getCannon().y);
+                Gdx.app.log("touches", "castle two " + castle2.getCannon().x + " " + castle2.getCannon().y);
+                if (game.getStateMachine().getCurrentState() == StateName.PLAYER1 && unprojectedStart.x < castle1.getCannon().x && unprojectedStart.y < castle1.getCannon().y) {
+                    game.getStateMachine().transitionTo(StateName.AIMING1);
                     return false;
                 }
+                if (game.getStateMachine().getCurrentState() == StateName.PLAYER2 && unprojectedStart.x > castle2.getCannon().x && unprojectedStart.y < castle2.getCannon().y) {
+                    game.getStateMachine().transitionTo(StateName.AIMING2);
+                    return false;
+                }
+
                 return false;
             }
 
@@ -179,7 +189,7 @@ public class GameScreen implements Screen {
             @Override
             public boolean pan(float x, float y, float deltaX, float deltaY) {
                 //Gdx.app.log("camera", " " + deltaX + " " + deltaY);
-                if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
+                if (game.getStateMachine().getCurrentState() == StateName.AIMING1 || game.getStateMachine().getCurrentState() == StateName.AIMING2) {
                     unprojectedEnd.x = x + deltaX;
                     unprojectedEnd.y = y + deltaY;
                     //Gdx.app.log("touches", "pan " + unprojectedEnd.x + " " + unprojectedEnd.y);
@@ -193,20 +203,28 @@ public class GameScreen implements Screen {
 
             @Override
             public boolean panStop(float x, float y, int pointer, int button) {
-                Gdx.app.log("touches", "pan stop" + x + " " + y);
-                if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
+                //Gdx.app.log("touches", "pan stop" + x + " " + y);
+                if (game.getStateMachine().getCurrentState() == StateName.AIMING1 || game.getStateMachine().getCurrentState() == StateName.AIMING2) {
                     unprojectedEnd.x = x;
                     unprojectedEnd.y = y;
                     //Gdx.app.log("touches", "pan " + unprojectedEnd.x + " " + unprojectedEnd.y);
                     camera.unproject(unprojectedEnd);
 
-                    float angle = MathUtils.atan2(unprojectedEnd.y - castle1.getCenter().y, unprojectedEnd.x - castle1.getCenter().x);
-                    int impulse = gameLevelConfig.getImpulse();
+                    if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
+                        float angle = MathUtils.atan2(unprojectedEnd.y - castle1.getCenter().y, unprojectedEnd.x - castle1.getCenter().x);
+                        int impulse = gameLevelConfig.getImpulse();
 
-                    bullet = new SingleBullet(camera, world, angle, impulse, castle1.getCannon().x, castle1.getCannon().y);
-                    camera.to(PixelCamera.CameraState.BULLET, null); //todo: move to the state machine transition
-                    bullet.fire();
-                    game.getStateMachine().transitionTo(StateName.BULLET1);
+                        bullet = new SingleBullet(camera, world, angle, impulse, castle1.getCannon().x, castle1.getCannon().y);
+                        bullet.fire();
+                        game.getStateMachine().transitionTo(StateName.BULLET1);
+                    } else {
+                        float angle = MathUtils.atan2(unprojectedEnd.y - castle2.getCenter().y, unprojectedEnd.x - castle2.getCenter().x);
+                        int impulse = gameLevelConfig.getImpulse();
+
+                        bullet = new SingleBullet(camera, world, angle, impulse, castle2.getCannon().x, castle2.getCannon().y);
+                        bullet.fire();
+                        game.getStateMachine().transitionTo(StateName.BULLET2);
+                    }
                     return true;
                 }
                 return false;
@@ -257,33 +275,14 @@ public class GameScreen implements Screen {
 
         game.spriteBatch.end();
 
-        if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
-            game.shapeRenderer.setProjectionMatrix(camera.combined);
-            game.shapeRenderer.identity();
-            game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-            game.shapeRenderer.line(castle1.getCenter().x, castle1.getCenter().y, unprojectedEnd.x, unprojectedEnd.y, Color.CYAN, Color.BLACK);
-            game.shapeRenderer.end();
-        }
+        renderAim();
 
-
-        world.step(1 / 30f, 6, 2); //todo: play with this values
+        world.step(1 / 30f, 6, 2); //todo: play with this values for performance
 
 
         game.shapeRenderer.setProjectionMatrix(camera.combined); //todo: is it necessary?
 
-        //todo: refactor mess regarding bullet
-        if (bullet != null) {
-            if (!bullet.isAlive() || bullet.getCoordinates().x < 0 || bullet.getCoordinates().x > levelWidth || bullet.getCoordinates().y < 0) {
-                Gdx.app.log("bullet:", "destroy bullet!!");
-                bullet.dispose();
-                bullet = null;
-                physicsManager.sweepBodyes = true;
-                game.getStateMachine().transitionTo(StateName.PLAYER1);
-            }
-        }
-        if (bullet != null) {
-            bullet.render(game.shapeRenderer);
-        }
+        renderOrDisposeBullet();
 
         physicsManager.sweepDeadBodies(); //todo: sweep bodies should be only after this mess with bullet which is bad. Refactor.
         physicsManager.createPhysicsObjects();
@@ -291,6 +290,41 @@ public class GameScreen implements Screen {
 
         //debugRenderer.render(world, camera.combined);
 
+    }
+
+    private void renderOrDisposeBullet() {
+        if (game.getStateMachine().getCurrentState() == StateName.BULLET1 || game.getStateMachine().getCurrentState() == StateName.BULLET2) {
+            if (bullet != null) {
+                if (!bullet.isAlive() || bullet.getCoordinates().x < 0 || bullet.getCoordinates().x > levelWidth || bullet.getCoordinates().y < 0) {
+                    Gdx.app.log("bullet:", "destroy bullet!!");
+                    bullet.dispose();
+                    bullet = null;
+                    physicsManager.sweepBodyes = true;
+                    if (game.getStateMachine().getCurrentState() == StateName.BULLET1) {
+                        game.getStateMachine().transitionTo(StateName.CAMERA_MOVING_TO_PLAYER_2);
+                    } else {
+                        game.getStateMachine().transitionTo(StateName.CAMERA_MOVING_TO_PLAYER_1);
+                    }
+                }
+            }
+            if (bullet != null) {
+                bullet.render(game.shapeRenderer);
+            }
+        }
+    }
+
+    private void renderAim() {
+        if (game.getStateMachine().getCurrentState() == StateName.AIMING1 || game.getStateMachine().getCurrentState() == StateName.AIMING2) {
+            game.shapeRenderer.setProjectionMatrix(camera.combined);
+            game.shapeRenderer.identity();
+            game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
+                game.shapeRenderer.line(castle1.getCenter().x, castle1.getCenter().y, unprojectedEnd.x, unprojectedEnd.y, Color.CYAN, Color.BLACK);
+            } else {
+                game.shapeRenderer.line(castle2.getCenter().x, castle2.getCenter().y, unprojectedEnd.x, unprojectedEnd.y, Color.CYAN, Color.BLACK);
+            }
+            game.shapeRenderer.end();
+        }
     }
 
     @Override
@@ -340,4 +374,37 @@ public class GameScreen implements Screen {
         world.dispose();
     }
 
+    // Transitions
+    public void mainMenuToOverview() {
+        camera.to(PixelCamera.CameraState.OVERVIEW, null, null);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                CastleGame.INSTANCE.getStateMachine().transitionTo(StateName.CAMERA_MOVING_TO_PLAYER_1);
+            }
+        }, GlobalGameConfig.LEVEL_INTRO_TIMEOUT);
+    }
+
+
+    public void toCastle1() {
+        camera.to(PixelCamera.CameraState.CASTLE1, null, StateName.PLAYER1);
+    }
+
+    public void player1ToAiming1() {
+    }
+
+    public void aiming1ToBullet1() {
+        camera.to(PixelCamera.CameraState.BULLET, null, null);
+    }
+
+    public void toCastle2() {
+        camera.to(PixelCamera.CameraState.CASTLE2, null, StateName.PLAYER2);
+    }
+
+    public void player2ToAiming2() {
+    }
+
+    public void aiming2ToBullet2() {
+        camera.to(PixelCamera.CameraState.BULLET, null, null);
+    }
 }

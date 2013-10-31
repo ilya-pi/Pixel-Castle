@@ -1,9 +1,7 @@
 package com.astroberries.core;
 
-import com.astroberries.core.config.GlobalGameConfig;
 import com.astroberries.core.screens.mainmenu.MainScreen;
 import com.astroberries.core.screens.game.GameScreen;
-import com.astroberries.core.screens.game.camera.PixelCamera;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -13,12 +11,7 @@ import com.astroberries.core.state.StateMashineBuilder;
 import com.astroberries.core.state.StateName;
 import com.astroberries.core.state.Transition;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import static com.astroberries.core.state.StateName.*;
-import static com.astroberries.core.state.StateName.BULLET2;
-import static com.astroberries.core.state.StateName.PLAYER1;
 
 public class CastleGame extends Game {
 
@@ -57,66 +50,75 @@ public class CastleGame extends Game {
             public void execute() {
             }
         };
-        Transition mainMenuToOverview = new Transition() {
+        Transition createGameScreen = new Transition() {
             @Override
             public void execute() {
                 //todo: here we should set level and set number (set is a group of levels displayed on screen)
                 gameScreen = GameScreen.geCreate(CastleGame.INSTANCE, 0, 0);
                 CastleGame.INSTANCE.setScreen(gameScreen);
-                gameScreen.camera.to(PixelCamera.CameraState.OVERVIEW, null);
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        CastleGame.INSTANCE.getStateMachine().transitionTo(StateName.PLAYER1);
-                    }
-                }, GlobalGameConfig.LEVEL_INTRO_TIMEOUT);
-
                 MainScreen.geCreate(CastleGame.INSTANCE).dispose();
             }
         };
-        Transition levelOverviewToPlayer1 = new Transition() {
+        Transition mainMenuToOverview = new Transition() {
             @Override
             public void execute() {
-                GameScreen.geCreate().camera.to(PixelCamera.CameraState.CASTLE1, null);
+                gameScreen.mainMenuToOverview();
+            }
+        };
+        Transition toCastle1 = new Transition() {
+            @Override
+            public void execute() {
+                gameScreen.toCastle1();
             }
         };
         Transition player1ToAiming1 = new Transition() {
             @Override
             public void execute() {
+                gameScreen.player1ToAiming1();
             }
         };
         Transition aiming1ToBullet1 = new Transition() {
             @Override
             public void execute() {
+                gameScreen.aiming1ToBullet1();
             }
         };
-        Transition bullet1ToPlayer2 = new Transition() {
+        Transition toCastle2 = new Transition() {
             @Override
             public void execute() {
+                gameScreen.toCastle2();
             }
         };
-        Transition player2ToBullet2 = new Transition() {
+        Transition player2ToAiming2 = new Transition() {
             @Override
             public void execute() {
+                gameScreen.player2ToAiming2();
             }
         };
-        Transition bullet2ToPlayer1 = new Transition() {
+        Transition aiming2ToBullet2 = new Transition() {
             @Override
             public void execute() {
+                gameScreen.aiming2ToBullet2();
             }
         };
 
+
         return new StateMashineBuilder()
                 .from(NIL).to(MAINMENU).with(nilToMainMenu)
-                .from(MAINMENU).to(CHOOSE_GAME).with()
-                .to(LEVEL_OVERVIEW).with(mainMenuToOverview)
-                .from(LEVEL_OVERVIEW).to(PLAYER1).with(levelOverviewToPlayer1)
+                .from(MAINMENU).to(CHOOSE_GAME).with(mainMenuToChooseGame)
+                               .to(LEVEL_OVERVIEW).with(createGameScreen, mainMenuToOverview)
+
+                .from(LEVEL_OVERVIEW).to(CAMERA_MOVING_TO_PLAYER_1).with(toCastle1)
+                .from(CAMERA_MOVING_TO_PLAYER_1).to(PLAYER1).with()
                 .from(PLAYER1).to(AIMING1).with(player1ToAiming1)
                 .from(AIMING1).to(BULLET1).with(aiming1ToBullet1)
-                .from(BULLET1).to(PLAYER2).with(bullet1ToPlayer2)
-                              .to(PLAYER1).with(levelOverviewToPlayer1) //todo: remove (just for testing purposes)
-                .from(PLAYER2).to(BULLET2).with(player2ToBullet2)
-                .from(BULLET2).to(PLAYER1).with(bullet2ToPlayer1)
+                .from(BULLET1).to(CAMERA_MOVING_TO_PLAYER_2).with(toCastle2)
+                              //.to(CAMERA_MOVING).with(toCastle1) //todo: remove (just for testing purposes)
+                .from(CAMERA_MOVING_TO_PLAYER_2).to(PLAYER2).with()
+                .from(PLAYER2).to(AIMING2).with(player2ToAiming2)
+                .from(AIMING2).to(BULLET2).with(aiming2ToBullet2)
+                .from(BULLET2).to(CAMERA_MOVING_TO_PLAYER_1).with(toCastle1)
+
                 .build();
     }
 
