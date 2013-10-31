@@ -6,6 +6,7 @@ import com.astroberries.core.screens.game.GameScreen;
 import com.astroberries.core.state.StateName;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 import static com.astroberries.core.config.GlobalGameConfig.DEFAULT_ANIMATION_METHOD;
@@ -21,9 +22,10 @@ public class PixelCamera extends OrthographicCamera {
 
     private CameraState state = CameraState.FREE;
     private StateName stateOnFinish = null;
+    private Vector2 finalCoords = null;
 
     public static enum CameraState {
-        OVERVIEW, CASTLE1, BULLET, CASTLE2,
+        OVERVIEW, BULLET, CASTLE1, CASTLE2,
 
         FREE
     }
@@ -43,20 +45,24 @@ public class PixelCamera extends OrthographicCamera {
             transitionCompleteTime = DEFAULT_TRANSITION_TIME;
         }
 
+        state = target;
+
         switch (state) {
             case OVERVIEW:
                 this.setToOrtho(false, GameScreen.geCreate().levelWidth, GameScreen.geCreate().viewPortHeight);
                 break;
             case CASTLE1:
+                finalCoords = new Vector2(GameScreen.geCreate().castle1.getCenter().x, GameScreen.geCreate().castle1.getCenter().y);
+                break;
             case BULLET:
                 break;
             case CASTLE2:
+                finalCoords = new Vector2(GameScreen.geCreate().castle2.getCenter().x, GameScreen.geCreate().castle2.getCenter().y);
                 break;
             case FREE:
                 break;
         }
 
-        this.state = target;
     }
 
     public void setFree() {
@@ -65,63 +71,31 @@ public class PixelCamera extends OrthographicCamera {
 
     public void handle() {
         GameScreen gameScreen = GameScreen.geCreate();
-        switch (state) {
-            case OVERVIEW:
-                break;
-            case CASTLE1:
-                transitionTime += Gdx.graphics.getDeltaTime();
-
-                if (transitionTime > transitionCompleteTime) {
-                    this.position.x = GameScreen.geCreate().castle1.getCenter().x;
-                    this.position.y = GameScreen.geCreate().castle1.getCenter().y;
-                    this.zoom = GlobalGameConfig.LEVEL_ZOOM;
-                    if (stateOnFinish != null) {
-                        CastleGame.INSTANCE.getStateMachine().transitionTo(stateOnFinish);
-                    }
-                    this.setFree();
-                } else {
-                    this.position.x = DEFAULT_ANIMATION_METHOD.apply(this.transitionStartPoint.x,
-                            gameScreen.castle1.getCenter().x, (transitionTime / transitionCompleteTime));
-                    this.position.y = DEFAULT_ANIMATION_METHOD.apply(this.transitionStartPoint.y,
-                            gameScreen.castle1.getCenter().y, (transitionTime / transitionCompleteTime));
-                    this.zoom = DEFAULT_ANIMATION_METHOD.apply(this.transitionZoomStart,
-                            GlobalGameConfig.LEVEL_ZOOM, (transitionTime / transitionCompleteTime));
+        if (state == CameraState.CASTLE1 || state == CameraState.CASTLE2) {
+            transitionTime += Gdx.graphics.getDeltaTime();
+            if (transitionTime > transitionCompleteTime) {
+                this.position.x = finalCoords.x;
+                this.position.y = finalCoords.y;
+                this.zoom = GlobalGameConfig.LEVEL_ZOOM;
+                if (stateOnFinish != null) {
+                    CastleGame.INSTANCE.getStateMachine().transitionTo(stateOnFinish);
                 }
-                break;
-            case BULLET:
-                if (gameScreen.bullet != null) {
-                    this.position.y = gameScreen.bullet.getCoordinates().y;
-                    this.position.x = gameScreen.bullet.getCoordinates().x;
-                }
-                break;
-            case CASTLE2:
-                //todo: remove duplication
-                transitionTime += Gdx.graphics.getDeltaTime();
-
-                if (transitionTime > transitionCompleteTime) {
-                    this.position.x = GameScreen.geCreate().castle2.getCenter().x;
-                    this.position.y = GameScreen.geCreate().castle2.getCenter().y;
-                    this.zoom = GlobalGameConfig.LEVEL_ZOOM;
-                    if (stateOnFinish != null) {
-                        CastleGame.INSTANCE.getStateMachine().transitionTo(stateOnFinish);
-                    }
-                    this.setFree();
-                } else {
-                    this.position.x = DEFAULT_ANIMATION_METHOD.apply(this.transitionStartPoint.x,
-                            gameScreen.castle2.getCenter().x, (transitionTime / transitionCompleteTime));
-                    this.position.y = DEFAULT_ANIMATION_METHOD.apply(this.transitionStartPoint.y,
-                            gameScreen.castle2.getCenter().y, (transitionTime / transitionCompleteTime));
-                    this.zoom = DEFAULT_ANIMATION_METHOD.apply(this.transitionZoomStart,
-                            GlobalGameConfig.LEVEL_ZOOM, (transitionTime / transitionCompleteTime));
-                }
-                break;
-            case FREE:
-                break;
+                this.setFree();
+            } else {
+                float transitionState = transitionTime / transitionCompleteTime;
+                this.position.x = DEFAULT_ANIMATION_METHOD.apply(transitionStartPoint.x, finalCoords.x, transitionState);
+                this.position.y = DEFAULT_ANIMATION_METHOD.apply(transitionStartPoint.y, finalCoords.y, transitionState);
+                this.zoom = DEFAULT_ANIMATION_METHOD.apply(this.transitionZoomStart, GlobalGameConfig.LEVEL_ZOOM, transitionState);
+            }
+        } else if (state == CameraState.BULLET) {
+            if (gameScreen.bullet != null) {
+                this.position.y = gameScreen.bullet.getCoordinates().y;
+                this.position.x = gameScreen.bullet.getCoordinates().x;
+            }
         }
 
         limits();
-
-        this.update();
+        update();
     }
 
     private void limits() {

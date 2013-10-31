@@ -52,6 +52,7 @@ public class GameScreen implements Screen {
     private final World world;
     public final Castle castle1;
     public final Castle castle2;
+    private BitmapFont font = new BitmapFont(Gdx.files.internal("arial-15.fnt"), false);
 
     private Box2DDebugRenderer debugRenderer;
     private final Matrix4 fixedPosition = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -65,7 +66,7 @@ public class GameScreen implements Screen {
     public float viewPortHeight;
     private float scrollRatio;
 
-    BitmapFont font = new BitmapFont(Gdx.files.internal("arial-15.fnt"), false);
+
 //    BitmapFont font = new BitmapFont();
 
     //disposable
@@ -149,6 +150,9 @@ public class GameScreen implements Screen {
 
         bulletPixmap = new Pixmap(Gdx.files.internal("bullets/11.png"));
         world.setContactListener(new BulletContactListener(physicsManager, bulletPixmap)); //todo: set bulletPixmap to bullet
+
+        castle1.recalculateHealth(physicsManager);
+        castle2.recalculateHealth(physicsManager);
 
 
         Gdx.input.setInputProcessor(new GestureDetector(new GestureDetector.GestureListener() {
@@ -260,6 +264,7 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+
         camera.handle();
 
         game.spriteBatch.setProjectionMatrix(camera.combined);
@@ -277,6 +282,8 @@ public class GameScreen implements Screen {
         game.spriteBatch.end();
 
         renderAim();
+        castle1.renderHealth(game, camera);
+        castle2.renderHealth(game, camera);
 
         world.step(1 / 30f, 6, 2); //todo: play with this values for performance
 
@@ -315,16 +322,10 @@ public class GameScreen implements Screen {
     }
 
     private void renderAim() {
-        if (game.getStateMachine().getCurrentState() == StateName.AIMING1 || game.getStateMachine().getCurrentState() == StateName.AIMING2) {
-            game.shapeRenderer.setProjectionMatrix(camera.combined);
-            game.shapeRenderer.identity();
-            game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-            if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
-                game.shapeRenderer.line(castle1.getCenter().x, castle1.getCenter().y, unprojectedEnd.x, unprojectedEnd.y, Color.CYAN, Color.BLACK);
-            } else {
-                game.shapeRenderer.line(castle2.getCenter().x, castle2.getCenter().y, unprojectedEnd.x, unprojectedEnd.y, Color.CYAN, Color.BLACK);
-            }
-            game.shapeRenderer.end();
+        if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
+            castle1.renderAim(unprojectedEnd.x, unprojectedEnd.y, game, camera);
+        } else if (game.getStateMachine().getCurrentState() == StateName.AIMING2) {
+            castle2.renderAim(unprojectedEnd.x, unprojectedEnd.y, game, camera);
         }
     }
 
@@ -388,6 +389,8 @@ public class GameScreen implements Screen {
 
 
     public void toCastle1() {
+        castle1.recalculateHealth(physicsManager);
+        castle2.recalculateHealth(physicsManager);
         camera.to(PixelCamera.CameraState.CASTLE1, null, StateName.PLAYER1);
     }
 
@@ -399,6 +402,8 @@ public class GameScreen implements Screen {
     }
 
     public void toCastle2() {
+        castle1.recalculateHealth(physicsManager);
+        castle2.recalculateHealth(physicsManager);
         camera.to(PixelCamera.CameraState.CASTLE2, null, StateName.PLAYER2);
     }
 

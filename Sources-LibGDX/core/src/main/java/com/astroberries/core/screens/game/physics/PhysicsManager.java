@@ -1,6 +1,7 @@
 package com.astroberries.core.screens.game.physics;
 
 import com.astroberries.core.screens.game.level.CheckRectangle;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -169,6 +170,22 @@ public class PhysicsManager implements Disposable {
 
     public void addRectToCheckPhysicsObjectsCreation(CheckRectangle checkRectangle) {
         createPhysicsObjectsQueue.add(checkRectangle);
+    }
+
+    public int calculateOpaquePixels(int x, int y, int width, int height) {
+        int pixels = 0;
+        for (int xCur = x; xCur < x + width; xCur++) {
+            for (int yCur = y - height; yCur < y; yCur++) {
+                //levelPixmap.drawPixel(xCur, yCur, Color.rgba8888(255 / 255f, 255 / 255f, 0 / 255f, 1));
+                //Gdx.app.log("alpha", "alpha " + new Color(levelPixmap.getPixel(xCur, yCur)).a);
+                if ((new Color(levelPixmap.getPixel(xCur, yCur)).a != 0f)) {
+                    //Gdx.app.log("health", "pixels " + pixels);
+                    //levelPixmap.drawPixel(xCur, yCur, Color.rgba8888(255 / 255f, 255 / 255f, 0 / 255f, 1));
+                    pixels++;
+                }
+            }
+        }
+        return pixels;
     }
 
 
