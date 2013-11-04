@@ -5,26 +5,20 @@ import com.astroberries.core.config.GameConfig;
 import com.astroberries.core.config.GameLevel;
 import com.astroberries.core.config.GlobalGameConfig;
 import com.astroberries.core.screens.game.bullets.Bullet;
-import com.astroberries.core.screens.game.bullets.SingleBullet;
 import com.astroberries.core.screens.game.camera.PixelCamera;
 import com.astroberries.core.screens.game.castle.Castle;
 import com.astroberries.core.screens.game.level.CheckRectangle;
 import com.astroberries.core.screens.game.physics.BulletContactListener;
 import com.astroberries.core.screens.game.physics.GameUserData;
 import com.astroberries.core.screens.game.physics.PhysicsManager;
-import com.astroberries.core.screens.mainmenu.MainScreen;
 import com.astroberries.core.state.StateName;
-import com.astroberries.core.state.Transition;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -44,8 +38,6 @@ public class GameScreen implements Screen {
     static final float BOX_TO_WORLD = 100f;
 */
 
-
-    static final float CANNON_PADDING = 4;
 
     private final CastleGame game;
     public final PixelCamera camera;
@@ -84,11 +76,6 @@ public class GameScreen implements Screen {
     private final GameLevel gameLevelConfig;
 
     private final PhysicsManager physicsManager;
-
-/*
-    private Body bulletBody;
-    final public ArrayList<Body> bullets = new ArrayList<Body>();
-*/
 
     private float lastInitialDistance = 0;
     private float lastCameraZoom = 1;
@@ -160,10 +147,7 @@ public class GameScreen implements Screen {
             public boolean touchDown(float x, float y, int pointer, int button) {
                 Vector3 unprojectedStart = new Vector3(x, y, 0);
                 camera.unproject(unprojectedStart);
-                Gdx.app.log("touches", "pan " + unprojectedStart.x + " " + unprojectedStart.y);
-                Gdx.app.log("touches", "castle one " + castle1.getCannon().x + " " + castle1.getCannon().y);
-                Gdx.app.log("touches", "castle two " + castle2.getCannon().x + " " + castle2.getCannon().y);
-                //if (game.getStateMachine().getCurrentState() == StateName.PLAYER1 && unprojectedStart.x < castle1.getCannon().x && unprojectedStart.y < castle1.getCannon().y) {
+                unprojectedEnd = new Vector3(unprojectedStart);
                 if (game.getStateMachine().getCurrentState() == StateName.PLAYER1 && castle1.isInsideAimArea(unprojectedStart.x, unprojectedStart.y)) {
                     game.getStateMachine().transitionTo(StateName.AIMING1);
                     return false;
@@ -257,10 +241,8 @@ public class GameScreen implements Screen {
         game.spriteBatch.draw(level, 0, 0);
 
 
-        //todo: only need it for debug
         game.spriteBatch.setProjectionMatrix(fixedPosition);
         font.draw(game.spriteBatch, "fps: " + Gdx.graphics.getFramesPerSecond(), 20, 30);
-        //todo: end only need it for debug
 
         game.spriteBatch.end();
 
@@ -279,9 +261,7 @@ public class GameScreen implements Screen {
         physicsManager.sweepDeadBodies(); //todo: sweep bodies should be only after this mess with bullet which is bad. Refactor.
         physicsManager.createPhysicsObjects();
 
-
         //debugRenderer.render(world, camera.combined);
-
     }
 
     private void renderOrDisposeBullet() {
