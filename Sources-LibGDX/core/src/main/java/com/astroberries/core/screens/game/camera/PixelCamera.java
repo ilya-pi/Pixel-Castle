@@ -13,7 +13,7 @@ import static com.astroberries.core.config.GlobalGameConfig.DEFAULT_ANIMATION_ME
 
 public class PixelCamera extends OrthographicCamera {
 
-    private static float DEFAULT_TRANSITION_TIME = 3f; //three seconds by default
+    private static float DEFAULT_TRANSITION_TIME = 1f; // seconds by default
 
     private float transitionCompleteTime = 0f;
     private float transitionTime = 0f;
@@ -35,8 +35,8 @@ public class PixelCamera extends OrthographicCamera {
     }
 
     public void to(CameraState target, Float _transitionCompleteTime, StateName stateOnFinish) {
-        this.transitionStartPoint = this.position;
-        this.transitionZoomStart = this.zoom;
+        this.transitionStartPoint = new Vector3(position);
+        this.transitionZoomStart = zoom;
         this.transitionTime = 0f;
         this.stateOnFinish = stateOnFinish;
         if (_transitionCompleteTime != null) {
@@ -74,23 +74,23 @@ public class PixelCamera extends OrthographicCamera {
         if (state == CameraState.CASTLE1 || state == CameraState.CASTLE2) {
             transitionTime += Gdx.graphics.getDeltaTime();
             if (transitionTime > transitionCompleteTime) {
-                this.position.x = finalCoords.x;
-                this.position.y = finalCoords.y;
-                this.zoom = GlobalGameConfig.LEVEL_ZOOM;
+                position.x = finalCoords.x;
+                position.y = finalCoords.y;
+                zoom = GlobalGameConfig.LEVEL_ZOOM;
                 if (stateOnFinish != null) {
                     CastleGame.INSTANCE.getStateMachine().transitionTo(stateOnFinish);
                 }
                 this.setFree();
             } else {
                 float transitionState = transitionTime / transitionCompleteTime;
-                this.position.x = DEFAULT_ANIMATION_METHOD.apply(transitionStartPoint.x, finalCoords.x, transitionState);
-                this.position.y = DEFAULT_ANIMATION_METHOD.apply(transitionStartPoint.y, finalCoords.y, transitionState);
-                this.zoom = DEFAULT_ANIMATION_METHOD.apply(this.transitionZoomStart, GlobalGameConfig.LEVEL_ZOOM, transitionState);
+                position.x = DEFAULT_ANIMATION_METHOD.apply(transitionStartPoint.x, finalCoords.x, transitionState);
+                position.y = DEFAULT_ANIMATION_METHOD.apply(transitionStartPoint.y, finalCoords.y, transitionState);
+                zoom = DEFAULT_ANIMATION_METHOD.apply(transitionZoomStart, GlobalGameConfig.LEVEL_ZOOM, transitionState);
             }
         } else if (state == CameraState.BULLET) {
             if (gameScreen.bullet != null) {
-                this.position.y = gameScreen.bullet.getCoordinates().y;
-                this.position.x = gameScreen.bullet.getCoordinates().x;
+                position.y = gameScreen.bullet.getCoordinates().y;
+                position.x = gameScreen.bullet.getCoordinates().x;
             }
         }
 
