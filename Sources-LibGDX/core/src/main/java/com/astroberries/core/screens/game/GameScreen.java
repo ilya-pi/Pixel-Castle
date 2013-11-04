@@ -163,11 +163,12 @@ public class GameScreen implements Screen {
                 Gdx.app.log("touches", "pan " + unprojectedStart.x + " " + unprojectedStart.y);
                 Gdx.app.log("touches", "castle one " + castle1.getCannon().x + " " + castle1.getCannon().y);
                 Gdx.app.log("touches", "castle two " + castle2.getCannon().x + " " + castle2.getCannon().y);
-                if (game.getStateMachine().getCurrentState() == StateName.PLAYER1 && unprojectedStart.x < castle1.getCannon().x && unprojectedStart.y < castle1.getCannon().y) {
+                //if (game.getStateMachine().getCurrentState() == StateName.PLAYER1 && unprojectedStart.x < castle1.getCannon().x && unprojectedStart.y < castle1.getCannon().y) {
+                if (game.getStateMachine().getCurrentState() == StateName.PLAYER1 && castle1.isInsideAimArea(unprojectedStart.x, unprojectedStart.y)) {
                     game.getStateMachine().transitionTo(StateName.AIMING1);
                     return false;
                 }
-                if (game.getStateMachine().getCurrentState() == StateName.PLAYER2 && unprojectedStart.x > castle2.getCannon().x && unprojectedStart.y < castle2.getCannon().y) {
+                if (game.getStateMachine().getCurrentState() == StateName.PLAYER2 && castle2.isInsideAimArea(unprojectedStart.x, unprojectedStart.y)) {
                     game.getStateMachine().transitionTo(StateName.AIMING2);
                     return false;
                 }
@@ -282,6 +283,7 @@ public class GameScreen implements Screen {
         game.spriteBatch.end();
 
         renderAim();
+        renderAimButton();
         castle1.renderHealth(game, camera);
         castle2.renderHealth(game, camera);
 
@@ -327,6 +329,15 @@ public class GameScreen implements Screen {
         } else if (game.getStateMachine().getCurrentState() == StateName.AIMING2) {
             castle2.renderAim(unprojectedEnd.x, unprojectedEnd.y, game, camera);
         }
+    }
+
+    private void renderAimButton() {
+        if (game.getStateMachine().getCurrentState() == StateName.PLAYER1) {
+            castle1.renderAimButton(game, camera);
+        } else if (game.getStateMachine().getCurrentState() == StateName.PLAYER2) {
+            castle2.renderAimButton(game, camera);
+        }
+
     }
 
     @Override

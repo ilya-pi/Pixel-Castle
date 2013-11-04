@@ -2,6 +2,7 @@ package com.astroberries.core.screens.game.bullets;
 
 import com.astroberries.core.screens.game.physics.GameUserData;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -10,8 +11,10 @@ import com.badlogic.gdx.physics.box2d.*;
 
 public class SingleBullet implements Bullet {
 
-    static final float BULLET_SIZE = 2;
-    static final float BULLET_DENSITY = 0.3f;
+    public static final float BULLET_SIZE = 2;
+    public static final float BULLET_DENSITY = 0.3f;
+    public static final Color BULLET_COLOR = new Color(1, 1, 1, 1);
+
 
     private Body bulletBody;
     private BodyDef bulletBodyDef;
@@ -63,6 +66,7 @@ public class SingleBullet implements Bullet {
         if (bulletBody != null) {
             Vector2 position = bulletBody.getPosition();
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(BULLET_COLOR);
             shapeRenderer.identity();
             shapeRenderer.translate(position.x, position.y, 0);
             shapeRenderer.rotate(0, 0, -1, -bulletBody.getAngle() * MathUtils.radiansToDegrees);
