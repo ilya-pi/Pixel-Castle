@@ -134,7 +134,7 @@ public class GameScreen implements Screen {
         levelHeight = levelPixmap.getHeight();
 
         castle1 = new Castle(gameLevelConfig.getCastle1(), levelWidth, levelHeight, Castle.Location.LEFT);
-        castle2 = new Castle(gameLevelConfig.getCastle2(), levelWidth, levelHeight,  Castle.Location.RIGHT);
+        castle2 = new Castle(gameLevelConfig.getCastle2(), levelWidth, levelHeight, Castle.Location.RIGHT);
 
         levelPixmap.drawPixmap(castle1.getCastlePixmap(), gameLevelConfig.getCastle1().getX(), gameLevelConfig.getCastle1().getY() - castle1.getCastlePixmap().getHeight());
         levelPixmap.drawPixmap(castle2.getCastlePixmap(), gameLevelConfig.getCastle2().getX(), gameLevelConfig.getCastle2().getY() - castle2.getCastlePixmap().getHeight());
@@ -208,32 +208,14 @@ public class GameScreen implements Screen {
 
             @Override
             public boolean panStop(float x, float y, int pointer, int button) {
-                //Gdx.app.log("touches", "pan stop" + x + " " + y);
-                //todo: create method fire in Castle class
-                if (game.getStateMachine().getCurrentState() == StateName.AIMING1 || game.getStateMachine().getCurrentState() == StateName.AIMING2) {
-                    unprojectedEnd.x = x;
-                    unprojectedEnd.y = y;
-                    //Gdx.app.log("touches", "pan " + unprojectedEnd.x + " " + unprojectedEnd.y);
-                    camera.unproject(unprojectedEnd);
-
-                    if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
-                        float angle = MathUtils.atan2(unprojectedEnd.y - castle1.getCenter().y, unprojectedEnd.x - castle1.getCenter().x);
-                        int impulse = gameLevelConfig.getImpulse();
-
-                        bullet = new SingleBullet(camera, world, angle, impulse, castle1.getCannon().x, castle1.getCannon().y);
-                        bullet.fire();
-                        game.getStateMachine().transitionTo(StateName.BULLET1);
-                    } else {
-                        float angle = MathUtils.atan2(unprojectedEnd.y - castle2.getCenter().y, unprojectedEnd.x - castle2.getCenter().x);
-                        int impulse = gameLevelConfig.getImpulse();
-
-                        bullet = new SingleBullet(camera, world, angle, impulse, castle2.getCannon().x, castle2.getCannon().y);
-                        bullet.fire();
-                        game.getStateMachine().transitionTo(StateName.BULLET2);
-                    }
-                    return true;
+                if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
+                    bullet = castle1.fire(x, y, gameLevelConfig.getImpulse(), camera, world);
+                    game.getStateMachine().transitionTo(StateName.BULLET1);
+                } else {
+                    bullet = castle2.fire(x, y, gameLevelConfig.getImpulse(), camera, world);
+                    game.getStateMachine().transitionTo(StateName.BULLET2);
                 }
-                return false;
+                return true;
             }
 
             @Override

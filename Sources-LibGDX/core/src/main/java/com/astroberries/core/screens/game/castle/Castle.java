@@ -2,6 +2,8 @@ package com.astroberries.core.screens.game.castle;
 
 import com.astroberries.core.CastleGame;
 import com.astroberries.core.config.GameCastle;
+import com.astroberries.core.screens.game.bullets.Bullet;
+import com.astroberries.core.screens.game.bullets.SingleBullet;
 import com.astroberries.core.screens.game.camera.PixelCamera;
 import com.astroberries.core.screens.game.physics.PhysicsManager;
 import com.astroberries.core.state.StateName;
@@ -11,8 +13,10 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.World;
 
 public class Castle {
 
@@ -116,5 +120,16 @@ public class Castle {
             return false;
         }
         return true;
+    }
+
+    public Bullet fire(float x, float y, int impulse, PixelCamera camera, World world) {
+        Vector3 unprojectedEnd = new Vector3(x, y, 0);
+        camera.unproject(unprojectedEnd);
+        float angle = MathUtils.atan2(unprojectedEnd.y - cannon.y, unprojectedEnd.x - cannon.x);
+
+        Bullet bullet = new SingleBullet(camera, world, angle, impulse, cannon.x, cannon.y);
+        bullet.fire();
+        return bullet;
+
     }
 }
