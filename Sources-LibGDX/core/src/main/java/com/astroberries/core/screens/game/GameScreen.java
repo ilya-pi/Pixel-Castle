@@ -195,7 +195,7 @@ public class GameScreen implements Screen {
                 if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
                     bullet = castle1.fire(x, y, gameLevelConfig.getImpulse(), camera, world);
                     game.getStateMachine().transitionTo(StateName.BULLET1);
-                } else {
+                } else if (game.getStateMachine().getCurrentState() == StateName.AIMING2) {
                     bullet = castle2.fire(x, y, gameLevelConfig.getImpulse(), camera, world);
                     game.getStateMachine().transitionTo(StateName.BULLET2);
                 }
@@ -272,7 +272,14 @@ public class GameScreen implements Screen {
                     bullet.dispose();
                     bullet = null;
                     physicsManager.sweepBodyes = true;
-                    if (game.getStateMachine().getCurrentState() == StateName.BULLET1) {
+
+                    castle1.recalculateHealth(physicsManager);
+                    castle2.recalculateHealth(physicsManager);
+                    if (castle1.getHealth() < Castle.MIN_HEALTH) {
+                        game.getStateMachine().transitionTo(StateName.PLAYER_1_LOST);
+                    } else if (castle2.getHealth() < Castle.MIN_HEALTH) {
+                        game.getStateMachine().transitionTo(StateName.PLAYER_2_LOST);
+                    } else if (game.getStateMachine().getCurrentState() == StateName.BULLET1) {
                         game.getStateMachine().transitionTo(StateName.CAMERA_MOVING_TO_PLAYER_2);
                     } else {
                         game.getStateMachine().transitionTo(StateName.CAMERA_MOVING_TO_PLAYER_1);
@@ -362,8 +369,6 @@ public class GameScreen implements Screen {
 
 
     public void toCastle1() {
-        castle1.recalculateHealth(physicsManager);
-        castle2.recalculateHealth(physicsManager);
         camera.to(PixelCamera.CameraState.CASTLE1, null, StateName.PLAYER1);
     }
 
@@ -375,8 +380,6 @@ public class GameScreen implements Screen {
     }
 
     public void toCastle2() {
-        castle1.recalculateHealth(physicsManager);
-        castle2.recalculateHealth(physicsManager);
         camera.to(PixelCamera.CameraState.CASTLE2, null, StateName.PLAYER2);
     }
 

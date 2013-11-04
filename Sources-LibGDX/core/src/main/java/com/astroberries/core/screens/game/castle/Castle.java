@@ -20,6 +20,7 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class Castle {
 
+    public static final int MIN_HEALTH = 10;
     public static final float CANNON_PADDING = 4;
     private static final Color AIM_BUTTON_COLOR = new Color(0, 0, 1, 0.1f);
     public final float touchSide;
@@ -130,6 +131,9 @@ public class Castle {
         Bullet bullet = new SingleBullet(camera, world, angle, impulse, cannon.x, cannon.y);
         bullet.fire();
         return bullet;
+    }
 
+    public int getHealth() {
+        return health;
     }
 }

@@ -5,7 +5,6 @@ import com.astroberries.core.screens.game.GameScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.astroberries.core.state.StateMachine;
@@ -103,6 +102,18 @@ public class CastleGame extends Game {
                 gameScreen.aiming2ToBullet2();
             }
         };
+        Transition player1lost = new Transition() {
+            @Override
+            public void execute() {
+                Gdx.app.log("state", "Show win/lost screen! 1st lost.");
+            }
+        };
+        Transition player2lost = new Transition() {
+            @Override
+            public void execute() {
+                Gdx.app.log("state", "Show win/lost screen! 2nd lost.");
+            }
+        };
 
 
         return new StateMashineBuilder()
@@ -115,11 +126,14 @@ public class CastleGame extends Game {
                 .from(PLAYER1).to(AIMING1).with(player1ToAiming1)
                 .from(AIMING1).to(BULLET1).with(aiming1ToBullet1)
                 .from(BULLET1).to(CAMERA_MOVING_TO_PLAYER_2).with(toCastle2)
+                              .to(PLAYER_2_LOST).with(player2lost)
+                              .to(PLAYER_1_LOST).with(player1lost)
                 .from(CAMERA_MOVING_TO_PLAYER_2).to(PLAYER2).with()
                 .from(PLAYER2).to(AIMING2).with(player2ToAiming2)
                 .from(AIMING2).to(BULLET2).with(aiming2ToBullet2)
                 .from(BULLET2).to(CAMERA_MOVING_TO_PLAYER_1).with(toCastle1)
-
+                              .to(PLAYER_2_LOST).with(player2lost)
+                              .to(PLAYER_1_LOST).with(player1lost)
                 .build();
     }
 
