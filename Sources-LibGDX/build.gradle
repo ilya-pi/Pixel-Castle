@@ -9,11 +9,11 @@ allprojects {
     
     version = "1.0"
     ext.appName = "mygame"
-    ext.gdxVersion = "0.9.9-SNAPSHOT"
+    ext.gdxVersion = "0.9.9"
     
     repositories {
         mavenCentral()
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
         mavenLocal();
     }
 }
