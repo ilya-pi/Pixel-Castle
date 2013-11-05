@@ -17,8 +17,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Disposable;
 
-public class Castle {
+public class Castle implements Disposable {
 
     public static final int MIN_HEALTH = 10;
     public static final float CANNON_PADDING = 4;
@@ -34,6 +35,11 @@ public class Castle {
     private int health = 0;
     private GameCastle castleConfig;
     private final BitmapFont font = new BitmapFont(Gdx.files.internal("arial-15.fnt"), false);
+
+    @Override
+    public void dispose() {
+        //todo: implement
+    }
 
     public static enum Location {
         LEFT, RIGHT
@@ -136,4 +142,5 @@ public class Castle {
     public int getHealth() {
         return health;
     }
+
 }

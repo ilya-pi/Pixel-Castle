@@ -1,5 +1,7 @@
 package com.astroberries.core.config;
 
+import java.util.List;
+
 public class GameLevel {
 
     private String name;
@@ -8,6 +10,7 @@ public class GameLevel {
     private int impulse;
     private GameCastle castle1;
     private GameCastle castle2;
+    private List<String> wind;
 
     public int getImpulse() {
         return impulse;
@@ -57,5 +60,13 @@ public class GameLevel {
 
     public GameCastle getCastle2() {
         return castle2;
+    }
+
+    public List<String> getWind() {
+        return wind;
+    }
+
+    public void setWind(List<String> wind) {
+        this.wind = wind;
     }
 }

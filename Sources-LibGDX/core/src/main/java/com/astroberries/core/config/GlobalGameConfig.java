@@ -9,6 +9,8 @@ public class GlobalGameConfig {
      */
     public static final long LEVEL_INTRO_TIMEOUT = 3000;
 
+    public static final int GRAVITY = -20;
+
     /**
      * The most usable animation method in the game
      */

@@ -8,6 +8,7 @@ import com.astroberries.core.screens.game.bullets.Bullet;
 import com.astroberries.core.screens.game.camera.PixelCamera;
 import com.astroberries.core.screens.game.castle.Castle;
 import com.astroberries.core.screens.game.level.CheckRectangle;
+import com.astroberries.core.screens.game.wind.Wind;
 import com.astroberries.core.screens.game.physics.BulletContactListener;
 import com.astroberries.core.screens.game.physics.GameUserData;
 import com.astroberries.core.screens.game.physics.PhysicsManager;
@@ -44,6 +45,8 @@ public class GameScreen implements Screen {
     private final World world;
     public final Castle castle1;
     public final Castle castle2;
+    public final Wind wind;
+
     private BitmapFont font = new BitmapFont(Gdx.files.internal("arial-15.fnt"), false);
 
     private Box2DDebugRenderer debugRenderer;
@@ -67,14 +70,14 @@ public class GameScreen implements Screen {
     private final Texture sky;
 
     private final Pixmap transparentPixmap;
+
     private final Pixmap bulletPixmap;
+    public Bullet bullet;
 
     private Vector3 unprojectedEnd = new Vector3(0, 0, 0);
 
-    public Bullet bullet;
 
     private final GameLevel gameLevelConfig;
-
     private final PhysicsManager physicsManager;
 
     private float lastInitialDistance = 0;
@@ -104,7 +107,7 @@ public class GameScreen implements Screen {
     private GameScreen(final CastleGame game, int setNumber, int levelNumber) {
         this.game = game;
         camera = new PixelCamera();
-        world = new World(new Vector2(0, -20), true); //todo: explain magic numbers
+        world = new World(new Vector2(0, GlobalGameConfig.GRAVITY), true);
 
 
         debugRenderer = new Box2DDebugRenderer();
@@ -113,7 +116,7 @@ public class GameScreen implements Screen {
         GameConfig config = json.fromJson(GameConfig.class, Gdx.files.internal("configuration.json"));
 
         gameLevelConfig = config.getSets().get(setNumber).getLevels().get(levelNumber);
-
+        wind = new Wind(world, gameLevelConfig);
 
         Pixmap.setBlending(Pixmap.Blending.None);
         Pixmap levelPixmap = new Pixmap(Gdx.files.internal("levels/" + gameLevelConfig.getPath() + "/level.png"));
@@ -250,6 +253,7 @@ public class GameScreen implements Screen {
         renderAimButton();
         castle1.renderHealth(game, camera);
         castle2.renderHealth(game, camera);
+        wind.render(game.spriteBatch);
 
         world.step(1 / 30f, 6, 2); //todo: play with this values for performance
 
@@ -388,5 +392,9 @@ public class GameScreen implements Screen {
 
     public void aiming2ToBullet2() {
         camera.to(PixelCamera.CameraState.BULLET, null, null);
+    }
+
+    public void updateWind() {
+        wind.update();
     }
 }
