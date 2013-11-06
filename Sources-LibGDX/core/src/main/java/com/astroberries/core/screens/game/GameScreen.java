@@ -123,8 +123,8 @@ public class GameScreen implements Screen {
         levelWidth = levelPixmap.getWidth();
         levelHeight = levelPixmap.getHeight();
 
-        castle1 = new Castle(gameLevelConfig.getCastle1(), levelWidth, levelHeight, Castle.Location.LEFT);
-        castle2 = new Castle(gameLevelConfig.getCastle2(), levelWidth, levelHeight, Castle.Location.RIGHT);
+        castle1 = new Castle(gameLevelConfig.getCastle1(), levelWidth, levelHeight, Castle.Location.LEFT, gameLevelConfig.getVelocity(), world);
+        castle2 = new Castle(gameLevelConfig.getCastle2(), levelWidth, levelHeight, Castle.Location.RIGHT, gameLevelConfig.getVelocity(), world);
 
         levelPixmap.drawPixmap(castle1.getCastlePixmap(), gameLevelConfig.getCastle1().getX(), gameLevelConfig.getCastle1().getY() - castle1.getCastlePixmap().getHeight());
         levelPixmap.drawPixmap(castle2.getCastlePixmap(), gameLevelConfig.getCastle2().getX(), gameLevelConfig.getCastle2().getY() - castle2.getCastlePixmap().getHeight());
@@ -196,10 +196,10 @@ public class GameScreen implements Screen {
             @Override
             public boolean panStop(float x, float y, int pointer, int button) {
                 if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
-                    bullet = castle1.fire(x, y, gameLevelConfig.getImpulse(), camera, world);
+                    bullet = castle1.fire(x, y, gameLevelConfig.getVelocity(), camera, world);
                     game.getStateMachine().transitionTo(StateName.BULLET1);
                 } else if (game.getStateMachine().getCurrentState() == StateName.AIMING2) {
-                    bullet = castle2.fire(x, y, gameLevelConfig.getImpulse(), camera, world);
+                    bullet = castle2.fire(x, y, gameLevelConfig.getVelocity(), camera, world);
                     game.getStateMachine().transitionTo(StateName.BULLET2);
                 }
                 return true;

@@ -6,7 +6,6 @@ import com.astroberries.core.screens.game.bullets.Bullet;
 import com.astroberries.core.screens.game.bullets.SingleBullet;
 import com.astroberries.core.screens.game.camera.PixelCamera;
 import com.astroberries.core.screens.game.physics.PhysicsManager;
-import com.astroberries.core.state.StateName;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
@@ -21,6 +20,9 @@ import com.badlogic.gdx.utils.Disposable;
 
 public class Castle implements Disposable {
 
+    private float x = 0; //todo: remove
+    private float y = 0; //todo: remove
+
     public static final int MIN_HEALTH = 10;
     public static final float CANNON_PADDING = 4;
     private static final Color AIM_BUTTON_COLOR = new Color(0, 0, 1, 0.1f);
@@ -28,6 +30,8 @@ public class Castle implements Disposable {
     public final Vector2 topLeftTouch;
     public final Vector2 bottomRightTouch;
 
+    private final int bulletVelocity;
+    private final World world;
     private final Vector2 cannon;
     private final Vector2 center;
     private final Pixmap castlePixmap;
@@ -45,9 +49,11 @@ public class Castle implements Disposable {
         LEFT, RIGHT
     }
 
-    public Castle(GameCastle castleConfig, int levelWidth, int levelHeight, Location location) {
+    public Castle(GameCastle castleConfig, int levelWidth, int levelHeight, Location location, int velocity, World world) {
         this.location = location;
         this.castleConfig = castleConfig;
+        this.bulletVelocity = velocity;
+        this.world = world;
         castlePixmap = new Pixmap(Gdx.files.internal("castles/" + castleConfig.getImage()));
         touchSide = Math.max(castlePixmap.getHeight(), castlePixmap.getWidth());
 
@@ -81,11 +87,38 @@ public class Castle implements Disposable {
     }
 
     public void renderAim(float x, float y, CastleGame game, PixelCamera camera) {
+        this.x = x; //todo: remove
+        this.y = y; //todo: remove
+
         game.shapeRenderer.setProjectionMatrix(camera.combined);
         game.shapeRenderer.identity();
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        game.shapeRenderer.line(cannon.x, cannon.y, x, y, Color.CYAN, Color.BLACK);
+        game.shapeRenderer.line(cannon.x, cannon.y, x, y, Color.BLACK, Color.BLACK);
         game.shapeRenderer.end();
+    }
+
+    private void debugTrajectory(float x, float y, ShapeRenderer shapeRenderer) {
+        float angle = MathUtils.atan2(y - cannon.y, x - cannon.x);
+
+        float vX = bulletVelocity * MathUtils.cos(angle);
+        float vY = bulletVelocity * MathUtils.sin(angle);
+        float aX = world.getGravity().x;
+        float aY = world.getGravity().y;
+
+        shapeRenderer.identity();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(new Color(1, 0, 0, 0));
+
+        float t = 0;
+        while(t < 20) {
+            float xTmp = cannon.x + vX * t + aX * t * t / 2;
+            float yTmp = cannon.y + vY * t + aY * t * t / 2;
+
+            t = t + 0.05f;
+
+            shapeRenderer.rect(xTmp, yTmp, 1, 1);
+        }
+        shapeRenderer.end();
     }
 
     public void renderHealth(CastleGame game, PixelCamera camera) {
@@ -94,6 +127,8 @@ public class Castle implements Disposable {
         camera.project(projected);
         font.draw(game.spriteBatch, "HL  " + health, projected.x, projected.y);
         game.spriteBatch.end();
+
+        //debugTrajectory(x, y, game.shapeRenderer);
     }
 
     public void renderAimButton(CastleGame game, PixelCamera camera) {
@@ -129,12 +164,12 @@ public class Castle implements Disposable {
         return true;
     }
 
-    public Bullet fire(float x, float y, int impulse, PixelCamera camera, World world) {
+    public Bullet fire(float x, float y, int velocity, PixelCamera camera, World world) {
         Vector3 unprojectedEnd = new Vector3(x, y, 0);
         camera.unproject(unprojectedEnd);
         float angle = MathUtils.atan2(unprojectedEnd.y - cannon.y, unprojectedEnd.x - cannon.x);
 
-        Bullet bullet = new SingleBullet(camera, world, angle, impulse, cannon.x, cannon.y);
+        Bullet bullet = new SingleBullet(camera, world, angle, velocity, cannon.x, cannon.y);
         bullet.fire();
         return bullet;
     }

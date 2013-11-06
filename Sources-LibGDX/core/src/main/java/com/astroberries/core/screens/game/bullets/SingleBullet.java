@@ -1,6 +1,7 @@
 package com.astroberries.core.screens.game.bullets;
 
 import com.astroberries.core.screens.game.physics.GameUserData;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -21,16 +22,16 @@ public class SingleBullet implements Bullet {
 
     private final Camera camera;
     private final World world;
-    private final float impulseX;
-    private final float impulseY;
+    private final float vX;
+    private final float vY;
     private final float x;
     private final float y;
 
-    public SingleBullet(Camera camera, World world, float angle, int impulse, float x, float y) {
+    public SingleBullet(Camera camera, World world, float angle, int velocity, float x, float y) {
         this.camera = camera;
         this.world = world;
-        this.impulseX = impulse * MathUtils.cos(angle);
-        this.impulseY = impulse * MathUtils.sin(angle);
+        this.vX = velocity * MathUtils.cos(angle);
+        this.vY = velocity * MathUtils.sin(angle);
         this.x = x;
         this.y = y;
     }
@@ -52,8 +53,7 @@ public class SingleBullet implements Bullet {
         bulletFixture.setSensor(true);
         bulletBox.dispose();
         bulletBody.setSleepingAllowed(false);
-
-        bulletBody.applyLinearImpulse(impulseX, impulseY, x, y, false);
+        bulletBody.setLinearVelocity(vX, vY);
     }
 
     @Override

@@ -7,17 +7,17 @@ public class GameLevel {
     private String name;
     private String path;
     private int number;
-    private int impulse;
+    private int velocity;
     private GameCastle castle1;
     private GameCastle castle2;
     private List<String> wind;
 
-    public int getImpulse() {
-        return impulse;
+    public int getVelocity() {
+        return velocity;
     }
 
-    public void setImpulse(int impulse) {
-        this.impulse = impulse;
+    public void setVelocity(int velocity) {
+        this.velocity = velocity;
     }
 
     public String getPath() {
