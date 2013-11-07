@@ -4,6 +4,8 @@ import com.astroberries.core.CastleGame;
 import com.astroberries.core.config.GameConfig;
 import com.astroberries.core.config.GameLevel;
 import com.astroberries.core.config.GlobalGameConfig;
+import com.astroberries.core.screens.game.ai.AI;
+import com.astroberries.core.screens.game.ai.AIFactory;
 import com.astroberries.core.screens.game.bullets.Bullet;
 import com.astroberries.core.screens.game.camera.PixelCamera;
 import com.astroberries.core.screens.game.castle.Castle;
@@ -46,6 +48,7 @@ public class GameScreen implements Screen {
     public final Castle castle1;
     public final Castle castle2;
     public final Wind wind;
+    public final AI ai;
 
     private BitmapFont font = new BitmapFont(Gdx.files.internal("arial-15.fnt"), false);
 
@@ -116,6 +119,7 @@ public class GameScreen implements Screen {
         GameConfig config = json.fromJson(GameConfig.class, Gdx.files.internal("configuration.json"));
 
         gameLevelConfig = config.getSets().get(setNumber).getLevels().get(levelNumber);
+        ai = new AIFactory().getAi(gameLevelConfig.getAiVariant());
         wind = new Wind(world, gameLevelConfig);
 
         Pixmap.setBlending(Pixmap.Blending.None);
@@ -372,7 +376,7 @@ public class GameScreen implements Screen {
     }
 
 
-    public void toCastle1() {
+    public void toPlayer1() {
         camera.to(PixelCamera.CameraState.CASTLE1, null, StateName.PLAYER1);
     }
 
@@ -383,18 +387,31 @@ public class GameScreen implements Screen {
         camera.to(PixelCamera.CameraState.BULLET, null, null);
     }
 
-    public void toCastle2() {
+    public void toPlayer2() {
         camera.to(PixelCamera.CameraState.CASTLE2, null, StateName.PLAYER2);
+    }
+
+    public void toComputer2() {
+        camera.to(PixelCamera.CameraState.CASTLE2, null, StateName.COMPUTER2);
     }
 
     public void player2ToAiming2() {
     }
 
-    public void aiming2ToBullet2() {
+    public void toBullet2() {
         camera.to(PixelCamera.CameraState.BULLET, null, null);
     }
 
     public void updateWind() {
         wind.update();
+    }
+
+    public void aiAimAndShoot() {
+        bullet = castle2.fire(ai.nextAngle(), gameLevelConfig.getVelocity(), camera, world);
+        CastleGame.INSTANCE.getStateMachine().transitionTo(StateName.BULLET2);
+    }
+
+    public void setCameraFree() {
+        camera.setFree();
     }
 }

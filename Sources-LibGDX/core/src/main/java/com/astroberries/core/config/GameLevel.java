@@ -11,6 +11,7 @@ public class GameLevel {
     private GameCastle castle1;
     private GameCastle castle2;
     private List<String> wind;
+    private String aiVariant;
 
     public int getVelocity() {
         return velocity;
@@ -68,5 +69,13 @@ public class GameLevel {
 
     public void setWind(List<String> wind) {
         this.wind = wind;
+    }
+
+    public String getAiVariant() {
+        return aiVariant;
+    }
+
+    public void setAiVariant(String aiVariant) {
+        this.aiVariant = aiVariant;
     }
 }

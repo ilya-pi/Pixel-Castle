@@ -164,14 +164,17 @@ public class Castle implements Disposable {
         return true;
     }
 
+    public Bullet fire(float angle, int velocity, PixelCamera camera, World world) {
+        Bullet bullet = new SingleBullet(camera, world, angle, velocity, cannon.x, cannon.y);
+        bullet.fire();
+        return bullet;
+    }
+
     public Bullet fire(float x, float y, int velocity, PixelCamera camera, World world) {
         Vector3 unprojectedEnd = new Vector3(x, y, 0);
         camera.unproject(unprojectedEnd);
         float angle = MathUtils.atan2(unprojectedEnd.y - cannon.y, unprojectedEnd.x - cannon.x);
-
-        Bullet bullet = new SingleBullet(camera, world, angle, velocity, cannon.x, cannon.y);
-        bullet.fire();
-        return bullet;
+        return fire(angle, velocity, camera, world);
     }
 
     public int getHealth() {

@@ -66,10 +66,10 @@ public class CastleGame extends Game {
                 gameScreen.mainMenuToOverview();
             }
         };
-        Transition toCastle1 = new Transition() {
+        Transition toPlayer1 = new Transition() {
             @Override
             public void execute() {
-                gameScreen.toCastle1();
+                gameScreen.toPlayer1();
             }
         };
         Transition player1ToAiming1 = new Transition() {
@@ -84,10 +84,10 @@ public class CastleGame extends Game {
                 gameScreen.aiming1ToBullet1();
             }
         };
-        Transition toCastle2 = new Transition() {
+        Transition toPlayer2 = new Transition() {
             @Override
             public void execute() {
-                gameScreen.toCastle2();
+                gameScreen.toPlayer2();
             }
         };
         Transition player2ToAiming2 = new Transition() {
@@ -96,10 +96,10 @@ public class CastleGame extends Game {
                 gameScreen.player2ToAiming2();
             }
         };
-        Transition aiming2ToBullet2 = new Transition() {
+        Transition toBullet2 = new Transition() {
             @Override
             public void execute() {
-                gameScreen.aiming2ToBullet2();
+                gameScreen.toBullet2();
             }
         };
         Transition player1lost = new Transition() {
@@ -120,27 +120,66 @@ public class CastleGame extends Game {
                 gameScreen.updateWind();
             }
         };
+        Transition aiAimAndShoot = new Transition() {
+            @Override
+            public void execute() {
+                gameScreen.aiAimAndShoot();
+            }
+        };
+        Transition toComputer2 = new Transition() {
+            @Override
+            public void execute() {
+                gameScreen.toComputer2();
+            }
+        };
+        Transition setCameraFree = new Transition() {
+            @Override
+            public void execute() {
+                gameScreen.setCameraFree();
+            }
+        };
 
-
-        return new StateMashineBuilder()
+          //PVP
+/*        return new StateMashineBuilder()
                 .from(NIL).to(MAINMENU).with(nilToMainMenu)
                 .from(MAINMENU).to(CHOOSE_GAME).with(mainMenuToChooseGame)
                                .to(LEVEL_OVERVIEW).with(createGameScreen, mainMenuToOverview)
 
-                .from(LEVEL_OVERVIEW).to(CAMERA_MOVING_TO_PLAYER_1).with(toCastle1)
-                .from(CAMERA_MOVING_TO_PLAYER_1).to(PLAYER1).with(updateWind)
+                .from(LEVEL_OVERVIEW).to(CAMERA_MOVING_TO_PLAYER_1).with(toPlayer1)
+                .from(CAMERA_MOVING_TO_PLAYER_1).to(PLAYER1).with(updateWind, setCameraFree)
                 .from(PLAYER1).to(AIMING1).with(player1ToAiming1)
                 .from(AIMING1).to(BULLET1).with(aiming1ToBullet1)
-                .from(BULLET1).to(CAMERA_MOVING_TO_PLAYER_2).with(toCastle2)
+                .from(BULLET1).to(CAMERA_MOVING_TO_PLAYER_2).with(toPlayer2)
                               .to(PLAYER_2_LOST).with(player2lost)
                               .to(PLAYER_1_LOST).with(player1lost)
-                .from(CAMERA_MOVING_TO_PLAYER_2).to(PLAYER2).with(updateWind)
+                .from(CAMERA_MOVING_TO_PLAYER_2).to(PLAYER2).with(updateWind, setCameraFree)
                 .from(PLAYER2).to(AIMING2).with(player2ToAiming2)
-                .from(AIMING2).to(BULLET2).with(aiming2ToBullet2)
-                .from(BULLET2).to(CAMERA_MOVING_TO_PLAYER_1).with(toCastle1)
+                .from(AIMING2).to(BULLET2).with(toBullet2)
+                .from(BULLET2).to(CAMERA_MOVING_TO_PLAYER_1).with(toPlayer1)
                               .to(PLAYER_2_LOST).with(player2lost)
                               .to(PLAYER_1_LOST).with(player1lost)
+                .build();*/
+
+        //AI
+        return new StateMashineBuilder()
+        .from(NIL).to(MAINMENU).with(nilToMainMenu)
+                .from(MAINMENU).to(CHOOSE_GAME).with(mainMenuToChooseGame)
+                .to(LEVEL_OVERVIEW).with(createGameScreen, mainMenuToOverview)
+
+                .from(LEVEL_OVERVIEW).to(CAMERA_MOVING_TO_PLAYER_1).with(toPlayer1)
+                .from(CAMERA_MOVING_TO_PLAYER_1).to(PLAYER1).with(updateWind, setCameraFree)
+                .from(PLAYER1).to(AIMING1).with(player1ToAiming1)
+                .from(AIMING1).to(BULLET1).with(aiming1ToBullet1)
+                .from(BULLET1).to(CAMERA_MOVING_TO_PLAYER_2).with(toComputer2)
+                .to(PLAYER_2_LOST).with(player2lost)
+                .to(PLAYER_1_LOST).with(player1lost)
+                .from(CAMERA_MOVING_TO_PLAYER_2).to(COMPUTER2).with(updateWind, aiAimAndShoot)
+                .from(COMPUTER2).to(BULLET2).with(toBullet2)
+                .from(BULLET2).to(CAMERA_MOVING_TO_PLAYER_1).with(toPlayer1)
+                .to(PLAYER_2_LOST).with(player2lost)
+                .to(PLAYER_1_LOST).with(player1lost)
                 .build();
+
     }
 
     @Override

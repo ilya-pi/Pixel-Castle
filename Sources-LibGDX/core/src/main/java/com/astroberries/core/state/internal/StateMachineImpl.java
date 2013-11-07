@@ -36,10 +36,11 @@ public class StateMachineImpl implements StateMachine {
             throw new IllegalStateException("state from: " + currentState + " doesn't have state to: " + toState);
         }
         Gdx.app.log("states", "currentState: " + currentState + ", toState: " + toState);
-        for (Transition transition : states.get(currentState).getTransitions(toState)) {
+        StateName oldState = currentState;
+        currentState = toState;
+        for (Transition transition : states.get(oldState).getTransitions(toState)) {
             Gdx.app.log("states", "transition execute");
             transition.execute();
         }
-        currentState = toState;
     }
 }

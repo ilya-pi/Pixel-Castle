@@ -35,6 +35,7 @@ public class PixelCamera extends OrthographicCamera {
     }
 
     public void to(CameraState target, Float _transitionCompleteTime, StateName stateOnFinish) {
+        Gdx.app.log("camera", target.toString());
         this.transitionStartPoint = new Vector3(position);
         this.transitionZoomStart = zoom;
         this.transitionTime = 0f;
@@ -66,7 +67,7 @@ public class PixelCamera extends OrthographicCamera {
     }
 
     public void setFree() {
-        this.state = CameraState.FREE;
+        state = CameraState.FREE;
     }
 
     public void handle() {
@@ -80,7 +81,6 @@ public class PixelCamera extends OrthographicCamera {
                 if (stateOnFinish != null) {
                     CastleGame.INSTANCE.getStateMachine().transitionTo(stateOnFinish);
                 }
-                this.setFree();
             } else {
                 float transitionState = transitionTime / transitionCompleteTime;
                 position.x = DEFAULT_ANIMATION_METHOD.apply(transitionStartPoint.x, finalCoords.x, transitionState);

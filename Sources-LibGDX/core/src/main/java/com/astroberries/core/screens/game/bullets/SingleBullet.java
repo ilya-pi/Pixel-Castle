@@ -38,10 +38,10 @@ public class SingleBullet implements Bullet {
 
     @Override
     public void fire() {
+        Gdx.app.log("bullet", "shoot!");
         bulletBodyDef = new BodyDef();
         bulletBodyDef.type = BodyDef.BodyType.DynamicBody;
         Vector3 unprojected = new Vector3(x, y, 0);
-        //camera.unproject(unprojected); todo: useful to get correct touch coordinates taking into account camera zoom
 
         bulletBodyDef.position.set(new Vector2(unprojected.x, unprojected.y));
         bulletBody = world.createBody(bulletBodyDef);
