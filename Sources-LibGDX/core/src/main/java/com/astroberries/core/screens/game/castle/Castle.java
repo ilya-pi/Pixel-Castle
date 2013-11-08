@@ -10,6 +10,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -36,6 +37,7 @@ public class Castle implements Disposable {
     private final Vector2 center;
     private final Pixmap castlePixmap;
     private final Location location;
+    private final WeaponControl weaponControl;
     private int health = 0;
     private GameCastle castleConfig;
     private final BitmapFont font = new BitmapFont(Gdx.files.internal("arial-15.fnt"), false);
@@ -54,6 +56,8 @@ public class Castle implements Disposable {
         this.castleConfig = castleConfig;
         this.bulletVelocity = velocity;
         this.world = world;
+
+        weaponControl = new WeaponControl();
         castlePixmap = new Pixmap(Gdx.files.internal("castles/" + castleConfig.getImage()));
         touchSide = Math.max(castlePixmap.getHeight(), castlePixmap.getWidth());
 
@@ -97,28 +101,16 @@ public class Castle implements Disposable {
         game.shapeRenderer.end();
     }
 
-    private void debugTrajectory(float x, float y, ShapeRenderer shapeRenderer) {
-        float angle = MathUtils.atan2(y - cannon.y, x - cannon.x);
-
-        float vX = bulletVelocity * MathUtils.cos(angle);
-        float vY = bulletVelocity * MathUtils.sin(angle);
-        float aX = world.getGravity().x;
-        float aY = world.getGravity().y;
-
-        shapeRenderer.identity();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(new Color(1, 0, 0, 0));
-
-        float t = 0;
-        while(t < 20) {
-            float xTmp = cannon.x + vX * t + aX * t * t / 2;
-            float yTmp = cannon.y + vY * t + aY * t * t / 2;
-
-            t = t + 0.05f;
-
-            shapeRenderer.rect(xTmp, yTmp, 1, 1);
-        }
-        shapeRenderer.end();
+    public void renderAimButton(CastleGame game, PixelCamera camera) {
+        Gdx.gl.glEnable(GL10.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        game.shapeRenderer.setProjectionMatrix(camera.combined);
+        game.shapeRenderer.identity();
+        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        game.shapeRenderer.setColor(AIM_BUTTON_COLOR);
+        game.shapeRenderer.rect(topLeftTouch.x, topLeftTouch.y, touchSide, touchSide);
+        game.shapeRenderer.end();
+        Gdx.gl.glDisable(GL10.GL_BLEND);
     }
 
     public void renderHealth(CastleGame game, PixelCamera camera) {
@@ -131,16 +123,8 @@ public class Castle implements Disposable {
         //debugTrajectory(x, y, game.shapeRenderer);
     }
 
-    public void renderAimButton(CastleGame game, PixelCamera camera) {
-        Gdx.gl.glEnable(GL10.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        game.shapeRenderer.setProjectionMatrix(camera.combined);
-        game.shapeRenderer.identity();
-        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        game.shapeRenderer.setColor(AIM_BUTTON_COLOR);
-        game.shapeRenderer.rect(topLeftTouch.x, topLeftTouch.y, touchSide, touchSide);
-        game.shapeRenderer.end();
-        Gdx.gl.glDisable(GL10.GL_BLEND);
+    public void renderWeapon(CastleGame game, PixelCamera camera) {
+        weaponControl.render(cannon.x, cannon.y, game, camera);
     }
 
     public void recalculateHealth(PhysicsManager physicsManager) {
@@ -179,6 +163,30 @@ public class Castle implements Disposable {
 
     public int getHealth() {
         return health;
+    }
+
+    private void debugTrajectory(float x, float y, ShapeRenderer shapeRenderer) {
+        float angle = MathUtils.atan2(y - cannon.y, x - cannon.x);
+
+        float vX = bulletVelocity * MathUtils.cos(angle);
+        float vY = bulletVelocity * MathUtils.sin(angle);
+        float aX = world.getGravity().x;
+        float aY = world.getGravity().y;
+
+        shapeRenderer.identity();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(new Color(1, 0, 0, 0));
+
+        float t = 0;
+        while(t < 20) {
+            float xTmp = cannon.x + vX * t + aX * t * t / 2;
+            float yTmp = cannon.y + vY * t + aY * t * t / 2;
+
+            t = t + 0.05f;
+
+            shapeRenderer.rect(xTmp, yTmp, 1, 1);
+        }
+        shapeRenderer.end();
     }
 
 }

@@ -10,12 +10,14 @@ import com.astroberries.core.screens.game.bullets.Bullet;
 import com.astroberries.core.screens.game.camera.PixelCamera;
 import com.astroberries.core.screens.game.castle.Castle;
 import com.astroberries.core.screens.game.level.CheckRectangle;
+import com.astroberries.core.screens.game.touch.MoveAndZoomListener;
 import com.astroberries.core.screens.game.wind.Wind;
 import com.astroberries.core.screens.game.physics.BulletContactListener;
 import com.astroberries.core.screens.game.physics.GameUserData;
 import com.astroberries.core.screens.game.physics.PhysicsManager;
 import com.astroberries.core.state.StateName;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -36,19 +38,15 @@ import java.util.TimerTask;
 
 public class GameScreen implements Screen {
 
-/*
-    static final float WORLD_TO_BOX = 0.01f;
-    static final float BOX_TO_WORLD = 100f;
-*/
-
-
     private final CastleGame game;
-    public final PixelCamera camera;
     private final World world;
+
+    public final PixelCamera camera;
     public final Castle castle1;
     public final Castle castle2;
     public final Wind wind;
     public final AI ai;
+    public float scrollRatio;
 
     private BitmapFont font = new BitmapFont(Gdx.files.internal("arial-15.fnt"), false);
 
@@ -62,30 +60,21 @@ public class GameScreen implements Screen {
     public int levelWidth;
 
     public float viewPortHeight;
-    private float scrollRatio;
-
-
-//    BitmapFont font = new BitmapFont();
 
     //disposable
     private Texture level;
     private final Texture background;
     private final Texture sky;
 
-    private final Pixmap transparentPixmap;
-
     private final Pixmap bulletPixmap;
     public Bullet bullet;
 
-    private Vector3 unprojectedEnd = new Vector3(0, 0, 0);
+    private Vector3 aimEnd = new Vector3(0, 0, 0);
 
 
     private final GameLevel gameLevelConfig;
     private final PhysicsManager physicsManager;
 
-    private float lastInitialDistance = 0;
-    private float lastCameraZoom = 1;
-    private float newCameraZoom = 1;
 
     private static GameScreen instance;
 
@@ -133,7 +122,6 @@ public class GameScreen implements Screen {
         levelPixmap.drawPixmap(castle1.getCastlePixmap(), gameLevelConfig.getCastle1().getX(), gameLevelConfig.getCastle1().getY() - castle1.getCastlePixmap().getHeight());
         levelPixmap.drawPixmap(castle2.getCastlePixmap(), gameLevelConfig.getCastle2().getX(), gameLevelConfig.getCastle2().getY() - castle2.getCastlePixmap().getHeight());
 
-        transparentPixmap = new Pixmap(Gdx.files.internal("transparent.png"));
         level = new Texture(levelPixmap);
         background = new Texture(Gdx.files.internal("levels/" + gameLevelConfig.getPath() + "/background.png"));
         sky = new Texture(Gdx.files.internal("levels/" + gameLevelConfig.getPath() + "/sky.png"));
@@ -148,90 +136,10 @@ public class GameScreen implements Screen {
         castle1.recalculateHealth(physicsManager);
         castle2.recalculateHealth(physicsManager);
 
-
-        Gdx.input.setInputProcessor(new GestureDetector(new GestureDetector.GestureListener() {
-            @Override
-            public boolean touchDown(float x, float y, int pointer, int button) {
-                Vector3 unprojectedStart = new Vector3(x, y, 0);
-                camera.unproject(unprojectedStart);
-                unprojectedEnd = new Vector3(unprojectedStart);
-                if (game.getStateMachine().getCurrentState() == StateName.PLAYER1 && castle1.isInsideAimArea(unprojectedStart.x, unprojectedStart.y)) {
-                    game.getStateMachine().transitionTo(StateName.AIMING1);
-                    return false;
-                }
-                if (game.getStateMachine().getCurrentState() == StateName.PLAYER2 && castle2.isInsideAimArea(unprojectedStart.x, unprojectedStart.y)) {
-                    game.getStateMachine().transitionTo(StateName.AIMING2);
-                    return false;
-                }
-
-                return false;
-            }
-
-            @Override
-            public boolean tap(float x, float y, int count, int button) {
-                return false;
-            }
-
-            @Override
-            public boolean longPress(float x, float y) {
-                return false;
-            }
-
-            @Override
-            public boolean fling(float velocityX, float velocityY, int button) {
-                return false;
-            }
-
-            @Override
-            public boolean pan(float x, float y, float deltaX, float deltaY) {
-                //Gdx.app.log("camera", " " + deltaX + " " + deltaY);
-                if (game.getStateMachine().getCurrentState() == StateName.AIMING1 || game.getStateMachine().getCurrentState() == StateName.AIMING2) {
-                    unprojectedEnd.x = x + deltaX;
-                    unprojectedEnd.y = y + deltaY;
-                    //Gdx.app.log("touches", "pan " + unprojectedEnd.x + " " + unprojectedEnd.y);
-                    camera.unproject(unprojectedEnd);
-                    return true;
-                } else {
-                    camera.translate(-deltaX * camera.zoom * scrollRatio, deltaY * camera.zoom * scrollRatio);
-                    return true;
-                }
-            }
-
-            @Override
-            public boolean panStop(float x, float y, int pointer, int button) {
-                if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
-                    bullet = castle1.fire(x, y, gameLevelConfig.getVelocity(), camera, world);
-                    game.getStateMachine().transitionTo(StateName.BULLET1);
-                } else if (game.getStateMachine().getCurrentState() == StateName.AIMING2) {
-                    bullet = castle2.fire(x, y, gameLevelConfig.getVelocity(), camera, world);
-                    game.getStateMachine().transitionTo(StateName.BULLET2);
-                }
-                return true;
-            }
-
-            @Override
-            public boolean zoom(float initialDistance, float distance) {
-                if (initialDistance != lastInitialDistance) {
-                    //Gdx.app.log("camera", " " + initialDistance + " " + lastInitialDistance);
-                    lastInitialDistance = initialDistance;
-                    lastCameraZoom = camera.zoom;
-                }
-                newCameraZoom = lastCameraZoom * (initialDistance / distance);
-                if (newCameraZoom > 1) {
-                    newCameraZoom = 1;
-                } else if (newCameraZoom < 0.2) {
-                    newCameraZoom = 0.2f;
-                }
-                camera.zoom = newCameraZoom;
-                return true;
-            }
-
-            @Override
-            public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
-                //todo: implement this method rather then zoom to let user drag and zoom at the same time
-                return false;
-            }
-        }));
+        GestureDetector.GestureListener moveAndZoomListener = new MoveAndZoomListener(camera, game, aimEnd, this);
+        InputMultiplexer processorsChain = new InputMultiplexer();
+        processorsChain.addProcessor(new GestureDetector(moveAndZoomListener));
+        Gdx.input.setInputProcessor(processorsChain);
     }
 
     @Override
@@ -255,6 +163,7 @@ public class GameScreen implements Screen {
 
         renderAim();
         renderAimButton();
+        renderWeapon();
         castle1.renderHealth(game, camera);
         castle2.renderHealth(game, camera);
         wind.render(game.spriteBatch);
@@ -302,9 +211,9 @@ public class GameScreen implements Screen {
 
     private void renderAim() {
         if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
-            castle1.renderAim(unprojectedEnd.x, unprojectedEnd.y, game, camera);
+            castle1.renderAim(aimEnd.x, aimEnd.y, game, camera);
         } else if (game.getStateMachine().getCurrentState() == StateName.AIMING2) {
-            castle2.renderAim(unprojectedEnd.x, unprojectedEnd.y, game, camera);
+            castle2.renderAim(aimEnd.x, aimEnd.y, game, camera);
         }
     }
 
@@ -314,7 +223,14 @@ public class GameScreen implements Screen {
         } else if (game.getStateMachine().getCurrentState() == StateName.PLAYER2) {
             castle2.renderAimButton(game, camera);
         }
+    }
 
+    private void renderWeapon() {
+        if (game.getStateMachine().getCurrentState() == StateName.PLAYER1) {
+            castle1.renderWeapon(game, camera);
+        } else if (game.getStateMachine().getCurrentState() == StateName.PLAYER2) {
+            castle2.renderWeapon(game, camera);
+        }
     }
 
     @Override
@@ -362,6 +278,16 @@ public class GameScreen implements Screen {
             }
         }
         world.dispose();
+    }
+
+    public void fire(float x, float y) {
+        if (game.getStateMachine().getCurrentState() == StateName.AIMING1) {
+            bullet = castle1.fire(x, y, gameLevelConfig.getVelocity(), camera, world);
+            game.getStateMachine().transitionTo(StateName.BULLET1);
+        } else {
+            bullet = castle2.fire(x, y, gameLevelConfig.getVelocity(), camera, world);
+            game.getStateMachine().transitionTo(StateName.BULLET2);
+        }
     }
 
     // Transitions
