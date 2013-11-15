@@ -13,6 +13,6 @@ public class AndroidCastleGameLauncher extends AndroidApplication {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         config.useGL20 = true;
-		initialize(new CastleGame(), config);
+		initialize(CastleGame.game(), config);
 	}
 }

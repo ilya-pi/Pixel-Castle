@@ -16,18 +16,19 @@ import static com.astroberries.core.state.StateName.*;
 
 public class CastleGame extends Game {
 
-
     public SpriteBatch spriteBatch;
     public ShapeRenderer shapeRenderer;
     private GameScreen gameScreen;
-
     private StateMachine stateMachine;
 
-    public static CastleGame INSTANCE;
+    private final static CastleGame instance = new CastleGame();
 
-    public CastleGame() {
+    private CastleGame() {
         super();
-        CastleGame.INSTANCE = this;
+    }
+
+    public static CastleGame game() {
+        return instance;
     }
 
     @Override
@@ -43,7 +44,7 @@ public class CastleGame extends Game {
         Transition nilToMainMenu = new Transition() {
             @Override
             public void execute() {
-                CastleGame.INSTANCE.setScreen(MainScreen.geCreate(CastleGame.INSTANCE));
+                CastleGame.this.setScreen(new MainScreen(CastleGame.this));
             }
         };
         Transition mainMenuToChooseGame = new Transition() {
@@ -55,9 +56,9 @@ public class CastleGame extends Game {
             @Override
             public void execute() {
                 //todo: here we should set level and set number (set is a group of levels displayed on screen)
-                gameScreen = GameScreen.geCreate(CastleGame.INSTANCE, 0, 0);
-                CastleGame.INSTANCE.setScreen(gameScreen);
-                MainScreen.geCreate(CastleGame.INSTANCE).dispose();
+                gameScreen = new GameScreen(0, 0);
+                CastleGame.this.getScreen().dispose();
+                CastleGame.this.setScreen(gameScreen);
             }
         };
         Transition mainMenuToOverview = new Transition() {
@@ -179,7 +180,6 @@ public class CastleGame extends Game {
                 .to(PLAYER_2_LOST).with(player2lost)
                 .to(PLAYER_1_LOST).with(player1lost)
                 .build();
-
     }
 
     @Override
@@ -194,5 +194,9 @@ public class CastleGame extends Game {
 
     public StateMachine getStateMachine() {
         return stateMachine;
+    }
+
+    public StateName state() {
+        return stateMachine.getCurrentState();
     }
 }

@@ -40,18 +40,7 @@ public class MainScreen implements Screen {
 
     private AbstractSubScreen subScreen;
 
-    private static MainScreen instance;
-
-    public static MainScreen geCreate(CastleGame game) {
-        if (MainScreen.instance == null) {
-            synchronized (MainScreen.class) {
-                MainScreen.instance = new MainScreen(game);
-            }
-        }
-        return MainScreen.instance;
-    }
-
-    private MainScreen(final CastleGame game) {
+    public MainScreen(final CastleGame game) {
         this.game = game;
 
         this.stage = new Stage();

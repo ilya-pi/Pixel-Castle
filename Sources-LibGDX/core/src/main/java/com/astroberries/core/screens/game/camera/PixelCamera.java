@@ -1,6 +1,5 @@
 package com.astroberries.core.screens.game.camera;
 
-import com.astroberries.core.CastleGame;
 import com.astroberries.core.config.GlobalGameConfig;
 import com.astroberries.core.screens.game.GameScreen;
 import com.astroberries.core.state.StateName;
@@ -9,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import static com.astroberries.core.CastleGame.game;
 import static com.astroberries.core.config.GlobalGameConfig.DEFAULT_ANIMATION_METHOD;
 
 public class PixelCamera extends OrthographicCamera {
@@ -24,14 +24,17 @@ public class PixelCamera extends OrthographicCamera {
     private StateName stateOnFinish = null;
     private Vector2 finalCoords = null;
 
+    private final GameScreen gameScreen;
+
     public static enum CameraState {
         OVERVIEW, BULLET, CASTLE1, CASTLE2,
 
         FREE
     }
 
-    public PixelCamera() {
+    public PixelCamera(GameScreen gameScreen) {
         super();
+        this.gameScreen = gameScreen;
     }
 
     public void to(CameraState target, Float _transitionCompleteTime, StateName stateOnFinish) {
@@ -50,15 +53,15 @@ public class PixelCamera extends OrthographicCamera {
 
         switch (state) {
             case OVERVIEW:
-                this.setToOrtho(false, GameScreen.geCreate().levelWidth, GameScreen.geCreate().viewPortHeight);
+                this.setToOrtho(false, gameScreen.levelWidth, gameScreen.viewPortHeight);
                 break;
             case CASTLE1:
-                finalCoords = new Vector2(GameScreen.geCreate().castle1.getCenter().x, GameScreen.geCreate().castle1.getCenter().y);
+                finalCoords = new Vector2(gameScreen.castle1.getCenter().x, gameScreen.castle1.getCenter().y);
                 break;
             case BULLET:
                 break;
             case CASTLE2:
-                finalCoords = new Vector2(GameScreen.geCreate().castle2.getCenter().x, GameScreen.geCreate().castle2.getCenter().y);
+                finalCoords = new Vector2(gameScreen.castle2.getCenter().x, gameScreen.castle2.getCenter().y);
                 break;
             case FREE:
                 break;
@@ -70,8 +73,8 @@ public class PixelCamera extends OrthographicCamera {
         state = CameraState.FREE;
     }
 
-    public void handle() {
-        GameScreen gameScreen = GameScreen.geCreate();
+    @Override
+    public void update() {
         if (state == CameraState.CASTLE1 || state == CameraState.CASTLE2) {
             transitionTime += Gdx.graphics.getDeltaTime();
             if (transitionTime > transitionCompleteTime) {
@@ -79,7 +82,7 @@ public class PixelCamera extends OrthographicCamera {
                 position.y = finalCoords.y;
                 zoom = GlobalGameConfig.LEVEL_ZOOM;
                 if (stateOnFinish != null) {
-                    CastleGame.INSTANCE.getStateMachine().transitionTo(stateOnFinish);
+                    game().getStateMachine().transitionTo(stateOnFinish);
                 }
             } else {
                 float transitionState = transitionTime / transitionCompleteTime;
@@ -95,11 +98,10 @@ public class PixelCamera extends OrthographicCamera {
         }
 
         limits();
-        update();
+        super.update();
     }
 
     private void limits() {
-        GameScreen gameScreen = GameScreen.geCreate();
         if (this.position.y > gameScreen.levelHeight - (gameScreen.viewPortHeight / 2f) * this.zoom) {
             this.position.y = gameScreen.levelHeight - (gameScreen.viewPortHeight / 2f) * this.zoom;
         }

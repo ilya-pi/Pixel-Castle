@@ -12,6 +12,8 @@ import com.badlogic.gdx.utils.Disposable;
 
 import java.util.*;
 
+import static com.astroberries.core.CastleGame.game;
+
 public class Wind implements Disposable{
 
     public static final float SCREEN_W_BIGGER_THEN_HUD = 4;
@@ -66,11 +68,11 @@ public class Wind implements Disposable{
         update();
     }
 
-    public void render(SpriteBatch spriteBatch) {
-        spriteBatch.begin();
-        spriteBatch.draw(windHud, 0, yHud, hudWidth, hudHeight);
-        spriteBatch.draw(accessibleHuds.get(representationPosition).getArrow(), xArrow, yArrow, arrowWidth, arrowHeight);
-        spriteBatch.end();
+    public void render() {
+        game().spriteBatch.begin();
+        game().spriteBatch.draw(windHud, 0, yHud, hudWidth, hudHeight);
+        game().spriteBatch.draw(accessibleHuds.get(representationPosition).getArrow(), xArrow, yArrow, arrowWidth, arrowHeight);
+        game().spriteBatch.end();
     }
 
     public void update() {

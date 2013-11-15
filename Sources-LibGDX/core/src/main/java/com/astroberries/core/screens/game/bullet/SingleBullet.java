@@ -1,4 +1,4 @@
-package com.astroberries.core.screens.game.bullets;
+package com.astroberries.core.screens.game.bullet;
 
 import com.astroberries.core.screens.game.physics.GameUserData;
 import com.badlogic.gdx.Gdx;
@@ -10,6 +10,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 
+import static com.astroberries.core.CastleGame.game;
+
 public class SingleBullet implements Bullet {
 
     public static final float BULLET_SIZE = 2;
@@ -20,7 +22,6 @@ public class SingleBullet implements Bullet {
     private Body bulletBody;
     private BodyDef bulletBodyDef;
 
-    private final Camera camera;
     private final World world;
     private final float vX;
     private final float vY;
@@ -28,7 +29,6 @@ public class SingleBullet implements Bullet {
     private final float y;
 
     public SingleBullet(Camera camera, World world, float angle, int velocity, float x, float y) {
-        this.camera = camera;
         this.world = world;
         this.vX = velocity * MathUtils.cos(angle);
         this.vY = velocity * MathUtils.sin(angle);
@@ -46,7 +46,6 @@ public class SingleBullet implements Bullet {
         bulletBodyDef.position.set(new Vector2(unprojected.x, unprojected.y));
         bulletBody = world.createBody(bulletBodyDef);
         bulletBody.setUserData(GameUserData.createBulletData());
-        //bodies.add(bulletBody);
         PolygonShape bulletBox = new PolygonShape();
         bulletBox.setAsBox(BULLET_SIZE, BULLET_SIZE);
         Fixture bulletFixture = bulletBody.createFixture(bulletBox, BULLET_DENSITY);
@@ -62,16 +61,16 @@ public class SingleBullet implements Bullet {
     }
 
     @Override
-    public void render(ShapeRenderer shapeRenderer) {
+    public void render() {
         if (bulletBody != null) {
             Vector2 position = bulletBody.getPosition();
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.setColor(BULLET_COLOR);
-            shapeRenderer.identity();
-            shapeRenderer.translate(position.x, position.y, 0);
-            shapeRenderer.rotate(0, 0, -1, -bulletBody.getAngle() * MathUtils.radiansToDegrees);
-            shapeRenderer.rect(-BULLET_SIZE, -BULLET_SIZE, BULLET_SIZE * 2, BULLET_SIZE * 2);
-            shapeRenderer.end();
+            game().shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            game().shapeRenderer.setColor(BULLET_COLOR);
+            game().shapeRenderer.identity();
+            game().shapeRenderer.translate(position.x, position.y, 0);
+            game().shapeRenderer.rotate(0, 0, -1, -bulletBody.getAngle() * MathUtils.radiansToDegrees);
+            game().shapeRenderer.rect(-BULLET_SIZE, -BULLET_SIZE, BULLET_SIZE * 2, BULLET_SIZE * 2);
+            game().shapeRenderer.end();
         }
 /*
         for (Body bulletBody : bullets) {

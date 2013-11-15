@@ -8,6 +8,6 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 public class DesktopCastleGameLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new CastleGame(), config);
+		new LwjglApplication(CastleGame.game(), config);
 	}
 }
