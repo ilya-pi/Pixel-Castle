@@ -78,15 +78,15 @@ public class MainScreen implements Screen {
         }
         bg.setU(scrollTimer);
         bg.setU2(scrollTimer + 1);
-        game.spriteBatch.begin();
-        bg.draw(game.spriteBatch);
+        game.fixedBatch.begin();
+        bg.draw(game.fixedBatch);
         float x = 0, y = 0, width = overlay.getWidth(), height = overlay.getHeight();
-        game.spriteBatch.draw(overlay.getTexture(), new float[]{
+        game.fixedBatch.draw(overlay.getTexture(), new float[]{
                 x, y, COLOR_B, overlay.getU(), overlay.getV2(),
                 x, y + height, COLOR_A, overlay.getU(), overlay.getV(),
                 x + width, y + height, COLOR_A, overlay.getU2(), overlay.getV(),
                 x + width, y, COLOR_B, overlay.getU2(), overlay.getV2()}, 0, 20);
-        game.spriteBatch.end();
+        game.fixedBatch.end();
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();

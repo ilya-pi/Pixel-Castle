@@ -1,7 +1,5 @@
 package com.astroberries.core.screens.game.physics;
 
-import com.astroberries.core.screens.game.level.CheckRectangle;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;

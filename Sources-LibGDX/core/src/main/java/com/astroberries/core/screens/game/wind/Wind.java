@@ -8,13 +8,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Disposable;
 
 import java.util.*;
 
 import static com.astroberries.core.CastleGame.game;
 
-public class Wind implements Disposable{
+public class Wind extends Actor implements Disposable {
 
     public static final float SCREEN_W_BIGGER_THEN_HUD = 4;
     public static final int WIND_MULTIPLIER = 3;
@@ -68,11 +69,12 @@ public class Wind implements Disposable{
         update();
     }
 
-    public void render() {
-        game().spriteBatch.begin();
-        game().spriteBatch.draw(windHud, 0, yHud, hudWidth, hudHeight);
-        game().spriteBatch.draw(accessibleHuds.get(representationPosition).getArrow(), xArrow, yArrow, arrowWidth, arrowHeight);
-        game().spriteBatch.end();
+    @Override
+    public void draw(SpriteBatch batch, float parentAlpha) {
+        game().fixedBatch.begin();
+        game().fixedBatch.draw(windHud, 0, yHud, hudWidth, hudHeight);
+        game().fixedBatch.draw(accessibleHuds.get(representationPosition).getArrow(), xArrow, yArrow, arrowWidth, arrowHeight);
+        game().fixedBatch.end();
     }
 
     public void update() {

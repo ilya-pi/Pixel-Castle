@@ -11,12 +11,14 @@ import com.astroberries.core.state.StateMachine;
 import com.astroberries.core.state.StateMashineBuilder;
 import com.astroberries.core.state.StateName;
 import com.astroberries.core.state.Transition;
+import com.badlogic.gdx.math.Matrix4;
 
 import static com.astroberries.core.state.StateName.*;
 
 public class CastleGame extends Game {
 
-    public SpriteBatch spriteBatch;
+
+    public SpriteBatch fixedBatch;
     public ShapeRenderer shapeRenderer;
     private GameScreen gameScreen;
     private StateMachine stateMachine;
@@ -33,7 +35,9 @@ public class CastleGame extends Game {
 
     @Override
     public void create() {
-        spriteBatch = new SpriteBatch();
+        fixedBatch = new SpriteBatch();
+        final Matrix4 fixedPosition = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        fixedBatch.setProjectionMatrix(fixedPosition);
         shapeRenderer = new ShapeRenderer();
         Texture.setEnforcePotImages(false);
         this.stateMachine = initStateMachine();
@@ -189,7 +193,7 @@ public class CastleGame extends Game {
 
     @Override
     public void dispose() {
-        spriteBatch.dispose();
+        fixedBatch.dispose();
     }
 
     public StateMachine getStateMachine() {

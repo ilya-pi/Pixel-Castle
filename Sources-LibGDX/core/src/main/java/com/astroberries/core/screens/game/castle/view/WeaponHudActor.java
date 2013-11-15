@@ -45,18 +45,18 @@ public class WeaponHudActor extends Actor {
 
     @Override
     public void draw(SpriteBatch batch, float parentAlpha) {
-/*        game().spriteBatch.begin();
+/*        game().fixedBatch.begin();
         topLeftTouch.x = projected.x;
         topLeftTouch.y = projected.y;
         bottomRightTouch.x = projected.x + activeWeapon.getWidth();
         bottomRightTouch.y = projected.y + activeWeapon.getHeight();
         if (touched) {
             //Gdx.app.log("weapon", "touched");
-            game().spriteBatch.draw(activeWeaponPressed, projected.x, projected.y, activeWeapon.getWidth(), activeWeapon.getHeight());
+            game().fixedBatch.draw(activeWeaponPressed, projected.x, projected.y, activeWeapon.getWidth(), activeWeapon.getHeight());
         } else {
             //Gdx.app.log("weapon", "not touched");
-            game().spriteBatch.draw(activeWeapon, projected.x, projected.y, activeWeapon.getWidth(), activeWeapon.getHeight());
+            game().fixedBatch.draw(activeWeapon, projected.x, projected.y, activeWeapon.getWidth(), activeWeapon.getHeight());
         }
-        game().spriteBatch.end();*/
+        game().fixedBatch.end();*/
     }
 }

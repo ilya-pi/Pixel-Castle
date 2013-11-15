@@ -1,17 +1,18 @@
 package com.astroberries.core.screens.game;
 
-
 import com.astroberries.core.config.GameConfig;
 import com.astroberries.core.config.GameLevel;
 import com.astroberries.core.config.GlobalGameConfig;
 import com.astroberries.core.screens.game.ai.AI;
 import com.astroberries.core.screens.game.ai.AIFactory;
+import com.astroberries.core.screens.game.background.BackgroundActor;
 import com.astroberries.core.screens.game.bullet.Bullet;
 import com.astroberries.core.screens.game.camera.PixelCamera;
 import com.astroberries.core.screens.game.castle.Castle;
 import com.astroberries.core.screens.game.castle.CastleImpl;
-import com.astroberries.core.screens.game.level.CheckRectangle;
+import com.astroberries.core.screens.game.debug.DebugActor;
 import com.astroberries.core.screens.game.physics.BulletContactListener;
+import com.astroberries.core.screens.game.physics.CheckRectangle;
 import com.astroberries.core.screens.game.physics.GameUserData;
 import com.astroberries.core.screens.game.physics.PhysicsManager;
 import com.astroberries.core.screens.game.touch.MoveAndZoomListener;
@@ -23,9 +24,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -46,16 +45,16 @@ public class GameScreen implements Screen {
     private final Stage stage;
     private final World world;
 
-    public final PixelCamera camera;
+    private final PixelCamera camera;
     public final Castle castle1;
     public final Castle castle2;
-    public final Wind wind;
-    public final AI ai;
+    private final Wind wind;
+    private final AI ai;
 
-    private BitmapFont font = new BitmapFont(Gdx.files.internal("arial-15.fnt"), false);
+
 
     private Box2DDebugRenderer debugRenderer;
-    private final Matrix4 fixedPosition = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
 
     public int levelHeight;
     public int levelWidth;
@@ -63,7 +62,7 @@ public class GameScreen implements Screen {
     public float viewPortHeight;
 
     //disposable
-    private Texture level;
+    private final Texture level;
     private final Texture background;
     private final Texture sky;
 
@@ -77,17 +76,13 @@ public class GameScreen implements Screen {
 
     //todo: split init to different functions
     public GameScreen(int setNumber, int levelNumber) {
-
         camera = new PixelCamera(this);
         world = new World(new Vector2(0, GlobalGameConfig.GRAVITY), true);
 
-
-        debugRenderer = new Box2DDebugRenderer();
-
         Json json = new Json();
         GameConfig config = json.fromJson(GameConfig.class, Gdx.files.internal("configuration.json"));
-
         gameLevelConfig = config.getSets().get(setNumber).getLevels().get(levelNumber);
+
         ai = new AIFactory().getAi(gameLevelConfig.getAiVariant());
         wind = new Wind(world, gameLevelConfig);
 
@@ -99,9 +94,6 @@ public class GameScreen implements Screen {
         castle1 = new CastleImpl(levelHeight, CastleImpl.Location.LEFT, gameLevelConfig, world);
         castle2 = new CastleImpl(levelHeight, CastleImpl.Location.RIGHT, gameLevelConfig, world);
 
-        stage = new Stage();
-        stage.addActor(castle1.getView());
-        stage.addActor(castle2.getView());
 
         levelPixmap.drawPixmap(castle1.getCastlePixmap(), gameLevelConfig.getCastle1().getX(), gameLevelConfig.getCastle1().getY() - castle1.getCastlePixmap().getHeight());
         levelPixmap.drawPixmap(castle2.getCastlePixmap(), gameLevelConfig.getCastle2().getX(), gameLevelConfig.getCastle2().getY() - castle2.getCastlePixmap().getHeight());
@@ -122,10 +114,19 @@ public class GameScreen implements Screen {
 
         moveAndZoomListener = new MoveAndZoomListener(camera);
 
+        stage = new Stage();
+        stage.addActor(new BackgroundActor(level, background, sky, camera, levelWidth));
+        stage.addActor(castle1.getView());
+        stage.addActor(castle2.getView());
+        stage.addActor(wind);
+        stage.addActor(new DebugActor()); //todo: delete
+
         InputMultiplexer processorsChain = new InputMultiplexer();
         processorsChain.addProcessor(stage);
         processorsChain.addProcessor(new GestureDetector(moveAndZoomListener));
         Gdx.input.setInputProcessor(processorsChain);
+
+        debugRenderer = new Box2DDebugRenderer();
     }
 
     @Override
@@ -134,28 +135,13 @@ public class GameScreen implements Screen {
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
         camera.update();
-        game().spriteBatch.begin();
-
-        game().spriteBatch.setProjectionMatrix(camera.combined);
-        game().spriteBatch.draw(sky, camera.position.x * 0.6f - levelWidth / 2f * 0.6f, 0);
-        game().spriteBatch.draw(background, camera.position.x * 0.4f - levelWidth / 2f * 0.4f, 0);
-        game().spriteBatch.draw(level, 0, 0);
-
-        game().spriteBatch.setProjectionMatrix(fixedPosition);
-        font.draw(game().spriteBatch, "fps: " + Gdx.graphics.getFramesPerSecond(), 20, 30);
-
-        game().spriteBatch.end();
 
         stage.act(delta);
         stage.draw();
 
-        wind.render();
+        world.step(1 / 30f, 6, 2); //todo: play with this values for better performance
 
-        world.step(1 / 30f, 6, 2); //todo: play with this values for performance
-
-
-        game().shapeRenderer.setProjectionMatrix(camera.combined); //todo: is it necessary?
-
+        game().shapeRenderer.setProjectionMatrix(camera.combined);
         renderOrDisposeBullet();
 
         physicsManager.sweepDeadBodies(); //todo: sweep bodies should be only after this mess with bullet which is bad. Refactor.
