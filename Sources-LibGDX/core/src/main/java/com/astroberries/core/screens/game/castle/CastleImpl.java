@@ -81,7 +81,7 @@ public class CastleImpl implements Castle, Disposable {
         float centerY = levelHeight - (castleConfig.getY() - castlePixmap.getHeight() / 2);
         center = new Vector2(centerX, centerY);
 
-        view = new CastleView(this, levelConfig.getVelocity(), world.getGravity());
+        view = new CastleView(this, levelConfig.getVelocity(), world);
     }
 
     @Override

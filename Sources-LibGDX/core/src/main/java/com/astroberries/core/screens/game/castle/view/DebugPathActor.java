@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import static com.astroberries.core.CastleGame.game;
@@ -18,20 +19,20 @@ public class DebugPathActor extends Actor {
     private final StateName aiming;
     private final StateName bullet;
     private final float bulletV;
-    private final Vector2 gravity;
+    private final World world;
 
-    public DebugPathActor(Vector2 aimEnd, Castle castle, float bulletV, Vector2 gravity) {
+    public DebugPathActor(Vector2 aimEnd, Castle castle, float bulletV, World world) {
         this.bulletV = bulletV;
-        this.gravity = gravity;
         this.aimEnd = aimEnd;
         this.castle = castle;
+        this.world = world;
         aiming = castle.getAiming();
         bullet = castle.getBullet();
     }
 
     @Override
     public void draw(SpriteBatch batch, float parentAlpha) {
-        if (game().state() == aiming && game().state() == bullet) {
+        if (game().state() == aiming || game().state() == bullet) {
             batch.end();
 
             game().shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
@@ -41,8 +42,8 @@ public class DebugPathActor extends Actor {
 
             float vX = bulletV * MathUtils.cos(angle);
             float vY = bulletV * MathUtils.sin(angle);
-            float aX = gravity.x;
-            float aY = gravity.y;
+            float aX = world.getGravity().x;
+            float aY = world.getGravity().y;
 
             game().shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             game().shapeRenderer.setColor(new Color(1, 0, 0, 0));
