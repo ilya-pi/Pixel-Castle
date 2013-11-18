@@ -12,6 +12,15 @@ public class GameLevel {
     private GameCastle castle2;
     private List<String> wind;
     private String aiVariant;
+    private int[] bullets;
+
+    public int[] getBullets() {
+        return bullets;
+    }
+
+    public void setBullets(int[] bullets) {
+        this.bullets = bullets;
+    }
 
     public int getVelocity() {
         return velocity;

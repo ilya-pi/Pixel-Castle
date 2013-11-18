@@ -28,7 +28,7 @@ public class SingleBullet implements Bullet {
     private final float x;
     private final float y;
 
-    public SingleBullet(Camera camera, World world, float angle, int velocity, float x, float y) {
+    public SingleBullet(World world, float angle, int velocity, float x, float y) {
         this.world = world;
         this.vX = velocity * MathUtils.cos(angle);
         this.vY = velocity * MathUtils.sin(angle);

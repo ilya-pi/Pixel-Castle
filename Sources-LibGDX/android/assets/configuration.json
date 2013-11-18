@@ -9,6 +9,7 @@
           "path": "000",
           "number": 1,
           "velocity": 60,
+          "bullets": [1, 2, 3],
           "wind": ["-5","-4","-3","-2","-1","0","1","2","3","4","5"],
           "aiVariant": "oneDirection",
           "castle1": {
@@ -27,6 +28,7 @@
           "path": "002",
           "number": 2,
           "velocity": 60,
+          "bullets": [1, 3],
           "wind": ["*","*","*","-2","-1","0","1","2","*","*","*"],
           "aiVariant": "oneDirection",
           "castle1": {

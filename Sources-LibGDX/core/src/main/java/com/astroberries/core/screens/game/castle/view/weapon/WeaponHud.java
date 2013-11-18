@@ -1,41 +1,38 @@
 package com.astroberries.core.screens.game.castle.view.weapon;
 
+import com.astroberries.core.config.GameLevel;
 import com.astroberries.core.screens.game.castle.Castle;
-import com.astroberries.core.screens.game.castle.CastleImpl;
 import com.astroberries.core.state.StateName;
-import com.astroberries.core.state.internal.GameState;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import static com.astroberries.core.CastleGame.game;
 
 public class WeaponHud extends Group {
 
+    public static final String WEAPON_PREFIX = "weapon";
+    public static final int BUTTON_OFFSET = 12;
     private final StateName player;
     private boolean folded = true;
     private int active = 0;
-    private WeaponButton[] buttons = new WeaponButton[3];
+    private final WeaponButton[] buttons;
 
-    public WeaponHud(Castle castle) {
+    public WeaponHud(Castle castle, GameLevel level) {
         player = castle.getPlayer();
         setPosition(castle.getBiggestSide(), castle.getBiggestSide() / 2);
-        buttons[0] = new WeaponButton("weapon1", new Vector2(0, 0), this, 0);
-        buttons[1] = new WeaponButton("weapon2", new Vector2(12, 0), this, 1);
-        buttons[2] = new WeaponButton("weapon3", new Vector2(24, 0), this, 2);
+        int[] bullets = level.getBullets();
+        buttons = new WeaponButton[bullets.length];
+        for (int i = 0; i < bullets.length; i++) {
+            buttons[i] = new WeaponButton(WEAPON_PREFIX + bullets[i], new Vector2(i * BUTTON_OFFSET, 0), this, i);
+            buttons[i].setState(WeaponButton.State.INVISIBLE);
+            buttons[i].setTouchable(Touchable.disabled);
+            addActor(buttons[i]);
+
+        }
         buttons[0].setState(WeaponButton.State.VISIBLE);
         buttons[0].setTouchable(Touchable.enabled);
-        buttons[1].setState(WeaponButton.State.INVISIBLE);
-        buttons[1].setTouchable(Touchable.disabled);
-        buttons[2].setState(WeaponButton.State.INVISIBLE);
-        buttons[2].setTouchable(Touchable.disabled);
-        for (WeaponButton button : buttons) {
-            addActor(button);
-        }
     }
 
     @Override

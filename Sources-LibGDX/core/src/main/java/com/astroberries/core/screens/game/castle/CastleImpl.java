@@ -81,7 +81,7 @@ public class CastleImpl implements Castle, Disposable {
         float centerY = levelHeight - (castleConfig.getY() - castlePixmap.getHeight() / 2);
         center = new Vector2(centerX, centerY);
 
-        view = new CastleView(this, levelConfig.getVelocity(), world);
+        view = new CastleView(this, levelConfig, world);
     }
 
     @Override
@@ -147,14 +147,14 @@ public class CastleImpl implements Castle, Disposable {
 
     @Override
     public Bullet fire(int velocity, PixelCamera camera, World world) {
-        Bullet bullet = new SingleBullet(camera, world, angle, velocity, cannonAbsolute.x, cannonAbsolute.y);
+        Bullet bullet = new SingleBullet(world, angle, velocity, cannonAbsolute.x, cannonAbsolute.y);
         bullet.fire();
         return bullet;
     }
 
     @Override
     public Bullet fireAi(float aiAngle, int velocity, PixelCamera camera, World world) {
-        Bullet bullet = new SingleBullet(camera, world, aiAngle, velocity, cannonAbsolute.x, cannonAbsolute.y);
+        Bullet bullet = new SingleBullet(world, aiAngle, velocity, cannonAbsolute.x, cannonAbsolute.y);
         bullet.fire();
         return bullet;
     }
