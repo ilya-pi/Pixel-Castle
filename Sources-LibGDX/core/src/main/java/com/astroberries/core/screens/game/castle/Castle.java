@@ -1,7 +1,9 @@
 package com.astroberries.core.screens.game.castle;
 
+import com.astroberries.core.screens.game.ai.AIResp;
 import com.astroberries.core.screens.game.bullet.Bullet;
 import com.astroberries.core.screens.game.camera.PixelCamera;
+import com.astroberries.core.screens.game.physics.BulletContactListener;
 import com.astroberries.core.screens.game.physics.PhysicsManager;
 import com.astroberries.core.state.StateName;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -26,7 +28,8 @@ public interface Castle {
     public void recalculateHealth(PhysicsManager physicsManager);
     public Pixmap getCastlePixmap();
     public Vector2 getCenter();
-    public Bullet fire(int velocity, PixelCamera camera, World world);
-    public Bullet fireAi(float aiAngle, int velocity, PixelCamera camera, World world);
+    public Bullet fire(int velocity, World world, BulletContactListener listener);
+    public Bullet fireAi(int velocity, World world, BulletContactListener listener, AIResp resp);
+    public int getWeaponVariant();
 
 }

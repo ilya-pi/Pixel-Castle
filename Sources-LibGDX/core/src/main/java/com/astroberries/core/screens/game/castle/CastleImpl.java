@@ -2,10 +2,13 @@ package com.astroberries.core.screens.game.castle;
 
 import com.astroberries.core.config.GameCastle;
 import com.astroberries.core.config.GameLevel;
+import com.astroberries.core.screens.game.ai.AIResp;
 import com.astroberries.core.screens.game.bullet.Bullet;
+import com.astroberries.core.screens.game.bullet.BulletFactory;
 import com.astroberries.core.screens.game.bullet.SingleBullet;
 import com.astroberries.core.screens.game.camera.PixelCamera;
 import com.astroberries.core.screens.game.castle.view.CastleView;
+import com.astroberries.core.screens.game.physics.BulletContactListener;
 import com.astroberries.core.screens.game.physics.PhysicsManager;
 import com.astroberries.core.state.StateName;
 import com.badlogic.gdx.Gdx;
@@ -13,7 +16,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.Disposable;
 
 public class CastleImpl implements Castle, Disposable {
@@ -33,7 +35,7 @@ public class CastleImpl implements Castle, Disposable {
 
     private float angle;
 
-    private final Group view;
+    private final CastleView view;
 
     private final Pixmap castlePixmap;
     private final Location location;
@@ -146,17 +148,23 @@ public class CastleImpl implements Castle, Disposable {
     }
 
     @Override
-    public Bullet fire(int velocity, PixelCamera camera, World world) {
-        Bullet bullet = new SingleBullet(world, angle, velocity, cannonAbsolute.x, cannonAbsolute.y);
+    public Bullet fire(int velocity, World world, BulletContactListener listener) {
+        Bullet bullet = BulletFactory.createBullet(listener, world, angle, velocity, new Vector2(cannonAbsolute.x, cannonAbsolute.y), getWeaponVariant());
         bullet.fire();
         return bullet;
     }
 
     @Override
-    public Bullet fireAi(float aiAngle, int velocity, PixelCamera camera, World world) {
-        Bullet bullet = new SingleBullet(world, aiAngle, velocity, cannonAbsolute.x, cannonAbsolute.y);
+    public Bullet fireAi(int velocity, World world, BulletContactListener listener, AIResp resp) {
+        Bullet bullet = BulletFactory.createBullet(listener, world, resp.getAngle(), velocity, new Vector2(cannonAbsolute.x, cannonAbsolute.y), resp.getWeaponVariant());
         bullet.fire();
         return bullet;
+    }
+
+    @Override
+    public int getWeaponVariant() {
+        return view.getBulletVariant();
+
     }
 
 }

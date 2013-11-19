@@ -5,6 +5,7 @@ import com.astroberries.core.config.GameLevel;
 import com.astroberries.core.config.GlobalGameConfig;
 import com.astroberries.core.screens.game.ai.AI;
 import com.astroberries.core.screens.game.ai.AIFactory;
+import com.astroberries.core.screens.game.ai.AIResp;
 import com.astroberries.core.screens.game.background.BackgroundActor;
 import com.astroberries.core.screens.game.bullet.Bullet;
 import com.astroberries.core.screens.game.camera.PixelCamera;
@@ -66,12 +67,11 @@ public class GameScreen implements Screen {
     private final Texture background;
     private final Texture sky;
 
-    private final Pixmap bulletPixmap;
     public Bullet bullet;
-
 
     private final GameLevel gameLevelConfig;
     private final PhysicsManager physicsManager;
+    private final BulletContactListener bulletContactListener;
 
 
     //todo: split init to different functions
@@ -106,8 +106,8 @@ public class GameScreen implements Screen {
         physicsManager.addRectToCheckPhysicsObjectsCreation(new CheckRectangle(0, 0, levelWidth, levelHeight));
         physicsManager.createPhysicsObjects();
 
-        bulletPixmap = new Pixmap(Gdx.files.internal("bullets/11.png"));
-        world.setContactListener(new BulletContactListener(physicsManager, bulletPixmap)); //todo: set bulletPixmap to bullet
+        bulletContactListener = new BulletContactListener(physicsManager);
+        world.setContactListener(bulletContactListener);
 
         castle1.recalculateHealth(physicsManager);
         castle2.recalculateHealth(physicsManager);
@@ -244,7 +244,7 @@ public class GameScreen implements Screen {
     }
 
     public void aiming1ToBullet1() {
-        bullet = castle1.fire(gameLevelConfig.getVelocity(), camera, world);
+        bullet = castle1.fire(gameLevelConfig.getVelocity(), world, bulletContactListener);
         camera.to(PixelCamera.CameraState.BULLET, null, null);
     }
 
@@ -268,7 +268,7 @@ public class GameScreen implements Screen {
     }
 
     public void aiAimAndShoot() {
-        bullet = castle2.fireAi(ai.nextAngle(), gameLevelConfig.getVelocity(), camera, world);
+        bullet = castle2.fireAi(gameLevelConfig.getVelocity(), world, bulletContactListener, ai.nextShoot(gameLevelConfig));
         game().getStateMachine().transitionTo(StateName.BULLET2);
     }
 

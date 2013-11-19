@@ -1,18 +1,20 @@
 package com.astroberries.core.screens.game.ai;
 
+import com.astroberries.core.config.GameLevel;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class AIFactory {
-    private Map<String, AI> variants = new HashMap<>();
 
+    private Map<String, AI> types = new HashMap<>();
 
     public AIFactory() {
         AI oneDirection = new OneDirection();
-        variants.put(oneDirection.getVariant(), oneDirection);
+        types.put(oneDirection.getType(), oneDirection);
     }
 
-    public AI getAi(String variant) {
-        return variants.get(variant).getNew();
+    public AI getAi(String type) {
+        return types.get(type).getNew();
     }
 }

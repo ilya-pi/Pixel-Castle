@@ -1,5 +1,6 @@
 package com.astroberries.core.screens.game.castle.view;
 
+import com.astroberries.core.screens.game.bullet.BigBullet;
 import com.astroberries.core.screens.game.castle.Castle;
 import com.astroberries.core.state.StateName;
 import com.badlogic.gdx.graphics.Color;
@@ -42,6 +43,10 @@ public class DebugPathActor extends Actor {
 
             float vX = bulletV * MathUtils.cos(angle);
             float vY = bulletV * MathUtils.sin(angle);
+            if (castle.getWeaponVariant() == 1) {
+                vX *= BigBullet.VELOCITY_FACTOR;
+                vY *= BigBullet.VELOCITY_FACTOR;
+            }
             float aX = world.getGravity().x;
             float aY = world.getGravity().y;
 

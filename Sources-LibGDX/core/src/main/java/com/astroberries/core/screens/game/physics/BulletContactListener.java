@@ -7,11 +7,14 @@ import com.badlogic.gdx.physics.box2d.*;
 public class BulletContactListener implements ContactListener {
 
     private final PhysicsManager physicsManager;
-    private final Pixmap bulletPixmap;
+    private Pixmap bulletPixmap;
 
-    public BulletContactListener(PhysicsManager physicsManager, Pixmap bulletPixmap) {
-        this.bulletPixmap = bulletPixmap;
+    public BulletContactListener(PhysicsManager physicsManager) {
         this.physicsManager = physicsManager;
+    }
+
+    public void setBulletPixmap(Pixmap bulletPixmap) {
+        this.bulletPixmap = bulletPixmap;
     }
 
     @Override

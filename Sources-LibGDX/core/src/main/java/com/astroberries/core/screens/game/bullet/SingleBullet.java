@@ -2,7 +2,6 @@ package com.astroberries.core.screens.game.bullet;
 
 import com.astroberries.core.screens.game.physics.GameUserData;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -12,12 +11,13 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import static com.astroberries.core.CastleGame.game;
 
-public class SingleBullet implements Bullet {
+public abstract class SingleBullet implements Bullet {
 
-    public static final float BULLET_SIZE = 2;
-    public static final float BULLET_DENSITY = 0.3f;
+    public final float bulletSize;
+    public final float velocityFactor;
+
+    public static final float BULLET_DENSITY = 0.9f;
     public static final Color BULLET_COLOR = new Color(1, 1, 1, 1);
-
 
     private Body bulletBody;
     private BodyDef bulletBodyDef;
@@ -28,12 +28,14 @@ public class SingleBullet implements Bullet {
     private final float x;
     private final float y;
 
-    public SingleBullet(World world, float angle, int velocity, float x, float y) {
+    public SingleBullet(World world, float angle, int velocity, Vector2 coordinates, float bulletSize, float velocityFactor) {
         this.world = world;
-        this.vX = velocity * MathUtils.cos(angle);
-        this.vY = velocity * MathUtils.sin(angle);
-        this.x = x;
-        this.y = y;
+        this.vX = velocity * MathUtils.cos(angle) * velocityFactor;
+        this.vY = velocity * MathUtils.sin(angle) * velocityFactor;
+        this.x = coordinates.x;
+        this.y = coordinates.y;
+        this.bulletSize = bulletSize;
+        this.velocityFactor = velocityFactor;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class SingleBullet implements Bullet {
         bulletBody = world.createBody(bulletBodyDef);
         bulletBody.setUserData(GameUserData.createBulletData());
         PolygonShape bulletBox = new PolygonShape();
-        bulletBox.setAsBox(BULLET_SIZE, BULLET_SIZE);
+        bulletBox.setAsBox(bulletSize, bulletSize);
         Fixture bulletFixture = bulletBody.createFixture(bulletBox, BULLET_DENSITY);
         bulletFixture.setSensor(true);
         bulletBox.dispose();
@@ -69,7 +71,7 @@ public class SingleBullet implements Bullet {
             game().shapeRenderer.identity();
             game().shapeRenderer.translate(position.x, position.y, 0);
             game().shapeRenderer.rotate(0, 0, -1, -bulletBody.getAngle() * MathUtils.radiansToDegrees);
-            game().shapeRenderer.rect(-BULLET_SIZE, -BULLET_SIZE, BULLET_SIZE * 2, BULLET_SIZE * 2);
+            game().shapeRenderer.rect(-bulletSize, -bulletSize, bulletSize * 2, bulletSize * 2);
             game().shapeRenderer.end();
         }
 /*
@@ -80,7 +82,7 @@ public class SingleBullet implements Bullet {
                 shapeRenderer.identity();
                 shapeRenderer.translate(position.x, position.y, 0);
                 shapeRenderer.rotate(0, 0, -1, -bulletBody.getAngle() * MathUtils.radiansToDegrees);
-                shapeRenderer.rect(-BULLET_SIZE, -BULLET_SIZE, BULLET_SIZE * 2, BULLET_SIZE * 2);
+                shapeRenderer.rect(-bulletSize, -bulletSize, bulletSize * 2, bulletSize * 2);
                 shapeRenderer.end();
             }
         }

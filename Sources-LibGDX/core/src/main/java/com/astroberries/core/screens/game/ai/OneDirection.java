@@ -1,5 +1,6 @@
 package com.astroberries.core.screens.game.ai;
 
+import com.astroberries.core.config.GameLevel;
 import com.badlogic.gdx.math.MathUtils;
 
 public class OneDirection implements AI {
@@ -10,12 +11,12 @@ public class OneDirection implements AI {
     }
 
     @Override
-    public String getVariant() {
+    public String getType() {
         return "oneDirection";
     }
 
     @Override
-    public float nextAngle() {
-        return 135 * MathUtils.degreesToRadians;
+    public AIResp nextShoot(GameLevel level) {
+        return new AIResp(level.getBullets()[0], 135 * MathUtils.degreesToRadians);
     }
 }
