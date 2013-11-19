@@ -28,8 +28,8 @@ public interface Castle {
     public void recalculateHealth(PhysicsManager physicsManager);
     public Pixmap getCastlePixmap();
     public Vector2 getCenter();
-    public Bullet fire(int velocity, World world, BulletContactListener listener);
-    public Bullet fireAi(int velocity, World world, BulletContactListener listener, AIResp resp);
+    public Bullet fire(int velocity, World world, float levelWidth, BulletContactListener listener);
+    public Bullet fireAi(int velocity, World world, float levelWidth, BulletContactListener listener, AIResp resp);
     public int getWeaponVariant();
 
 }

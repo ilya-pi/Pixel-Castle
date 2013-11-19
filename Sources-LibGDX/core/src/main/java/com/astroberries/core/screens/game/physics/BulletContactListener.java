@@ -1,6 +1,7 @@
 package com.astroberries.core.screens.game.physics;
 
 import com.astroberries.core.screens.game.GameScreen;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.physics.box2d.*;
 
@@ -26,7 +27,7 @@ public class BulletContactListener implements ContactListener {
         GameUserData d1 = (GameUserData) b1.getUserData();
         GameUserData d2 = (GameUserData) b2.getUserData();
         if (d1 != null && d2 != null && !d1.isFlaggedForDelete && !d2.isFlaggedForDelete) {
-//            Gdx.app.log("contact", "contact!!");
+            Gdx.app.log("contact", "contact!!");
             if (d1.type == GameUserData.Type.BRICK && d2.type == GameUserData.Type.BULLET) {
                 //1 - brick
                 //2 - bullet

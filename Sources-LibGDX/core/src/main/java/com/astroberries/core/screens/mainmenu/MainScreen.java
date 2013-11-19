@@ -46,6 +46,8 @@ public class MainScreen implements Screen {
         this.stage = new Stage();
         Gdx.input.setInputProcessor(stage);
 
+        //todo: rewrite to actor and action
+        //addAction(forever(sequence(moveTo(0, 0, 1f), moveTo(width, 0))));
         Texture bgTexture = new Texture(Gdx.files.internal("main/castle_splash.png"));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
         bg = new Sprite(bgTexture, 0, 0, bgTexture.getWidth(), bgTexture.getHeight());

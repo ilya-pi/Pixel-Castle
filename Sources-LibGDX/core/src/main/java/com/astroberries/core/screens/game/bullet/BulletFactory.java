@@ -16,17 +16,17 @@ public class BulletFactory {
         pixmaps[2] = new Pixmap(Gdx.files.internal("bullets/7.png"));
     }
 
-    public static Bullet createBullet(BulletContactListener listener, World world, float angle, int velocity, Vector2 coordinates, int num) {
+    public static Bullet createBullet(BulletContactListener listener, World world, float levelWidth, float angle, int velocity, Vector2 coordinates, int num) {
         switch (num) {
             case 0:
                 listener.setBulletPixmap(pixmaps[0]);
-                return new SmallBullet(world, angle, velocity, coordinates);
+                return new SmallBullet(world, levelWidth, angle, velocity, coordinates);
             case 1:
                 listener.setBulletPixmap(pixmaps[1]);
-                return new BigBullet(world, angle, velocity, coordinates);
+                return new BigBullet(world, levelWidth, angle, velocity, coordinates);
             case 2:
                 listener.setBulletPixmap(pixmaps[2]);
-                return null; //todo implement multiple bullets
+                return new MultipleBullet(world, levelWidth, angle, velocity, coordinates);
         }
         throw new IllegalAccessError("no such bullet");
     }

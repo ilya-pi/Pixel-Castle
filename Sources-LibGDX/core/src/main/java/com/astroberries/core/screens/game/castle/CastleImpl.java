@@ -5,8 +5,6 @@ import com.astroberries.core.config.GameLevel;
 import com.astroberries.core.screens.game.ai.AIResp;
 import com.astroberries.core.screens.game.bullet.Bullet;
 import com.astroberries.core.screens.game.bullet.BulletFactory;
-import com.astroberries.core.screens.game.bullet.SingleBullet;
-import com.astroberries.core.screens.game.camera.PixelCamera;
 import com.astroberries.core.screens.game.castle.view.CastleView;
 import com.astroberries.core.screens.game.physics.BulletContactListener;
 import com.astroberries.core.screens.game.physics.PhysicsManager;
@@ -148,15 +146,15 @@ public class CastleImpl implements Castle, Disposable {
     }
 
     @Override
-    public Bullet fire(int velocity, World world, BulletContactListener listener) {
-        Bullet bullet = BulletFactory.createBullet(listener, world, angle, velocity, new Vector2(cannonAbsolute.x, cannonAbsolute.y), getWeaponVariant());
+    public Bullet fire(int velocity, World world, float levelWidth, BulletContactListener listener) {
+        Bullet bullet = BulletFactory.createBullet(listener, world, levelWidth, angle, velocity, new Vector2(cannonAbsolute.x, cannonAbsolute.y), getWeaponVariant());
         bullet.fire();
         return bullet;
     }
 
     @Override
-    public Bullet fireAi(int velocity, World world, BulletContactListener listener, AIResp resp) {
-        Bullet bullet = BulletFactory.createBullet(listener, world, resp.getAngle(), velocity, new Vector2(cannonAbsolute.x, cannonAbsolute.y), resp.getWeaponVariant());
+    public Bullet fireAi(int velocity, World world, float levelWidth, BulletContactListener listener, AIResp resp) {
+        Bullet bullet = BulletFactory.createBullet(listener, world, levelWidth, resp.getAngle(), velocity, new Vector2(cannonAbsolute.x, cannonAbsolute.y), resp.getWeaponVariant());
         bullet.fire();
         return bullet;
     }

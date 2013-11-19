@@ -52,10 +52,7 @@ public class GameScreen implements Screen {
     private final Wind wind;
     private final AI ai;
 
-
-
     private Box2DDebugRenderer debugRenderer;
-
 
     public int levelHeight;
     public int levelWidth;
@@ -153,7 +150,7 @@ public class GameScreen implements Screen {
     private void renderOrDisposeBullet() {
         if (game().state() == StateName.BULLET1 || game().state() == StateName.BULLET2) {
             if (bullet != null) {
-                if (!bullet.isAlive() || bullet.getCoordinates().x < 0 || bullet.getCoordinates().x > levelWidth || bullet.getCoordinates().y < 0) {
+                if (!bullet.isAlive()) {
                     Gdx.app.log("bullet:", "destroy bullet!!");
                     bullet.dispose();
                     bullet = null;
@@ -244,7 +241,7 @@ public class GameScreen implements Screen {
     }
 
     public void aiming1ToBullet1() {
-        bullet = castle1.fire(gameLevelConfig.getVelocity(), world, bulletContactListener);
+        bullet = castle1.fire(gameLevelConfig.getVelocity(), world, levelWidth, bulletContactListener);
         camera.to(PixelCamera.CameraState.BULLET, null, null);
     }
 
@@ -268,7 +265,7 @@ public class GameScreen implements Screen {
     }
 
     public void aiAimAndShoot() {
-        bullet = castle2.fireAi(gameLevelConfig.getVelocity(), world, bulletContactListener, ai.nextShoot(gameLevelConfig));
+        bullet = castle2.fireAi(gameLevelConfig.getVelocity(), world, levelWidth, bulletContactListener, ai.nextShoot(gameLevelConfig));
         game().getStateMachine().transitionTo(StateName.BULLET2);
     }
 
