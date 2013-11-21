@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class HealthActor extends Actor {
 
-    private final BitmapFont font = new BitmapFont(Gdx.files.internal("arial-15.fnt"), false);
+    private final BitmapFont font = new BitmapFont(Gdx.files.internal("scene2d/ui_skin/default_font/default.fnt"), false);
 
     private final Castle castle;
 

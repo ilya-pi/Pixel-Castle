@@ -5,6 +5,7 @@ import com.astroberries.core.screens.game.GameScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.astroberries.core.state.StateMachine;
@@ -12,11 +13,14 @@ import com.astroberries.core.state.StateMashineBuilder;
 import com.astroberries.core.state.StateName;
 import com.astroberries.core.state.Transition;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import static com.astroberries.core.state.StateName.*;
 
 public class CastleGame extends Game {
 
+    private Skin skin;
+    private float ratio;
 
     public SpriteBatch fixedBatch;
     public ShapeRenderer shapeRenderer;
@@ -35,6 +39,13 @@ public class CastleGame extends Game {
 
     @Override
     public void create() {
+        skin = new Skin(Gdx.files.internal("scene2d/ui_skin/uiskin.json"));
+        ratio =  Gdx.graphics.getHeight() / (float) 720;
+        BitmapFont buttonFont = skin.getFont("button-font");
+        buttonFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        buttonFont.setScale(ratio);
+
+
         fixedBatch = new SpriteBatch();
         final Matrix4 fixedPosition = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         fixedBatch.setProjectionMatrix(fixedPosition);
@@ -48,7 +59,7 @@ public class CastleGame extends Game {
         Transition nilToMainMenu = new Transition() {
             @Override
             public void execute() {
-                CastleGame.this.setScreen(new MainScreen(CastleGame.this));
+                CastleGame.this.setScreen(new MainScreen());
             }
         };
         Transition mainMenuToChooseGame = new Transition() {
@@ -194,6 +205,7 @@ public class CastleGame extends Game {
     @Override
     public void dispose() {
         fixedBatch.dispose();
+        skin.dispose();
     }
 
     public StateMachine getStateMachine() {
@@ -202,5 +214,13 @@ public class CastleGame extends Game {
 
     public StateName state() {
         return stateMachine.getCurrentState();
+    }
+
+    public Skin getSkin() {
+        return skin;
+    }
+
+    public float getRatio() {
+        return ratio;
     }
 }

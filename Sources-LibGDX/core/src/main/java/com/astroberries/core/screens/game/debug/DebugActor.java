@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import static com.astroberries.core.CastleGame.game;
 
 public class DebugActor extends Actor {
-    private BitmapFont font = new BitmapFont(Gdx.files.internal("arial-15.fnt"), false);
+    private BitmapFont font = new BitmapFont(Gdx.files.internal("scene2d/ui_skin/default_font/default.fnt"), false);
 
     public DebugActor() {
         setPosition(10, 10);
