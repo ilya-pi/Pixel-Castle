@@ -1,10 +1,16 @@
 {
-com.badlogic.gdx.graphics.g2d.BitmapFont: { button-font: { file: trebuchet_ms/trebuchet_bold_39_shadow_1_3dot2.fnt } },
+com.badlogic.gdx.graphics.g2d.BitmapFont: {
+    button-font: { file: trebuchet_ms/trebuchet_bold_39_shadow_1_3dot2.fnt },
+    huge-title-font-dark-green: { file: trebuchet_ms/trebuchet_bold_80_shadow_2_5_colored.fnt },
+    huge-title-font-white: { file: trebuchet_ms/trebuchet_bold_80_shadow_2_5.fnt },
+    title-font: { file: trebuchet_ms/trebuchet_bold_50_shadow_2_4.fnt },
+},
 com.badlogic.gdx.graphics.Color: {
 	green: { a: 1, b: 0, g: 1, r: 0 },
 	white: { a: 1, b: 1, g: 1, r: 1 },
 	red: { a: 1, b: 0, g: 0, r: 1 },
-	black: { a: 1, b: 0, g: 0, r: 0 }
+	black: { a: 1, b: 0, g: 0, r: 0 },
+	very-dark-green: { a: 1, 34: 0, g: 54, r: 37 }
 },
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	dialogDim: { name: white, color: { r: 0, g: 0, b: 0, a: 0.45 } }
@@ -39,7 +45,10 @@ com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
 	default-horizontal: { background: default-slider, knob: default-slider-knob }
 },
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
-	default: { font: button-font, fontColor: white }
+	default: { font: button-font, fontColor: white },
+	huge-title-dark: {font: huge-title-font-dark-green, fontColor: white },
+	huge-title-white: {font: huge-title-font-white, fontColor: white },
+	title-white: {font: title-font, fontColor: white }
 },
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 	default: { selection: selection, background: textfield, font: button-font, fontColor: white, cursor: cursor }

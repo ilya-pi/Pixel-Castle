@@ -2,6 +2,7 @@ package com.astroberries.core;
 
 import com.astroberries.core.screens.mainmenu.MainScreen;
 import com.astroberries.core.screens.game.GameScreen;
+import com.astroberries.core.screens.win.LevelClearScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -15,9 +16,16 @@ import com.astroberries.core.state.Transition;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.astroberries.core.state.StateName.*;
 
 public class CastleGame extends Game {
+
+    public static final String HUGE_TITLE_DARK_STYLE = "huge-title-dark";
+    public static final String HUGE_TITLE_WHITE_STYLE = "huge-title-white";
+    public static final String TITLE_WHITE_STYLE = "title-white";
 
     private Skin skin;
     private float ratio;
@@ -41,10 +49,17 @@ public class CastleGame extends Game {
     public void create() {
         skin = new Skin(Gdx.files.internal("scene2d/ui_skin/uiskin.json"));
         ratio =  Gdx.graphics.getHeight() / (float) 720;
-        BitmapFont buttonFont = skin.getFont("button-font");
-        buttonFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        buttonFont.setScale(ratio);
 
+        List<BitmapFont> fonts = new ArrayList<>();
+        fonts.add(skin.getFont("button-font"));
+        fonts.add(skin.getFont("huge-title-font-dark-green"));
+        fonts.add(skin.getFont("huge-title-font-white"));
+        fonts.add(skin.getFont("title-font"));
+
+        for (BitmapFont font : fonts) {
+            font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+            font.setScale(ratio);
+        }
 
         fixedBatch = new SpriteBatch();
         final Matrix4 fixedPosition = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -56,6 +71,14 @@ public class CastleGame extends Game {
     }
 
     private StateMachine initStateMachine() {
+/*
+        Transition nilToMainMenu = new Transition() {
+            @Override
+            public void execute() {
+                CastleGame.this.setScreen(new LevelClearScreen());
+            }
+        };
+*/
         Transition nilToMainMenu = new Transition() {
             @Override
             public void execute() {

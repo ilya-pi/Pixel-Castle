@@ -20,12 +20,12 @@ public class MainMenuSubScreen extends AbstractSubScreen {
     private static final int defaultHeight = 480;
     private Table table = new Table();
 
-    public MainMenuSubScreen(final Skin skin) {
+    public MainMenuSubScreen() {
         float ratio = game().getRatio();
         table.setFillParent(true);
         final Image title = new Image(new Texture(Gdx.files.internal("main/title.png")));
-        final TextButton playButton = new TextButton(PLAY_BUTTON_CAPTION, skin);
-        final TextButton optionsButton = new TextButton(OPTIONS_BUTTON_CAPTION, skin);
+        final TextButton playButton = new TextButton(PLAY_BUTTON_CAPTION, game().getSkin());
+        final TextButton optionsButton = new TextButton(OPTIONS_BUTTON_CAPTION, game().getSkin());
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
