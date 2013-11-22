@@ -1,5 +1,6 @@
 package com.astroberries.core;
 
+import com.astroberries.core.screens.lost.LevelLostScreen;
 import com.astroberries.core.screens.mainmenu.MainScreen;
 import com.astroberries.core.screens.game.GameScreen;
 import com.astroberries.core.screens.win.LevelClearScreen;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.astroberries.core.state.StateMachine;
 import com.astroberries.core.state.StateMashineBuilder;
@@ -15,6 +17,7 @@ import com.astroberries.core.state.StateName;
 import com.astroberries.core.state.Transition;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -144,13 +147,17 @@ public class CastleGame extends Game {
         Transition player1lost = new Transition() {
             @Override
             public void execute() {
-                Gdx.app.log("state", "Show win/lost screen! 1st lost.");
+                TextureRegion screenshot = ScreenUtils.getFrameBufferTexture();
+                //CastleGame.this.getScreen().dispose();  //todo: dig here!!!
+                CastleGame.this.setScreen(new LevelLostScreen(screenshot));
             }
         };
         Transition player2lost = new Transition() {
             @Override
             public void execute() {
-                Gdx.app.log("state", "Show win/lost screen! 2nd lost.");
+                TextureRegion screenshot = ScreenUtils.getFrameBufferTexture();
+                //CastleGame.this.getScreen().dispose();  //todo: dig here!!!
+                CastleGame.this.setScreen(new LevelClearScreen(screenshot));
             }
         };
         Transition updateWind = new Transition() {

@@ -1,4 +1,4 @@
-package com.astroberries.core.screens.win;
+package com.astroberries.core.screens.lost;
 
 import com.astroberries.core.CastleGame;
 import com.astroberries.core.state.StateName;
@@ -13,17 +13,15 @@ import static com.astroberries.core.CastleGame.game;
 public class ButtonsTable extends Table {
 
     public static final String LEVEL_SELECT = "Level select";
-    public static final String NEXT_LEVEL = "Next level";
-    private final float bottomToButtonTop;
+    public static final String NEXT_LEVEL = "Try again";
 
     public ButtonsTable() {
         super(game().getSkin());
         float ratio = game().getRatio();
         setFillParent(true);
-        final Label titleFirstRow = new Label("LEVEL", game().getSkin(), CastleGame.HUGE_TITLE_DARK_STYLE);
-        final Label titleSecondRow = new Label("CLEAR!", game().getSkin(), CastleGame.HUGE_TITLE_DARK_STYLE);
+        final Label title = new Label("You lose!", game().getSkin(), CastleGame.HUGE_TITLE_WHITE_STYLE);
         final TextButton levelSelect = new TextButton(LEVEL_SELECT, game().getSkin());
-        final TextButton nextLevel = new TextButton(NEXT_LEVEL, game().getSkin());
+        final TextButton again = new TextButton(NEXT_LEVEL, game().getSkin());
         levelSelect.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -33,19 +31,13 @@ public class ButtonsTable extends Table {
 
         float padBottom = 16 * 4.5f * ratio;
         float buttonHeight = 16 * 4.5f * ratio;
-        bottomToButtonTop = padBottom + buttonHeight;
 
         bottom().padBottom(padBottom);
         row();
-        add(titleFirstRow).colspan(2);
-        row();
-        add(titleSecondRow).colspan(2).padBottom(16 * 12 * ratio);
+        add(title).colspan(2).padBottom(16 * 18 * ratio);
         row();
         add(levelSelect).width(35 * 7.5f * ratio).height(buttonHeight).padRight(16 * 4 * ratio);
-        add(nextLevel).width(35 * 7.5f * ratio).height(buttonHeight);
+        add(again).width(35 * 7.5f * ratio).height(buttonHeight);
     }
 
-    public float getBottomToButtonTop() {
-        return bottomToButtonTop;
-    }
 }

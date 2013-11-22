@@ -18,7 +18,7 @@ import com.badlogic.gdx.utils.Disposable;
 
 public class CastleImpl implements Castle, Disposable {
 
-    public static final int MIN_HEALTH = 10;
+    public static final int MIN_HEALTH = 54;
     public static final float CANNON_PADDING = 4;
 
     private final StateName player;

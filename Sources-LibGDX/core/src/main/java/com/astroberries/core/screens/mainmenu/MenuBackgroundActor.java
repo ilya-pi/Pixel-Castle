@@ -22,22 +22,11 @@ public class MenuBackgroundActor extends Actor {
 
 
     private final Texture texture;
-    //private final Sprite overlay;
 
     public MenuBackgroundActor(Texture texture, float width, float height) {
         this.texture = texture;
         setBounds(0, 0, width, height);
         addAction(forever(sequence(moveTo(0, 0, 0), moveTo(-width, 0, 10f))));
-
-        //graphics.newGradient({ 236, 0, 140, 150 }, { 255, 25, 170, 75 }, "down"),
-
-/*
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.WHITE);
-        pixmap.fill();
-        overlay = new Sprite(new Texture(pixmap), 0, 0, texture.getWidth(), texture.getHeight());
-        overlay.setBounds(0, 0, texture.getWidth() * scale, stage.getHeight());
-*/
     }
 
     @Override
@@ -54,15 +43,5 @@ public class MenuBackgroundActor extends Actor {
         Gdx.gl.glDisable(GL10.GL_BLEND);
 
         batch.begin();
-
-/*
-        float x = 0, y = 0, width = overlay.getWidth(), height = overlay.getHeight();
-        batch.draw(overlay.getTexture(), new float[]{
-                x, y, COLOR_B, overlay.getU(), overlay.getV2(),
-                x, y + height, COLOR_A, overlay.getU(), overlay.getV(),
-                x + width, y + height, COLOR_A, overlay.getU2(), overlay.getV(),
-                x + width, y, COLOR_B, overlay.getU2(), overlay.getV2()}, 0, 20);
-*/
-
     }
 }
