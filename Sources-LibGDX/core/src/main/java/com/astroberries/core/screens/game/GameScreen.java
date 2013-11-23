@@ -222,7 +222,7 @@ public class GameScreen implements Screen {
     }
 
     // Transitions
-    public void mainMenuToOverview() {
+    public void toOverview() {
         camera.to(PixelCamera.CameraState.OVERVIEW, null, null);
         new Timer().schedule(new TimerTask() {
             @Override

@@ -37,11 +37,13 @@ public class CastleGame extends Game {
     public ShapeRenderer shapeRenderer;
     private GameScreen gameScreen;
     private StateMachine stateMachine;
+    private MainScreen mainScreen;
 
     private final static CastleGame instance = new CastleGame();
 
     private CastleGame() {
         super();
+        Texture.setEnforcePotImages(false); //todo: remove and use onle gl 2.0
     }
 
     public static CastleGame game() {
@@ -52,6 +54,7 @@ public class CastleGame extends Game {
     public void create() {
         skin = new Skin(Gdx.files.internal("scene2d/ui_skin/uiskin.json"));
         ratio =  Gdx.graphics.getHeight() / (float) 720;
+        mainScreen = new MainScreen();
 
         List<BitmapFont> fonts = new ArrayList<>();
         fonts.add(skin.getFont("button-font"));
@@ -69,8 +72,8 @@ public class CastleGame extends Game {
         fixedBatch.setProjectionMatrix(fixedPosition);
         shapeRenderer = new ShapeRenderer();
         Texture.setEnforcePotImages(false);
-        this.stateMachine = initStateMachine();
-        this.stateMachine.transitionTo(StateName.MAINMENU);
+        stateMachine = initStateMachine();
+        stateMachine.transitionTo(StateName.MAINMENU);
     }
 
     private StateMachine initStateMachine() {
@@ -85,12 +88,25 @@ public class CastleGame extends Game {
         Transition nilToMainMenu = new Transition() {
             @Override
             public void execute() {
-                CastleGame.this.setScreen(new MainScreen());
+                CastleGame.this.setScreen(mainScreen);
             }
         };
         Transition mainMenuToChooseGame = new Transition() {
             @Override
             public void execute() {
+                mainScreen.setSubScreen(MainScreen.Type.GAME_TYPE_SELECT);
+            }
+        };
+        Transition chooseGameToMainMenu = new Transition() {
+            @Override
+            public void execute() {
+                mainScreen.setSubScreen(MainScreen.Type.MAIN_MENU);
+            }
+        };
+        Transition chooseGameToLevelSelect = new Transition() {
+            @Override
+            public void execute() {
+                mainScreen.setSubScreen(MainScreen.Type.SELECT_LEVEL);
             }
         };
         Transition createGameScreen = new Transition() {
@@ -102,10 +118,10 @@ public class CastleGame extends Game {
                 CastleGame.this.setScreen(gameScreen);
             }
         };
-        Transition mainMenuToOverview = new Transition() {
+        Transition toOverview = new Transition() {
             @Override
             public void execute() {
-                gameScreen.mainMenuToOverview();
+                gameScreen.toOverview();
             }
         };
         Transition toPlayer1 = new Transition() {
@@ -189,7 +205,7 @@ public class CastleGame extends Game {
 /*        return new StateMashineBuilder()
                 .from(NIL).to(MAINMENU).with(nilToMainMenu)
                 .from(MAINMENU).to(CHOOSE_GAME).with(mainMenuToChooseGame)
-                               .to(LEVEL_OVERVIEW).with(createGameScreen, mainMenuToOverview)
+                               .to(LEVEL_OVERVIEW).with(createGameScreen, toOverview)
 
                 .from(LEVEL_OVERVIEW).to(CAMERA_MOVING_TO_PLAYER_1).with(toPlayer1)
                 .from(CAMERA_MOVING_TO_PLAYER_1).to(PLAYER1).with(updateWind, setCameraFree)
@@ -210,20 +226,22 @@ public class CastleGame extends Game {
         return new StateMashineBuilder()
         .from(NIL).to(MAINMENU).with(nilToMainMenu)
                 .from(MAINMENU).to(CHOOSE_GAME).with(mainMenuToChooseGame)
-                .to(LEVEL_OVERVIEW).with(createGameScreen, mainMenuToOverview)
+                .from(CHOOSE_GAME).to(LEVEL_OVERVIEW).with(createGameScreen, toOverview)
+                                  .to(MAINMENU).with(chooseGameToMainMenu)
+                                  .to(LEVEL_SELECT).with(chooseGameToLevelSelect)
 
                 .from(LEVEL_OVERVIEW).to(CAMERA_MOVING_TO_PLAYER_1).with(toPlayer1)
                 .from(CAMERA_MOVING_TO_PLAYER_1).to(PLAYER1).with(updateWind, setCameraFree)
                 .from(PLAYER1).to(AIMING1).with(player1ToAiming1)
                 .from(AIMING1).to(BULLET1).with(aiming1ToBullet1)
                 .from(BULLET1).to(CAMERA_MOVING_TO_PLAYER_2).with(toComputer2)
-                .to(PLAYER_2_LOST).with(player2lost)
-                .to(PLAYER_1_LOST).with(player1lost)
+                              .to(PLAYER_2_LOST).with(player2lost)
+                              .to(PLAYER_1_LOST).with(player1lost)
                 .from(CAMERA_MOVING_TO_PLAYER_2).to(COMPUTER2).with(updateWind, aiAimAndShoot)
                 .from(COMPUTER2).to(BULLET2).with(toBullet2)
                 .from(BULLET2).to(CAMERA_MOVING_TO_PLAYER_1).with(toPlayer1)
-                .to(PLAYER_2_LOST).with(player2lost)
-                .to(PLAYER_1_LOST).with(player1lost)
+                              .to(PLAYER_2_LOST).with(player2lost)
+                              .to(PLAYER_1_LOST).with(player1lost)
                 .build();
     }
 
