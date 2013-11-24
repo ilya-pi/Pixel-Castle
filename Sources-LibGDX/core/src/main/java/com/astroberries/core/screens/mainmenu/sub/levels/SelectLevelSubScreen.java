@@ -1,6 +1,6 @@
 package com.astroberries.core.screens.mainmenu.sub.levels;
 
-import com.astroberries.core.screens.common.BackButton;
+import com.astroberries.core.screens.common.ButtonFactory;
 import com.astroberries.core.state.StateName;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -13,7 +13,7 @@ public class SelectLevelSubScreen extends Group {
         setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         final Table levelIcons = new SelectLevelTable();
-        final Actor back = new BackButton(StateName.CHOOSE_GAME);
+        final Actor back = ButtonFactory.getBackButton(StateName.CHOOSE_GAME);
 
         //levelIcons.debug(); //todo: delete
 

@@ -1,7 +1,7 @@
 package com.astroberries.core.screens.mainmenu.sub;
 
 import com.astroberries.core.CastleGame;
-import com.astroberries.core.screens.common.BackButton;
+import com.astroberries.core.screens.common.ButtonFactory;
 import com.astroberries.core.state.StateName;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -20,7 +20,7 @@ public class GameTypeSubScreen extends Group {
     public static final String TWO_PLAYERS = "Two players";
 
     private final Table buttons = new Table(game().getSkin());
-    private final Actor back = new BackButton(StateName.MAINMENU);
+    private final Actor back = ButtonFactory.getBackButton(StateName.MAINMENU);
 
     public GameTypeSubScreen() {
         float ratio = game().getRatio();
