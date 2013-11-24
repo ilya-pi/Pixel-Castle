@@ -12,7 +12,6 @@ import static com.astroberries.core.CastleGame.game;
 
 public class BackButton extends Actor {
 
-    private boolean pressed = false;
     private final Texture button;
     private final Texture buttonPressed;
     private Texture active;
@@ -28,13 +27,11 @@ public class BackButton extends Actor {
         addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int buttonInt) {
-                pressed = true;
                 active = buttonPressed;
                 return true;
             }
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int buttonInt) {
-                pressed = false;
                 active = button;
                 game().getStateMachine().transitionTo(backState);
             }

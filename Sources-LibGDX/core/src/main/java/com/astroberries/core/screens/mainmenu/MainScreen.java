@@ -2,13 +2,14 @@ package com.astroberries.core.screens.mainmenu;
 
 import com.astroberries.core.screens.mainmenu.sub.GameTypeSubScreen;
 import com.astroberries.core.screens.mainmenu.sub.MainMenuSubScreen;
-import com.astroberries.core.screens.mainmenu.sub.SelectLevelSubScreen;
+import com.astroberries.core.screens.mainmenu.sub.levels.SelectLevelSubScreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +47,7 @@ public class MainScreen implements Screen {
 
         stage.act(delta);
         stage.draw();
-        //Table.drawDebug(stage); //todo: remove
+        Table.drawDebug(stage); //todo: remove
     }
 
     @Override

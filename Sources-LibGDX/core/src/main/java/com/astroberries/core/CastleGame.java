@@ -3,6 +3,7 @@ package com.astroberries.core;
 import com.astroberries.core.screens.lost.LevelLostScreen;
 import com.astroberries.core.screens.mainmenu.MainScreen;
 import com.astroberries.core.screens.game.GameScreen;
+import com.astroberries.core.screens.mainmenu.sub.levels.SelectLevelTable;
 import com.astroberries.core.screens.win.LevelClearScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -58,6 +59,7 @@ public class CastleGame extends Game {
 
         List<BitmapFont> fonts = new ArrayList<>();
         fonts.add(skin.getFont("button-font"));
+        fonts.add(skin.getFont("level-select-num-font"));
         fonts.add(skin.getFont("huge-title-font-dark-green"));
         fonts.add(skin.getFont("huge-title-font-white"));
         fonts.add(skin.getFont("title-font"));
@@ -66,6 +68,10 @@ public class CastleGame extends Game {
             font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
             font.setScale(ratio);
         }
+        //all the fonts sizes are dependant on screen size but the following one is exception.
+        // It also depends on button size. So we scale down it together with button.
+        BitmapFont buttonIconDependentFont = skin.getFont("level-select-num-font");
+        buttonIconDependentFont.setScale(buttonIconDependentFont.getScaleX() * SelectLevelTable.BUTTON_RATIO);
 
         fixedBatch = new SpriteBatch();
         final Matrix4 fixedPosition = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -107,6 +113,12 @@ public class CastleGame extends Game {
             @Override
             public void execute() {
                 mainScreen.setSubScreen(MainScreen.Type.SELECT_LEVEL);
+            }
+        };
+        Transition levelSelectToChooseGame = new Transition() {
+            @Override
+            public void execute() {
+                mainScreen.setSubScreen(MainScreen.Type.GAME_TYPE_SELECT);
             }
         };
         Transition createGameScreen = new Transition() {
@@ -229,6 +241,8 @@ public class CastleGame extends Game {
                 .from(CHOOSE_GAME).to(LEVEL_OVERVIEW).with(createGameScreen, toOverview)
                                   .to(MAINMENU).with(chooseGameToMainMenu)
                                   .to(LEVEL_SELECT).with(chooseGameToLevelSelect)
+                .from(LEVEL_SELECT).to(LEVEL_OVERVIEW).with(createGameScreen, toOverview)
+                                   .to(CHOOSE_GAME).with(levelSelectToChooseGame)
 
                 .from(LEVEL_OVERVIEW).to(CAMERA_MOVING_TO_PLAYER_1).with(toPlayer1)
                 .from(CAMERA_MOVING_TO_PLAYER_1).to(PLAYER1).with(updateWind, setCameraFree)

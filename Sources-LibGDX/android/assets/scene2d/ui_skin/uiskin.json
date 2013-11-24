@@ -1,6 +1,7 @@
 {
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
     button-font: { file: trebuchet_ms/trebuchet_bold_39_shadow_1_3dot2.fnt },
+    level-select-num-font: { file: trebuchet_ms/trebuchet_bold_72_shadow_5_8.fnt },
     huge-title-font-dark-green: { file: trebuchet_ms/trebuchet_bold_80_shadow_2_5_colored.fnt },
     huge-title-font-white: { file: trebuchet_ms/trebuchet_bold_80_shadow_2_5.fnt },
     title-font: { file: trebuchet_ms/trebuchet_bold_50_shadow_2_4.fnt },
