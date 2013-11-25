@@ -1,6 +1,5 @@
 package com.astroberries.core.screens.lost;
 
-import com.astroberries.core.screens.win.WinBackgroundActor;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
@@ -23,7 +22,7 @@ public class LevelLostScreen implements Screen {
     @Override
     public void render(float delta) {
         //Table.drawDebug(stage);
-        Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);  //todo: do we need it?
+        Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
         stage.act(delta);

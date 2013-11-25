@@ -9,4 +9,6 @@ public interface StateMachine {
     public void transitionTo(StateName state);
 
     public void addState(GameState state);
+
+    public StateName getPreviousState();
 }

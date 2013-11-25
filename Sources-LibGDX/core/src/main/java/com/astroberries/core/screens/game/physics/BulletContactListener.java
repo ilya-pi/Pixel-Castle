@@ -4,8 +4,9 @@ import com.astroberries.core.screens.game.GameScreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Disposable;
 
-public class BulletContactListener implements ContactListener {
+public class BulletContactListener implements ContactListener, Disposable {
 
     private final PhysicsManager physicsManager;
     private Pixmap bulletPixmap;
@@ -54,4 +55,8 @@ public class BulletContactListener implements ContactListener {
     public void postSolve(Contact contact, ContactImpulse contactImpulse) {
     }
 
+    @Override
+    public void dispose() {
+        bulletPixmap.dispose();
+    }
 }

@@ -16,8 +16,6 @@ public class DebugActor extends Actor {
 
     @Override
     public void draw(SpriteBatch batch, float parentAlpha) {
-        game().fixedBatch.begin();
-        font.draw(game().fixedBatch, "fps: " + Gdx.graphics.getFramesPerSecond(), 20, 30);
-        game().fixedBatch.end();
+        font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 20, 30);
     }
 }

@@ -16,7 +16,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Disposable;
 
-public class CastleImpl implements Castle, Disposable {
+public class CastleImpl implements Castle {
 
     public static final int MIN_HEALTH = 54;
     public static final float CANNON_PADDING = 4;

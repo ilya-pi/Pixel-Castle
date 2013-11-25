@@ -33,8 +33,8 @@ public class ButtonFactory {
         return imageButton;
     }
 
-    public static ImageButton getPlayButton(final StateName pushChangeState) {
-        ImageButton imageButton = getButton(playButton, playButtonPressed, pushChangeState);
+    public static ImageButton getPlayButton() {
+        ImageButton imageButton = getButton(playButton, playButtonPressed, null);
         imageButton.setPosition(Gdx.graphics.getWidth() - imageButton.getWidth(), Gdx.graphics.getHeight() - imageButton.getHeight());
         return imageButton;
     }
@@ -48,12 +48,21 @@ public class ButtonFactory {
         float height = button.getHeight() * game().getRatio();
         float width = button.getWidth() * game().getRatio();
         imageButton.setSize(width, height);
-        imageButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game().getStateMachine().transitionTo(pushChangeState);
-            }
-        });
+        if (pushChangeState != null) {
+            imageButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    game().getStateMachine().transitionTo(pushChangeState);
+                }
+            });
+        } else {
+            imageButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    game().getStateMachine().transitionTo(game().getStateMachine().getPreviousState());
+                }
+            });
+        }
         return imageButton;
     }
 

@@ -74,7 +74,6 @@ public class AimAreaActor extends Actor {
             game().shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             game().shapeRenderer.rect(getX(), getY(), size, size);
             game().shapeRenderer.end();
-
             Gdx.gl.glDisable(GL10.GL_BLEND);
 
             batch.begin();

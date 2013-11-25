@@ -1,4 +1,4 @@
-package com.astroberries.core.screens.win;
+package com.astroberries.core.screens.common;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -10,19 +10,25 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import static com.astroberries.core.CastleGame.game;
 
-public class WinBackgroundActor extends Actor {
+public class BlendBackgroundActor extends Actor {
 
     private static Color OVERLAY_COLOR = new Color(255.0f / 255, 255.0f / 255, 255.0f / 255, 60.0f / 255);
     private final TextureRegion screenshot;
 
-    public WinBackgroundActor(TextureRegion screenshot) {
+    public BlendBackgroundActor(TextureRegion screenshot) {
         this.screenshot = screenshot;
         setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
+    public BlendBackgroundActor() {
+        this(null);
+    }
+
     @Override
     public void draw(SpriteBatch batch, float parentAlpha) {
-        batch.draw(screenshot, 0, 0);
+        if (screenshot != null) {
+            batch.draw(screenshot, 0, 0);
+        }
         batch.end();
 
         Gdx.gl.glEnable(GL10.GL_BLEND);

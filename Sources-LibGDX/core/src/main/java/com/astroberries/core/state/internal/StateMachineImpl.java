@@ -10,6 +10,7 @@ import java.util.Map;
 public class StateMachineImpl implements StateMachine {
 
     private volatile StateName currentState;
+    private volatile StateName previousState;
     private Map<StateName, GameState> states;
 
     public StateMachineImpl(StateName currentState, Map<StateName, GameState> states) {
@@ -36,11 +37,18 @@ public class StateMachineImpl implements StateMachine {
             throw new IllegalStateException("state from: " + currentState + " doesn't have state to: " + toState);
         }
         Gdx.app.log("states", "currentState: " + currentState + ", toState: " + toState);
-        StateName oldState = currentState;
+        previousState = currentState;
         currentState = toState;
-        for (Transition transition : states.get(oldState).getTransitions(toState)) {
+        for (Transition transition : states.get(previousState).getTransitions(toState)) {
             Gdx.app.log("states", "transition execute");
             transition.execute();
         }
     }
+
+    @Override
+    public StateName getPreviousState() {
+        return previousState;
+    }
+
+
 }

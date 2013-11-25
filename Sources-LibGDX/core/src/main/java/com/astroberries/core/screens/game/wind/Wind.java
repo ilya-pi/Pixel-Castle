@@ -71,10 +71,8 @@ public class Wind extends Actor implements Disposable {
 
     @Override
     public void draw(SpriteBatch batch, float parentAlpha) {
-        game().fixedBatch.begin();
-        game().fixedBatch.draw(windHud, 0, yHud, hudWidth, hudHeight);
-        game().fixedBatch.draw(accessibleHuds.get(representationPosition).getArrow(), xArrow, yArrow, arrowWidth, arrowHeight);
-        game().fixedBatch.end();
+        batch.draw(windHud, 0, yHud, hudWidth, hudHeight);
+        batch.draw(accessibleHuds.get(representationPosition).getArrow(), xArrow, yArrow, arrowWidth, arrowHeight);
     }
 
     public void update() {

@@ -3,9 +3,9 @@ package com.astroberries.core.screens.game;
 import com.astroberries.core.config.GameConfig;
 import com.astroberries.core.config.GameLevel;
 import com.astroberries.core.config.GlobalGameConfig;
+import com.astroberries.core.screens.common.ButtonFactory;
 import com.astroberries.core.screens.game.ai.AI;
 import com.astroberries.core.screens.game.ai.AIFactory;
-import com.astroberries.core.screens.game.ai.AIResp;
 import com.astroberries.core.screens.game.background.BackgroundActor;
 import com.astroberries.core.screens.game.bullet.Bullet;
 import com.astroberries.core.screens.game.camera.PixelCamera;
@@ -16,6 +16,7 @@ import com.astroberries.core.screens.game.physics.BulletContactListener;
 import com.astroberries.core.screens.game.physics.CheckRectangle;
 import com.astroberries.core.screens.game.physics.GameUserData;
 import com.astroberries.core.screens.game.physics.PhysicsManager;
+import com.astroberries.core.screens.game.subscreens.PauseSubScreen;
 import com.astroberries.core.screens.game.touch.MoveAndZoomListener;
 import com.astroberries.core.screens.game.wind.Wind;
 import com.astroberries.core.state.StateName;
@@ -30,12 +31,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Timer;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.astroberries.core.CastleGame.game;
 
@@ -43,7 +48,8 @@ public class GameScreen implements Screen {
 
     private final MoveAndZoomListener moveAndZoomListener;
 
-    private final Stage stage;
+    private final Stage resizableStage;
+    private final Stage staticStage;
     private final World world;
 
     private final PixelCamera camera;
@@ -51,6 +57,9 @@ public class GameScreen implements Screen {
     public final Castle castle2;
     private final Wind wind;
     private final AI ai;
+    private ImageButton pauseButton;
+    private Group pauseSubScreen;
+    private Timer timer = new Timer();
 
     private Box2DDebugRenderer debugRenderer;
 
@@ -65,16 +74,19 @@ public class GameScreen implements Screen {
     private final Texture sky;
 
     public Bullet bullet;
+    private boolean pause = false;
 
     private final GameLevel gameLevelConfig;
     private final PhysicsManager physicsManager;
     private final BulletContactListener bulletContactListener;
 
+    public List<Disposable> disposables = new ArrayList<>();
 
     //todo: split init to different functions
     public GameScreen(int setNumber, int levelNumber) {
         camera = new PixelCamera(this);
         world = new World(new Vector2(0, GlobalGameConfig.GRAVITY), true);
+        disposables.add(world);
 
         Json json = new Json();
         GameConfig config = json.fromJson(GameConfig.class, Gdx.files.internal("configuration.json"));
@@ -82,15 +94,18 @@ public class GameScreen implements Screen {
 
         ai = new AIFactory().getAi(gameLevelConfig.getAiVariant());
         wind = new Wind(world, gameLevelConfig);
+        disposables.add(wind);
 
         Pixmap.setBlending(Pixmap.Blending.None);
         Pixmap levelPixmap = new Pixmap(Gdx.files.internal("levels/" + gameLevelConfig.getPath() + "/level.png"));
+        disposables.add(levelPixmap);
         levelWidth = levelPixmap.getWidth();
         levelHeight = levelPixmap.getHeight();
 
         castle1 = new CastleImpl(levelHeight, CastleImpl.Location.LEFT, gameLevelConfig, world);
         castle2 = new CastleImpl(levelHeight, CastleImpl.Location.RIGHT, gameLevelConfig, world);
-
+        disposables.add(castle1);
+        disposables.add(castle2);
 
         levelPixmap.drawPixmap(castle1.getCastlePixmap(), gameLevelConfig.getCastle1().getX(), gameLevelConfig.getCastle1().getY() - castle1.getCastlePixmap().getHeight());
         levelPixmap.drawPixmap(castle2.getCastlePixmap(), gameLevelConfig.getCastle2().getX(), gameLevelConfig.getCastle2().getY() - castle2.getCastlePixmap().getHeight());
@@ -98,12 +113,17 @@ public class GameScreen implements Screen {
         level = new Texture(levelPixmap);
         background = new Texture(Gdx.files.internal("levels/" + gameLevelConfig.getPath() + "/background.png"));
         sky = new Texture(Gdx.files.internal("levels/" + gameLevelConfig.getPath() + "/sky.png"));
+        disposables.add(level);
+        disposables.add(background);
+        disposables.add(sky);
 
         physicsManager = new PhysicsManager(world, levelPixmap, level);
         physicsManager.addRectToCheckPhysicsObjectsCreation(new CheckRectangle(0, 0, levelWidth, levelHeight));
         physicsManager.createPhysicsObjects();
+        disposables.add(physicsManager);
 
         bulletContactListener = new BulletContactListener(physicsManager);
+        disposables.add(bulletContactListener);
         world.setContactListener(bulletContactListener);
 
         castle1.recalculateHealth(physicsManager);
@@ -111,34 +131,53 @@ public class GameScreen implements Screen {
 
         moveAndZoomListener = new MoveAndZoomListener(camera);
 
-        stage = new Stage();
-        stage.addActor(new BackgroundActor(level, background, sky, camera, levelWidth));
-        stage.addActor(castle1.getView());
-        stage.addActor(castle2.getView());
-        stage.addActor(wind);
-        stage.addActor(new DebugActor()); //todo: delete
+        pauseButton = ButtonFactory.getPauseButton(StateName.PAUSE);
+        pauseSubScreen = new PauseSubScreen();
+        pauseSubScreen.setVisible(false);
+
+        resizableStage = new Stage();
+        staticStage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false, game().fixedBatch);
+        disposables.add(resizableStage);
+        disposables.add(staticStage);
+
+        resizableStage.addActor(new BackgroundActor(level, background, sky, camera, levelWidth));
+        resizableStage.addActor(castle1.getView());
+        resizableStage.addActor(castle2.getView());
+
+        staticStage.addActor(wind);
+        staticStage.addActor(pauseButton);
+        staticStage.addActor(pauseSubScreen);
+        staticStage.addActor(new DebugActor()); //todo: delete
 
         InputMultiplexer processorsChain = new InputMultiplexer();
-        processorsChain.addProcessor(stage);
+        processorsChain.addProcessor(staticStage);
+        processorsChain.addProcessor(resizableStage);
         processorsChain.addProcessor(new GestureDetector(moveAndZoomListener));
         Gdx.input.setInputProcessor(processorsChain);
 
-        debugRenderer = new Box2DDebugRenderer();
+        debugRenderer = new Box2DDebugRenderer(); //todo: delete
     }
 
     @Override
     public void render(float delta) {
+
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
-        camera.update();
 
-        stage.act(delta);
-        stage.draw();
 
-        world.step(1 / 30f, 6, 2); //todo: play with this values for better performance
+        if (!pause) {
+            camera.update();
+            resizableStage.act(delta);
+        }
+        resizableStage.draw();
+        staticStage.act();
+        staticStage.draw();
 
-        game().shapeRenderer.setProjectionMatrix(camera.combined);
+        if (!pause) {
+            world.step(1 / 30f, 6, 2); //todo: play with this values for better performance
+        }
+
         renderOrDisposeBullet();
 
         physicsManager.sweepDeadBodies(); //todo: sweep bodies should be only after this mess with bullet which is bad. Refactor.
@@ -148,7 +187,7 @@ public class GameScreen implements Screen {
     }
 
     private void renderOrDisposeBullet() {
-        if (game().state() == StateName.BULLET1 || game().state() == StateName.BULLET2) {
+        if (game().state() == StateName.BULLET1 || game().state() == StateName.BULLET2 || game().state() == StateName.PAUSE) {
             if (bullet != null) {
                 if (!bullet.isAlive()) {
                     Gdx.app.log("bullet:", "destroy bullet!!");
@@ -170,6 +209,7 @@ public class GameScreen implements Screen {
                 }
             }
             if (bullet != null) {
+                game().shapeRenderer.setProjectionMatrix(camera.combined);
                 bullet.render();
             }
         }
@@ -181,7 +221,7 @@ public class GameScreen implements Screen {
         viewPortHeight = levelWidth / ratio;
         moveAndZoomListener.setScrollRatio(levelWidth / (float) width);
         camera.setToOrtho(false, levelWidth, viewPortHeight);
-        stage.setCamera(camera);
+        resizableStage.setCamera(camera);
     }
 
     @Override
@@ -194,19 +234,19 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
+        if (game().state() != StateName.PAUSE) {
+            game().getStateMachine().transitionTo(StateName.PAUSE);
+        }
     }
 
     @Override
     public void resume() {
+        pause = false;
     }
 
     @Override
     public void dispose() {
-        background.dispose();
-        sky.dispose();
-        level.dispose();
-        physicsManager.dispose();
-
+        timer.clear();
         Array<Body> bodies = new Array<>();
         world.getBodies(bodies);
         for (Body body : bodies) {
@@ -218,13 +258,15 @@ public class GameScreen implements Screen {
                 }
             }
         }
-        world.dispose();
+        for (Disposable disposable : disposables) {
+            disposable.dispose();
+        }
     }
 
     // Transitions
     public void toOverview() {
         camera.to(PixelCamera.CameraState.OVERVIEW, null, null);
-        new Timer().schedule(new TimerTask() {
+        timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
                 game().getStateMachine().transitionTo(StateName.CAMERA_MOVING_TO_PLAYER_1);
@@ -272,4 +314,21 @@ public class GameScreen implements Screen {
     public void setCameraFree() {
         camera.setFree();
     }
+
+    public void intPause() {
+        pause = true;
+        pauseButton.setVisible(false);
+        pauseSubScreen.setVisible(true);
+        timer.stop();
+        camera.pause();
+    }
+
+    public void intPlay() {
+        pause = false;
+        pauseButton.setVisible(true);
+        pauseSubScreen.setVisible(false);
+        timer.start();
+        camera.unpause();
+    }
+
 }

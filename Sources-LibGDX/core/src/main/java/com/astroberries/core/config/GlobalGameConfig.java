@@ -7,7 +7,7 @@ public class GlobalGameConfig {
     /**
      * Time that the level overview is shown prior to zoom in on a certain castle
      */
-    public static final long LEVEL_INTRO_TIMEOUT = 3000;
+    public static final float LEVEL_INTRO_TIMEOUT = 3;
 
     public static final int GRAVITY = -20;
 

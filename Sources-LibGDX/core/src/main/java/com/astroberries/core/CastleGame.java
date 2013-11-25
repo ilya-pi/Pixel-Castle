@@ -212,6 +212,19 @@ public class CastleGame extends Game {
                 gameScreen.setCameraFree();
             }
         };
+        Transition pause = new Transition() {
+            @Override
+            public void execute() {
+                gameScreen.intPause();
+            }
+        };
+        Transition play = new Transition() {
+            @Override
+            public void execute() {
+                gameScreen.intPlay();
+            }
+        };
+
 
           //PVP
 /*        return new StateMashineBuilder()
@@ -245,17 +258,35 @@ public class CastleGame extends Game {
                                    .to(CHOOSE_GAME).with(levelSelectToChooseGame)
 
                 .from(LEVEL_OVERVIEW).to(CAMERA_MOVING_TO_PLAYER_1).with(toPlayer1)
+                                     .to(PAUSE).with(pause)
                 .from(CAMERA_MOVING_TO_PLAYER_1).to(PLAYER1).with(updateWind, setCameraFree)
+                                                .to(PAUSE).with(pause)
                 .from(PLAYER1).to(AIMING1).with(player1ToAiming1)
+                              .to(PAUSE).with(pause)
                 .from(AIMING1).to(BULLET1).with(aiming1ToBullet1)
+                              .to(PAUSE).with(pause)
                 .from(BULLET1).to(CAMERA_MOVING_TO_PLAYER_2).with(toComputer2)
                               .to(PLAYER_2_LOST).with(player2lost)
                               .to(PLAYER_1_LOST).with(player1lost)
+                              .to(PAUSE).with(pause)
                 .from(CAMERA_MOVING_TO_PLAYER_2).to(COMPUTER2).with(updateWind, aiAimAndShoot)
+                                                .to(PAUSE).with(pause)
                 .from(COMPUTER2).to(BULLET2).with(toBullet2)
+                                .to(PAUSE).with(pause)
                 .from(BULLET2).to(CAMERA_MOVING_TO_PLAYER_1).with(toPlayer1)
                               .to(PLAYER_2_LOST).with(player2lost)
                               .to(PLAYER_1_LOST).with(player1lost)
+                              .to(PAUSE).with(pause)
+
+                .from(PAUSE).to(LEVEL_OVERVIEW).with(play)
+                            .to(PLAYER1).with(play)
+                            .to(AIMING1).with(play)
+                            .to(BULLET1).with(play)
+                            .to(PLAYER2).with(play)
+                            .to(AIMING2).with(play)
+                            .to(BULLET2).with(play)
+                            .to(CAMERA_MOVING_TO_PLAYER_1).with(play)
+                            .to(CAMERA_MOVING_TO_PLAYER_2).with(play)
                 .build();
     }
 

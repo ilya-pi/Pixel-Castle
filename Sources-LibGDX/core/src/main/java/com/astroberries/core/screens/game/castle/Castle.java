@@ -10,8 +10,9 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.utils.Disposable;
 
-public interface Castle {
+public interface Castle extends Disposable{
 
     //state: access from actors
     public float getBiggestSide();

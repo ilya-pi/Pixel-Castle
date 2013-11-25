@@ -1,12 +1,12 @@
 package com.astroberries.core.screens.win;
 
+import com.astroberries.core.screens.common.BlendBackgroundActor;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
@@ -23,7 +23,7 @@ public class LevelClearScreen implements Screen {
         StarsActor bigStar = new StarsActor(table.getPadBottom(), new Texture(Gdx.files.internal("win/big_star.png")));
         StarsActor smallStar = new StarsActor(table.getPadBottom(), new Texture(Gdx.files.internal("win/small_star.png")));
 
-        stage.addActor(new WinBackgroundActor(screenshot));
+        stage.addActor(new BlendBackgroundActor(screenshot));
         stage.addActor(bigStar);
         stage.addActor(smallStar);
         stage.addActor(table);

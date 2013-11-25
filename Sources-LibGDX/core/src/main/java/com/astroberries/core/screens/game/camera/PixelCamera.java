@@ -21,6 +21,7 @@ public class PixelCamera extends OrthographicCamera {
     private float transitionZoomStart = 0f;
 
     private CameraState state = CameraState.FREE;
+    private CameraState beforePauseState = CameraState.FREE;
     private StateName stateOnFinish = null;
     private Vector2 finalCoords = null;
 
@@ -29,7 +30,7 @@ public class PixelCamera extends OrthographicCamera {
     public static enum CameraState {
         OVERVIEW, BULLET, CASTLE1, CASTLE2,
 
-        FREE
+        FREE, PAUSE
     }
 
     public PixelCamera(GameScreen gameScreen) {
@@ -37,16 +38,16 @@ public class PixelCamera extends OrthographicCamera {
         this.gameScreen = gameScreen;
     }
 
-    public void to(CameraState target, Float _transitionCompleteTime, StateName stateOnFinish) {
+    public void to(CameraState target, Float transitionCompleteTime, StateName stateOnFinish) {
         Gdx.app.log("camera", target.toString());
         this.transitionStartPoint = new Vector3(position);
         this.transitionZoomStart = zoom;
         this.transitionTime = 0f;
         this.stateOnFinish = stateOnFinish;
-        if (_transitionCompleteTime != null) {
-            transitionCompleteTime = _transitionCompleteTime;
+        if (transitionCompleteTime != null) {
+            this.transitionCompleteTime = transitionCompleteTime;
         } else {
-            transitionCompleteTime = DEFAULT_TRANSITION_TIME;
+            this.transitionCompleteTime = DEFAULT_TRANSITION_TIME;
         }
 
         state = target;
@@ -71,6 +72,15 @@ public class PixelCamera extends OrthographicCamera {
 
     public void setFree() {
         state = CameraState.FREE;
+    }
+
+    public void pause() {
+        beforePauseState = state;
+        state = CameraState.PAUSE;
+    }
+
+    public void unpause() {
+        state = beforePauseState;
     }
 
     @Override
