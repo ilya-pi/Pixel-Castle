@@ -43,7 +43,8 @@ com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
 	dialog: { titleFont: button-font, background: default-window, titleFontColor: white, stageBackground: dialogDim }
 },
 com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
-	default-horizontal: { background: default-slider, knob: default-slider-knob }
+	default-horizontal: { background: default-slider, knob: default-slider-knob },
+	game-horizontal: { background: game-knob-before, knob: game-slider-knob, knobAfter: game-knob-after },
 },
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: { font: button-font, fontColor: white },

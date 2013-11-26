@@ -2,6 +2,7 @@ package com.astroberries.core.screens.mainmenu;
 
 import com.astroberries.core.screens.mainmenu.sub.GameTypeSubScreen;
 import com.astroberries.core.screens.mainmenu.sub.MainMenuSubScreen;
+import com.astroberries.core.screens.mainmenu.sub.SettingsSubScreen;
 import com.astroberries.core.screens.mainmenu.sub.levels.SelectLevelSubScreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -14,23 +15,26 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.astroberries.core.CastleGame.game;
+
 public class MainScreen implements Screen {
 
     private final Stage stage;
 
     public static enum Type {
-        GAME_TYPE_SELECT, SELECT_LEVEL, MAIN_MENU
+        GAME_TYPE_SELECT, SELECT_LEVEL, MAIN_MENU, SETTINGS
     }
 
     private final Map<Type, Actor> subscreens = new HashMap<>();
     private Type current;
 
     public MainScreen() {
-        stage = new Stage();
+        stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false, game().fixedBatch);
         Gdx.input.setInputProcessor(stage);
         subscreens.put(Type.MAIN_MENU, new MainMenuSubScreen());
         subscreens.put(Type.GAME_TYPE_SELECT, new GameTypeSubScreen());
         subscreens.put(Type.SELECT_LEVEL, new SelectLevelSubScreen());
+        subscreens.put(Type.SETTINGS, new SettingsSubScreen());
 
         Texture texture = new Texture(Gdx.files.internal("main/castle_splash.png"));
         float aspectRatio = texture.getWidth() / (float) texture.getHeight();

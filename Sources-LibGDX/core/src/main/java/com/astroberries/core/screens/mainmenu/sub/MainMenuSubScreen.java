@@ -3,6 +3,7 @@ package com.astroberries.core.screens.mainmenu.sub;
 import com.astroberries.core.CastleGame;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -29,6 +30,12 @@ public class MainMenuSubScreen extends Table {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game().getStateMachine().transitionTo(StateName.CHOOSE_GAME);
+            }
+        });
+        optionsButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game().getStateMachine().transitionTo(StateName.SETTINGS);
             }
         });
 

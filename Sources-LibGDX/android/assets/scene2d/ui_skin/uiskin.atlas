@@ -49,6 +49,29 @@ default-slider-knob
   orig: 9, 18
   offset: 0, 0
   index: -1
+game-slider-knob
+  rotate: false
+  xy: 176, 1
+  size: 36, 42
+  orig: 36, 42
+  offset: 0, 0
+  index: -1
+game-knob-before
+  rotate: false
+  xy: 213, 1
+  size: 3, 28
+  split: 2, 0, 0, 0
+  orig: 3, 28
+  offset: 0, 0
+  index: -1
+game-knob-after
+  rotate: false
+  xy: 217, 1
+  size: 3, 28
+  split: 0, 0, 2, 0
+  orig: 3, 28
+  offset: 0, 0
+  index: -1
 default-round-down
   rotate: false
   xy: 99, 29

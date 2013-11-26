@@ -34,6 +34,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
@@ -160,11 +161,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-
-
 
         if (!pause) {
             camera.update();
@@ -173,6 +171,7 @@ public class GameScreen implements Screen {
         resizableStage.draw();
         staticStage.act();
         staticStage.draw();
+        Table.drawDebug(staticStage);
 
         if (!pause) {
             world.step(1 / 30f, 6, 2); //todo: play with this values for better performance
@@ -222,6 +221,7 @@ public class GameScreen implements Screen {
         moveAndZoomListener.setScrollRatio(levelWidth / (float) width);
         camera.setToOrtho(false, levelWidth, viewPortHeight);
         resizableStage.setCamera(camera);
+        staticStage.setViewport(width, height, false);
     }
 
     @Override

@@ -18,6 +18,7 @@ import com.astroberries.core.state.StateName;
 import com.astroberries.core.state.Transition;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.ArrayList;
@@ -68,10 +69,24 @@ public class CastleGame extends Game {
             font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
             font.setScale(ratio);
         }
+
         //all the fonts sizes are dependant on screen size but the following one is exception.
         // It also depends on button size. So we scale down it together with button.
         BitmapFont buttonIconDependentFont = skin.getFont("level-select-num-font");
         buttonIconDependentFont.setScale(buttonIconDependentFont.getScaleX() * SelectLevelTable.BUTTON_RATIO);
+
+        List<Drawable> drawablesToResize = new ArrayList<>();
+        drawablesToResize.add(skin.getDrawable("game-knob-before"));
+        drawablesToResize.add(skin.getDrawable("game-slider-knob"));
+        drawablesToResize.add(skin.getDrawable("game-knob-after"));
+        for (Drawable drawable : drawablesToResize) {
+            drawable.setMinHeight(drawable.getMinHeight() * ratio);
+            drawable.setTopHeight(drawable.getTopHeight() * ratio);
+            drawable.setMinWidth(drawable.getMinWidth() * ratio);
+            drawable.setLeftWidth(drawable.getLeftWidth() * ratio);
+            drawable.setRightWidth(drawable.getRightWidth() * ratio);
+        }
+
 
         fixedBatch = new SpriteBatch();
         final Matrix4 fixedPosition = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -101,6 +116,18 @@ public class CastleGame extends Game {
             @Override
             public void execute() {
                 mainScreen.setSubScreen(MainScreen.Type.GAME_TYPE_SELECT);
+            }
+        };
+        Transition mainMenuToSettings = new Transition() {
+            @Override
+            public void execute() {
+                mainScreen.setSubScreen(MainScreen.Type.SETTINGS);
+            }
+        };
+        Transition settingsToMainMenu = new Transition() {
+            @Override
+            public void execute() {
+                mainScreen.setSubScreen(MainScreen.Type.MAIN_MENU);
             }
         };
         Transition chooseGameToMainMenu = new Transition() {
@@ -251,6 +278,8 @@ public class CastleGame extends Game {
         return new StateMashineBuilder()
         .from(NIL).to(MAINMENU).with(nilToMainMenu)
                 .from(MAINMENU).to(CHOOSE_GAME).with(mainMenuToChooseGame)
+                               .to(SETTINGS).with(mainMenuToSettings)
+                .from(SETTINGS).to(MAINMENU).with(settingsToMainMenu)
                 .from(CHOOSE_GAME).to(LEVEL_OVERVIEW).with(createGameScreen, toOverview)
                                   .to(MAINMENU).with(chooseGameToMainMenu)
                                   .to(LEVEL_SELECT).with(chooseGameToLevelSelect)
