@@ -181,8 +181,10 @@ public class GameScreen implements Screen {
 
             renderOrDisposeBullet();
 
-            physicsManager.sweepDeadBodies(); //todo: sweep bodies should be only after this mess with bullet which is bad. Refactor.
-            physicsManager.createPhysicsObjects();
+            if (!shuttingDown) { //ugly double check to avoid exceptions
+                physicsManager.sweepDeadBodies(); //todo: sweep bodies should be only after this mess with bullet which is bad. Refactor.
+                physicsManager.createPhysicsObjects();
+            }
 
             //debugRenderer.render(world, camera.combined);
         }

@@ -45,10 +45,10 @@ public class BlendBackgroundActor extends Actor {
 
         Gdx.gl.glEnable(GL10.GL_BLEND);
         Gdx.gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        game().shapeRenderer.identity();
-        game().shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        game().shapeRenderer.rect(0, 0, getWidth(), getHeight(), overlayColor, overlayColor, overlayColor, overlayColor);
-        game().shapeRenderer.end();
+        game().fixedShapeRenderer.identity();
+        game().fixedShapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        game().fixedShapeRenderer.rect(0, 0, getWidth(), getHeight(), overlayColor, overlayColor, overlayColor, overlayColor);
+        game().fixedShapeRenderer.end();
         Gdx.gl.glDisable(GL10.GL_BLEND);
 
         batch.begin();

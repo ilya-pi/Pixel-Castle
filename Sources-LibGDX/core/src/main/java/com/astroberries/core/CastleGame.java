@@ -37,6 +37,7 @@ public class CastleGame extends Game {
     private float ratio;
 
     public SpriteBatch fixedBatch;
+    public ShapeRenderer fixedShapeRenderer;
     public ShapeRenderer shapeRenderer;
     private GameScreen gameScreen;
     private StateMachine stateMachine;
@@ -94,6 +95,7 @@ public class CastleGame extends Game {
         final Matrix4 fixedPosition = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         fixedBatch.setProjectionMatrix(fixedPosition);
         shapeRenderer = new ShapeRenderer();
+        fixedShapeRenderer = new ShapeRenderer();
         Texture.setEnforcePotImages(false);
         stateMachine = initStateMachine();
         stateMachine.transitionTo(StateName.MAINMENU);
@@ -118,18 +120,18 @@ public class CastleGame extends Game {
             @Override
             public void execute() {
                 mainScreen = new MainScreen();
-                mainScreen.setSubScreen(MainScreen.Type.MAIN_MENU);
                 CastleGame.this.getScreen().dispose();
                 CastleGame.this.setScreen(mainScreen);
+                mainScreen.setSubScreen(MainScreen.Type.MAIN_MENU);
             }
         };
         Transition levelEndToLevelSelect = new Transition() {
             @Override
             public void execute() {
                 mainScreen = new MainScreen();
-                mainScreen.setSubScreen(MainScreen.Type.SELECT_LEVEL);
                 CastleGame.this.getScreen().dispose();
                 CastleGame.this.setScreen(mainScreen);
+                mainScreen.setSubScreen(MainScreen.Type.SELECT_LEVEL);
             }
         };
         Transition mainMenuToChooseGame = new Transition() {
