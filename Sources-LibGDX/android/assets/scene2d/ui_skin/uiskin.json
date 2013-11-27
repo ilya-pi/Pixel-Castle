@@ -5,6 +5,7 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
     huge-title-font-dark-green: { file: trebuchet_ms/trebuchet_bold_80_shadow_2_5_colored.fnt },
     huge-title-font-white: { file: trebuchet_ms/trebuchet_bold_80_shadow_2_5.fnt },
     title-font: { file: trebuchet_ms/trebuchet_bold_50_shadow_2_4.fnt },
+    title-font-dark: { file: trebuchet_ms/trebuchet_bold_50_shadow_2_4_dark.fnt },
 },
 com.badlogic.gdx.graphics.Color: {
 	green: { a: 1, b: 0, g: 1, r: 0 },
@@ -50,7 +51,8 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: { font: button-font, fontColor: white },
 	huge-title-dark: {font: huge-title-font-dark-green, fontColor: white },
 	huge-title-white: {font: huge-title-font-white, fontColor: white },
-	title-white: {font: title-font, fontColor: white }
+	title-white: {font: title-font, fontColor: white },
+	title-dark: {font: title-font-dark, fontColor: white }
 },
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 	default: { selection: selection, background: textfield, font: button-font, fontColor: white, cursor: cursor }

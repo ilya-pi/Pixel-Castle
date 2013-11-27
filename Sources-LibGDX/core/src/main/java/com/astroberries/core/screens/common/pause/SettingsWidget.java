@@ -1,17 +1,12 @@
 package com.astroberries.core.screens.common.pause;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import static com.astroberries.core.CastleGame.game;
 
 public class SettingsWidget extends Table {
-
-    private static Color OVERLAY_COLOR = new Color(0f / 255, 0f / 255, 0f / 255, 66.0f / 255);
 
     public SettingsWidget() {
         //debug(); //todo: delete

@@ -73,6 +73,7 @@ public class GameScreen implements Screen {
     private final Texture level;
     private final Texture background;
     private final Texture sky;
+    private boolean shuttingDown = false;
 
     public Bullet bullet;
     private boolean pause = false;
@@ -161,28 +162,30 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0.2f, 1);
-        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+        if (!shuttingDown) {
+            Gdx.gl.glClearColor(0, 0, 0.2f, 1);
+            Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
-        if (!pause) {
-            camera.update();
-            resizableStage.act(delta);
+            if (!pause) {
+                camera.update();
+                resizableStage.act(delta);
+            }
+            resizableStage.draw();
+            staticStage.act();
+            staticStage.draw();
+            Table.drawDebug(staticStage);
+
+            if (!pause) {
+                world.step(1 / 30f, 6, 2); //todo: play with this values for better performance
+            }
+
+            renderOrDisposeBullet();
+
+            physicsManager.sweepDeadBodies(); //todo: sweep bodies should be only after this mess with bullet which is bad. Refactor.
+            physicsManager.createPhysicsObjects();
+
+            //debugRenderer.render(world, camera.combined);
         }
-        resizableStage.draw();
-        staticStage.act();
-        staticStage.draw();
-        Table.drawDebug(staticStage);
-
-        if (!pause) {
-            world.step(1 / 30f, 6, 2); //todo: play with this values for better performance
-        }
-
-        renderOrDisposeBullet();
-
-        physicsManager.sweepDeadBodies(); //todo: sweep bodies should be only after this mess with bullet which is bad. Refactor.
-        physicsManager.createPhysicsObjects();
-
-        //debugRenderer.render(world, camera.combined);
     }
 
     private void renderOrDisposeBullet() {
@@ -246,6 +249,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
+        //todo: dig here: proper tear down
+        shuttingDown = true;
         timer.clear();
         Array<Body> bodies = new Array<>();
         world.getBodies(bodies);
@@ -253,8 +258,8 @@ public class GameScreen implements Screen {
             if (body != null) {
                 GameUserData data = (GameUserData) body.getUserData();
                 if (data != null) {
-                    world.destroyBody(body);
                     body.setUserData(null);
+                    world.destroyBody(body);
                 }
             }
         }

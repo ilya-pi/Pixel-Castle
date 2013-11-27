@@ -56,6 +56,6 @@ public class LevelLostScreen implements Screen {
 
     @Override
     public void dispose() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        stage.dispose();
     }
 }

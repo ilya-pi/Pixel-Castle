@@ -189,6 +189,6 @@ public class PhysicsManager implements Disposable {
 
     @Override
     public void dispose() {
-        levelPixmap.dispose();
+        //nothing to do yet
     }
 }

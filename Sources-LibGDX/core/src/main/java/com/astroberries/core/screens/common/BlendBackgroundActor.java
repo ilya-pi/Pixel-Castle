@@ -12,16 +12,28 @@ import static com.astroberries.core.CastleGame.game;
 
 public class BlendBackgroundActor extends Actor {
 
-    private static Color OVERLAY_COLOR = new Color(255.0f / 255, 255.0f / 255, 255.0f / 255, 60.0f / 255);
+    private Color overlayColor = new Color(255.0f / 255, 255.0f / 255, 255.0f / 255, 60.0f / 255);
     private final TextureRegion screenshot;
 
     public BlendBackgroundActor(TextureRegion screenshot) {
+        this(screenshot, null);
+    }
+
+    public BlendBackgroundActor(TextureRegion screenshot, Color overlayColor) {
         this.screenshot = screenshot;
+        if (overlayColor != null) {
+            this.overlayColor = overlayColor;
+        }
         setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
     }
 
     public BlendBackgroundActor() {
-        this(null);
+        this(null, null);
+    }
+
+    public BlendBackgroundActor(Color overlayColor) {
+        this(null, overlayColor);
     }
 
     @Override
@@ -35,7 +47,7 @@ public class BlendBackgroundActor extends Actor {
         Gdx.gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
         game().shapeRenderer.identity();
         game().shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        game().shapeRenderer.rect(0, 0, getWidth(), getHeight(), OVERLAY_COLOR, OVERLAY_COLOR, OVERLAY_COLOR, OVERLAY_COLOR);
+        game().shapeRenderer.rect(0, 0, getWidth(), getHeight(), overlayColor, overlayColor, overlayColor, overlayColor);
         game().shapeRenderer.end();
         Gdx.gl.glDisable(GL10.GL_BLEND);
 

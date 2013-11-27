@@ -31,6 +31,7 @@ public class CastleGame extends Game {
     public static final String HUGE_TITLE_DARK_STYLE = "huge-title-dark";
     public static final String HUGE_TITLE_WHITE_STYLE = "huge-title-white";
     public static final String TITLE_WHITE_STYLE = "title-white";
+    public static final String TITLE_DARK_STYLE = "title-dark";
 
     private Skin skin;
     private float ratio;
@@ -64,6 +65,7 @@ public class CastleGame extends Game {
         fonts.add(skin.getFont("huge-title-font-dark-green"));
         fonts.add(skin.getFont("huge-title-font-white"));
         fonts.add(skin.getFont("title-font"));
+        fonts.add(skin.getFont("title-font-dark"));
 
         for (BitmapFont font : fonts) {
             font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -109,6 +111,24 @@ public class CastleGame extends Game {
         Transition nilToMainMenu = new Transition() {
             @Override
             public void execute() {
+                CastleGame.this.setScreen(mainScreen);
+            }
+        };
+        Transition pauseToMainMenu = new Transition() {
+            @Override
+            public void execute() {
+                mainScreen = new MainScreen();
+                mainScreen.setSubScreen(MainScreen.Type.MAIN_MENU);
+                CastleGame.this.getScreen().dispose();
+                CastleGame.this.setScreen(mainScreen);
+            }
+        };
+        Transition levelEndToLevelSelect = new Transition() {
+            @Override
+            public void execute() {
+                mainScreen = new MainScreen();
+                mainScreen.setSubScreen(MainScreen.Type.SELECT_LEVEL);
+                CastleGame.this.getScreen().dispose();
                 CastleGame.this.setScreen(mainScreen);
             }
         };
@@ -203,7 +223,7 @@ public class CastleGame extends Game {
             @Override
             public void execute() {
                 TextureRegion screenshot = ScreenUtils.getFrameBufferTexture();
-                //CastleGame.this.getScreen().dispose();  //todo: dig here!!!
+                CastleGame.this.getScreen().dispose();
                 CastleGame.this.setScreen(new LevelLostScreen(screenshot));
             }
         };
@@ -211,7 +231,7 @@ public class CastleGame extends Game {
             @Override
             public void execute() {
                 TextureRegion screenshot = ScreenUtils.getFrameBufferTexture();
-                //CastleGame.this.getScreen().dispose();  //todo: dig here!!!
+                CastleGame.this.getScreen().dispose();
                 CastleGame.this.setScreen(new LevelClearScreen(screenshot));
             }
         };
@@ -306,6 +326,11 @@ public class CastleGame extends Game {
                               .to(PLAYER_2_LOST).with(player2lost)
                               .to(PLAYER_1_LOST).with(player1lost)
                               .to(PAUSE).with(pause)
+                .from(PLAYER_1_LOST).to(LEVEL_SELECT).with(levelEndToLevelSelect)
+                                    .to(LEVEL_OVERVIEW).with(createGameScreen, toOverview)
+
+                .from(PLAYER_2_LOST).to(LEVEL_SELECT).with(levelEndToLevelSelect)
+                                    .to(LEVEL_OVERVIEW).with() //todo: implement next level after db research
 
                 .from(PAUSE).to(LEVEL_OVERVIEW).with(play)
                             .to(PLAYER1).with(play)
@@ -316,6 +341,7 @@ public class CastleGame extends Game {
                             .to(BULLET2).with(play)
                             .to(CAMERA_MOVING_TO_PLAYER_1).with(play)
                             .to(CAMERA_MOVING_TO_PLAYER_2).with(play)
+                            .to(MAINMENU).with(pauseToMainMenu)
                 .build();
     }
 

@@ -57,6 +57,6 @@ public class BulletContactListener implements ContactListener, Disposable {
 
     @Override
     public void dispose() {
-        bulletPixmap.dispose();
+        //nothing to do yet
     }
 }
