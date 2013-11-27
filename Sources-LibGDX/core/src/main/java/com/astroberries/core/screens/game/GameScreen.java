@@ -206,12 +206,16 @@ public class GameScreen implements Screen {
                     castle1.recalculateHealth(physicsManager);
                     castle2.recalculateHealth(physicsManager);
                     if (castle1.getHealth() < CastleImpl.MIN_HEALTH) {
+                        pauseButton.setVisible(false);
+                        render(0);
                         if (pvp) {
                             game().getStateMachine().transitionTo(StateName.PVP_GAME_END);
                         } else {
                             game().getStateMachine().transitionTo(StateName.YOU_LOST);
                         }
                     } else if (castle2.getHealth() < CastleImpl.MIN_HEALTH) {
+                        pauseButton.setVisible(false);
+                        render(0);
                         if (pvp) {
                             game().getStateMachine().transitionTo(StateName.PVP_GAME_END);
                         } else {
