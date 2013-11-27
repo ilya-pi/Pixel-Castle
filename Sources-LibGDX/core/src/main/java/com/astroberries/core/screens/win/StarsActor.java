@@ -15,12 +15,13 @@ public class StarsActor extends Actor {
     private final TextureRegion star;
 
 
-    public StarsActor(float padBottom, Texture star) {
+    public StarsActor(Texture star, float centerX, float centerY) {
         this.star = new TextureRegion(star);
 
         setSize(star.getWidth() * game().getRatio(), star.getHeight() * game().getRatio());
-        float x = Gdx.graphics.getWidth() / 2f - getWidth() / 2f;
-        float y = (Gdx.graphics.getHeight() / 2f - getHeight() / 2f) + padBottom;
+        float x = centerX - getWidth() / 2f;
+        float y = centerY - getHeight() / 2f;
+
         setPosition(x, y);
         setOrigin(getWidth() / 2f, getHeight() / 2f);
     }

@@ -14,14 +14,22 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 public class LevelClearScreen implements Screen {
 
     private final Stage stage;
+    private final Texture smallStarTexture;
+    private final Texture bigStarTexture;
 
     public LevelClearScreen(TextureRegion screenshot) {
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
         Table table = new ButtonsTable();
         table.debug();
-        StarsActor bigStar = new StarsActor(table.getPadBottom(), new Texture(Gdx.files.internal("win/big_star.png")));
-        StarsActor smallStar = new StarsActor(table.getPadBottom(), new Texture(Gdx.files.internal("win/small_star.png")));
+
+        smallStarTexture = new Texture(Gdx.files.internal("win/small_star.png"));
+        bigStarTexture = new Texture(Gdx.files.internal("win/big_star.png"));
+        float x = Gdx.graphics.getWidth() / 2f;
+        float y = Gdx.graphics.getHeight() / 2f + table.getPadBottom();
+
+        StarsActor bigStar = new StarsActor(smallStarTexture, x, y);
+        StarsActor smallStar = new StarsActor(bigStarTexture, x, y);
 
         stage.addActor(new BlendBackgroundActor(screenshot));
         stage.addActor(bigStar);
@@ -70,5 +78,7 @@ public class LevelClearScreen implements Screen {
     @Override
     public void dispose() {
         stage.dispose();
+        bigStarTexture.dispose();
+        smallStarTexture.dispose();
     }
 }

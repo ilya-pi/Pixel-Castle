@@ -26,6 +26,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -61,6 +62,7 @@ public class GameScreen implements Screen {
     private ImageButton pauseButton;
     private Group pauseSubScreen;
     private Timer timer = new Timer();
+    private boolean pvp = false;
 
     private Box2DDebugRenderer debugRenderer;
 
@@ -70,6 +72,7 @@ public class GameScreen implements Screen {
     public float viewPortHeight;
 
     //disposable
+    private Pixmap levelPixmap;
     private final Texture level;
     private final Texture background;
     private final Texture sky;
@@ -85,7 +88,8 @@ public class GameScreen implements Screen {
     public List<Disposable> disposables = new ArrayList<>();
 
     //todo: split init to different functions
-    public GameScreen(int setNumber, int levelNumber) {
+    public GameScreen(int setNumber, int levelNumber, boolean pvp) {
+        this.pvp = pvp;
         camera = new PixelCamera(this);
         world = new World(new Vector2(0, GlobalGameConfig.GRAVITY), true);
         disposables.add(world);
@@ -99,7 +103,7 @@ public class GameScreen implements Screen {
         disposables.add(wind);
 
         Pixmap.setBlending(Pixmap.Blending.None);
-        Pixmap levelPixmap = new Pixmap(Gdx.files.internal("levels/" + gameLevelConfig.getPath() + "/level.png"));
+        levelPixmap = new Pixmap(Gdx.files.internal("levels/" + gameLevelConfig.getPath() + "/level.png"));
         disposables.add(levelPixmap);
         levelWidth = levelPixmap.getWidth();
         levelHeight = levelPixmap.getHeight();
@@ -202,11 +206,23 @@ public class GameScreen implements Screen {
                     castle1.recalculateHealth(physicsManager);
                     castle2.recalculateHealth(physicsManager);
                     if (castle1.getHealth() < CastleImpl.MIN_HEALTH) {
-                        game().getStateMachine().transitionTo(StateName.PLAYER_1_LOST);
+                        if (pvp) {
+                            game().getStateMachine().transitionTo(StateName.PVP_GAME_END);
+                        } else {
+                            game().getStateMachine().transitionTo(StateName.YOU_LOST);
+                        }
                     } else if (castle2.getHealth() < CastleImpl.MIN_HEALTH) {
-                        game().getStateMachine().transitionTo(StateName.PLAYER_2_LOST);
+                        if (pvp) {
+                            game().getStateMachine().transitionTo(StateName.PVP_GAME_END);
+                        } else {
+                            game().getStateMachine().transitionTo(StateName.COMPUTER_LOST);
+                        }
                     } else if (game().state() == StateName.BULLET1) {
-                        game().getStateMachine().transitionTo(StateName.CAMERA_MOVING_TO_PLAYER_2);
+                        if (pvp) {
+                            game().getStateMachine().transitionTo(StateName.CAMERA_MOVING_TO_PLAYER_2);
+                        } else {
+                            game().getStateMachine().transitionTo(StateName.CAMERA_MOVING_TO_COMPUTER_2);
+                        }
                     } else {
                         game().getStateMachine().transitionTo(StateName.CAMERA_MOVING_TO_PLAYER_1);
                     }
@@ -294,6 +310,11 @@ public class GameScreen implements Screen {
         camera.to(PixelCamera.CameraState.BULLET, null, null);
     }
 
+    public void aiming2ToBullet2() {
+        bullet = castle2.fire(gameLevelConfig.getVelocity(), world, levelWidth, bulletContactListener);
+        camera.to(PixelCamera.CameraState.BULLET, null, null);
+    }
+
     public void toPlayer2() {
         camera.to(PixelCamera.CameraState.CASTLE2, null, StateName.PLAYER2);
     }
@@ -336,6 +357,15 @@ public class GameScreen implements Screen {
         pauseSubScreen.setVisible(false);
         timer.start();
         camera.unpause();
+    }
+
+    public TextureRegion getCurrentCastlePixmap(Castle castle) {
+        int x = castle.getCastleConfig().getX();
+        int y = castle.getCastleConfig().getY();
+        int width = castle.getCastlePixmap().getWidth();
+        int height = castle.getCastlePixmap().getHeight();
+        Texture tmpLevel = new Texture(levelPixmap);
+        return new TextureRegion(tmpLevel, x, y - height, width, height);
     }
 
 }

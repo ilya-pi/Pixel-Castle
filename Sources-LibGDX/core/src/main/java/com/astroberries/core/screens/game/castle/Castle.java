@@ -1,5 +1,6 @@
 package com.astroberries.core.screens.game.castle;
 
+import com.astroberries.core.config.GameCastle;
 import com.astroberries.core.screens.game.ai.AIResp;
 import com.astroberries.core.screens.game.bullet.Bullet;
 import com.astroberries.core.screens.game.camera.PixelCamera;
@@ -23,11 +24,13 @@ public interface Castle extends Disposable{
     public Vector2 getPosition();
     public void setAngle(float angle);
     public int getHealth();
+    public int getHealthPercent();
 
     //access from game screen
     public Actor getView();
     public void recalculateHealth(PhysicsManager physicsManager);
     public Pixmap getCastlePixmap();
+    public GameCastle getCastleConfig();
     public Vector2 getCenter();
     public Bullet fire(int velocity, World world, float levelWidth, BulletContactListener listener);
     public Bullet fireAi(int velocity, World world, float levelWidth, BulletContactListener listener, AIResp resp);

@@ -1,12 +1,15 @@
 package com.astroberries.core;
 
+import com.astroberries.core.screens.game.castle.Castle;
 import com.astroberries.core.screens.lost.LevelLostScreen;
 import com.astroberries.core.screens.mainmenu.MainScreen;
 import com.astroberries.core.screens.game.GameScreen;
 import com.astroberries.core.screens.mainmenu.sub.levels.SelectLevelTable;
+import com.astroberries.core.screens.pvp.PvpEndScreen;
 import com.astroberries.core.screens.win.LevelClearScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -35,6 +38,7 @@ public class CastleGame extends Game {
 
     private Skin skin;
     private float ratio;
+    private boolean pvp = false;
 
     public SpriteBatch fixedBatch;
     public ShapeRenderer fixedShapeRenderer;
@@ -116,7 +120,7 @@ public class CastleGame extends Game {
                 CastleGame.this.setScreen(mainScreen);
             }
         };
-        Transition pauseToMainMenu = new Transition() {
+        Transition gameToMainMenu = new Transition() {
             @Override
             public void execute() {
                 mainScreen = new MainScreen();
@@ -170,11 +174,23 @@ public class CastleGame extends Game {
                 mainScreen.setSubScreen(MainScreen.Type.GAME_TYPE_SELECT);
             }
         };
+        Transition pvpTrue = new Transition() {
+            @Override
+            public void execute() {
+                pvp = true;
+            }
+        };
+        Transition pvpFalse = new Transition() {
+            @Override
+            public void execute() {
+                pvp = false;
+            }
+        };
         Transition createGameScreen = new Transition() {
             @Override
             public void execute() {
                 //todo: here we should set level and set number (set is a group of levels displayed on screen)
-                gameScreen = new GameScreen(0, 0);
+                gameScreen = new GameScreen(0, 0, pvp);
                 CastleGame.this.getScreen().dispose();
                 CastleGame.this.setScreen(gameScreen);
             }
@@ -203,6 +219,12 @@ public class CastleGame extends Game {
                 gameScreen.aiming1ToBullet1();
             }
         };
+        Transition aiming2ToBullet2 = new Transition() {
+            @Override
+            public void execute() {
+                gameScreen.aiming2ToBullet2();
+            }
+        };
         Transition toPlayer2 = new Transition() {
             @Override
             public void execute() {
@@ -221,7 +243,19 @@ public class CastleGame extends Game {
                 gameScreen.toBullet2();
             }
         };
-        Transition player1lost = new Transition() {
+        Transition pvpEnd = new Transition() {
+            @Override
+            public void execute() {
+                TextureRegion screenshot = ScreenUtils.getFrameBufferTexture();
+                TextureRegion castle1Pixmap = gameScreen.getCurrentCastlePixmap(gameScreen.castle1);
+                int healthPercent1 = gameScreen.castle1.getHealthPercent();
+                TextureRegion castle2Pixmap = gameScreen.getCurrentCastlePixmap(gameScreen.castle2);
+                int healthPercent2 = gameScreen.castle1.getHealthPercent();
+                CastleGame.this.getScreen().dispose();
+                CastleGame.this.setScreen(new PvpEndScreen(screenshot, castle1Pixmap, healthPercent1, castle2Pixmap, healthPercent2));
+            }
+        };
+        Transition youLost = new Transition() {
             @Override
             public void execute() {
                 TextureRegion screenshot = ScreenUtils.getFrameBufferTexture();
@@ -229,7 +263,7 @@ public class CastleGame extends Game {
                 CastleGame.this.setScreen(new LevelLostScreen(screenshot));
             }
         };
-        Transition player2lost = new Transition() {
+        Transition computerLost = new Transition() {
             @Override
             public void execute() {
                 TextureRegion screenshot = ScreenUtils.getFrameBufferTexture();
@@ -286,14 +320,14 @@ public class CastleGame extends Game {
                 .from(PLAYER1).to(AIMING1).with(player1ToAiming1)
                 .from(AIMING1).to(BULLET1).with(aiming1ToBullet1)
                 .from(BULLET1).to(CAMERA_MOVING_TO_PLAYER_2).with(toPlayer2)
-                              .to(PLAYER_2_LOST).with(player2lost)
-                              .to(PLAYER_1_LOST).with(player1lost)
+                              .to(COMPUTER_LOST).with(player2lost)
+                              .to(YOU_LOST).with(player1lost)
                 .from(CAMERA_MOVING_TO_PLAYER_2).to(PLAYER2).with(updateWind, setCameraFree)
                 .from(PLAYER2).to(AIMING2).with(player2ToAiming2)
                 .from(AIMING2).to(BULLET2).with(toBullet2)
                 .from(BULLET2).to(CAMERA_MOVING_TO_PLAYER_1).with(toPlayer1)
-                              .to(PLAYER_2_LOST).with(player2lost)
-                              .to(PLAYER_1_LOST).with(player1lost)
+                              .to(COMPUTER_LOST).with(player2lost)
+                              .to(YOU_LOST).with(player1lost)
                 .build();*/
 
         //AI
@@ -302,37 +336,49 @@ public class CastleGame extends Game {
                 .from(MAINMENU).to(CHOOSE_GAME).with(mainMenuToChooseGame)
                                .to(SETTINGS).with(mainMenuToSettings)
                 .from(SETTINGS).to(MAINMENU).with(settingsToMainMenu)
-                .from(CHOOSE_GAME).to(LEVEL_OVERVIEW).with(createGameScreen, toOverview)
+                .from(CHOOSE_GAME).to(LEVEL_OVERVIEW).with(pvpTrue, createGameScreen, toOverview)
                                   .to(MAINMENU).with(chooseGameToMainMenu)
                                   .to(LEVEL_SELECT).with(chooseGameToLevelSelect)
-                .from(LEVEL_SELECT).to(LEVEL_OVERVIEW).with(createGameScreen, toOverview)
+                .from(LEVEL_SELECT).to(LEVEL_OVERVIEW).with(pvpFalse, createGameScreen, toOverview)
                                    .to(CHOOSE_GAME).with(levelSelectToChooseGame)
 
                 .from(LEVEL_OVERVIEW).to(CAMERA_MOVING_TO_PLAYER_1).with(toPlayer1)
                                      .to(PAUSE).with(pause)
                 .from(CAMERA_MOVING_TO_PLAYER_1).to(PLAYER1).with(updateWind, setCameraFree)
                                                 .to(PAUSE).with(pause)
+                //todo: dub this set
                 .from(PLAYER1).to(AIMING1).with(player1ToAiming1)
                               .to(PAUSE).with(pause)
                 .from(AIMING1).to(BULLET1).with(aiming1ToBullet1)
                               .to(PAUSE).with(pause)
-                .from(BULLET1).to(CAMERA_MOVING_TO_PLAYER_2).with(toComputer2)
-                              .to(PLAYER_2_LOST).with(player2lost)
-                              .to(PLAYER_1_LOST).with(player1lost)
+                .from(PLAYER2).to(AIMING2).with(player2ToAiming2)
                               .to(PAUSE).with(pause)
-                .from(CAMERA_MOVING_TO_PLAYER_2).to(COMPUTER2).with(updateWind, aiAimAndShoot)
+                .from(AIMING2).to(BULLET2).with(aiming2ToBullet2)
+                              .to(PAUSE).with(pause)
+                .from(BULLET1).to(CAMERA_MOVING_TO_PLAYER_2).with(toPlayer2)
+                              .to(CAMERA_MOVING_TO_COMPUTER_2).with(toComputer2)
+                              .to(COMPUTER_LOST).with(computerLost)
+                              .to(YOU_LOST).with(youLost)
+                              .to(PVP_GAME_END).with(pvpEnd)
+                              .to(PAUSE).with(pause)
+                .from(CAMERA_MOVING_TO_PLAYER_2).to(PLAYER2).with(updateWind, setCameraFree)
                                                 .to(PAUSE).with(pause)
+                .from(CAMERA_MOVING_TO_COMPUTER_2).to(COMPUTER2).with(updateWind, aiAimAndShoot)
+                                                  .to(PAUSE).with(pause)
                 .from(COMPUTER2).to(BULLET2).with(toBullet2)
                                 .to(PAUSE).with(pause)
                 .from(BULLET2).to(CAMERA_MOVING_TO_PLAYER_1).with(toPlayer1)
-                              .to(PLAYER_2_LOST).with(player2lost)
-                              .to(PLAYER_1_LOST).with(player1lost)
+                              .to(COMPUTER_LOST).with(computerLost)
+                              .to(YOU_LOST).with(youLost)
+                              .to(PVP_GAME_END).with(pvpEnd)
                               .to(PAUSE).with(pause)
-                .from(PLAYER_1_LOST).to(LEVEL_SELECT).with(levelEndToLevelSelect)
-                                    .to(LEVEL_OVERVIEW).with(createGameScreen, toOverview)
+                .from(PVP_GAME_END).to(LEVEL_OVERVIEW).with(pvpTrue, createGameScreen, toOverview)
+                                   .to(MAINMENU).with(gameToMainMenu)
+                .from(YOU_LOST).to(LEVEL_SELECT).with(levelEndToLevelSelect)
+                                    .to(LEVEL_OVERVIEW).with(pvpFalse, createGameScreen, toOverview)
 
-                .from(PLAYER_2_LOST).to(LEVEL_SELECT).with(levelEndToLevelSelect)
-                                    .to(LEVEL_OVERVIEW).with() //todo: implement next level after db research
+                .from(COMPUTER_LOST).to(LEVEL_SELECT).with(levelEndToLevelSelect)
+                                    .to(LEVEL_OVERVIEW).with(pvpFalse, createGameScreen, toOverview)
 
                 .from(PAUSE).to(LEVEL_OVERVIEW).with(play)
                             .to(PLAYER1).with(play)
@@ -341,9 +387,11 @@ public class CastleGame extends Game {
                             .to(PLAYER2).with(play)
                             .to(AIMING2).with(play)
                             .to(BULLET2).with(play)
+                            .to(COMPUTER2).with(play)
                             .to(CAMERA_MOVING_TO_PLAYER_1).with(play)
                             .to(CAMERA_MOVING_TO_PLAYER_2).with(play)
-                            .to(MAINMENU).with(pauseToMainMenu)
+                            .to(CAMERA_MOVING_TO_COMPUTER_2).with(play)
+                            .to(MAINMENU).with(gameToMainMenu)
                 .build();
     }
 

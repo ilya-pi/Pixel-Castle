@@ -35,6 +35,12 @@ public class GameTypeSubScreen extends Group {
                 game().getStateMachine().transitionTo(StateName.LEVEL_SELECT);
             }
         });
+        twoPlayers.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game().getStateMachine().transitionTo(StateName.LEVEL_OVERVIEW);
+            }
+        });
 
         float padBottom = 16 * 4.5f * ratio;
         float buttonHeight = 16 * 4.5f * ratio;

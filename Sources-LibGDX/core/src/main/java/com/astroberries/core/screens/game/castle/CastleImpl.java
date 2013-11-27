@@ -38,6 +38,7 @@ public class CastleImpl implements Castle {
     private final Pixmap castlePixmap;
     private final Location location;
     private final GameCastle castleConfig;
+    private int initialHealth = 0;
     private int health = 0;
 
 
@@ -128,11 +129,19 @@ public class CastleImpl implements Castle {
     public void recalculateHealth(PhysicsManager physicsManager) {
         Gdx.app.log("health", "health for " + location + " castle: " + health);
         health = physicsManager.calculateOpaquePixels(castleConfig.getX(), castleConfig.getY(), castlePixmap.getWidth(), castlePixmap.getHeight());
+        if (initialHealth == 0) {
+            initialHealth = health;
+        }
     }
 
     @Override
     public Pixmap getCastlePixmap() {
         return castlePixmap;
+    }
+
+    @Override
+    public GameCastle getCastleConfig() {
+        return castleConfig;
     }
 
     @Override
@@ -143,6 +152,11 @@ public class CastleImpl implements Castle {
     @Override
     public int getHealth() {
         return health;
+    }
+
+    @Override
+    public int getHealthPercent() {
+        return health / initialHealth;
     }
 
     @Override
