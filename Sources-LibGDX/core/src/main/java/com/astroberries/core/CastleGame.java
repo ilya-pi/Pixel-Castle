@@ -250,7 +250,7 @@ public class CastleGame extends Game {
                 TextureRegion castle1Pixmap = gameScreen.getCurrentCastlePixmap(gameScreen.castle1);
                 int healthPercent1 = gameScreen.castle1.getHealthPercent();
                 TextureRegion castle2Pixmap = gameScreen.getCurrentCastlePixmap(gameScreen.castle2);
-                int healthPercent2 = gameScreen.castle1.getHealthPercent();
+                int healthPercent2 = gameScreen.castle2.getHealthPercent();
                 CastleGame.this.getScreen().dispose();
                 CastleGame.this.setScreen(new PvpEndScreen(screenshot, castle1Pixmap, healthPercent1, castle2Pixmap, healthPercent2));
             }
