@@ -1,5 +1,6 @@
 package com.astroberries.core.screens.game.physics;
 
+import com.astroberries.core.screens.game.GameScreen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,15 +12,20 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class PhysicsManager implements Disposable {
 
     //static configuration.
     static final float BRICK_SIZE = 0.5f;
+    public static final float EXPLODE_TIME_SEC = 0.5f;
+
+    private List<Coordinate> particlesToCreate = new LinkedList<>();
 
     //temp values for optimization
     private float currentAlpha;
@@ -30,6 +36,8 @@ public class PhysicsManager implements Disposable {
     //levelTexture data
     private final Body[][] bricks;
     private final Pixmap levelPixmap;
+    private final Timer timer;
+    private final GameScreen gameScreen;
 
     //levelTexture Texture which should be drawn in render cycle
     private final Texture levelTexture;
@@ -40,8 +48,10 @@ public class PhysicsManager implements Disposable {
     public boolean sweepBodyes = false;
     private List<CheckRectangle> createPhysicsObjectsQueue = new ArrayList<CheckRectangle>();
 
-    public PhysicsManager(World world, Pixmap levelPixmap, Texture levelTexture) {
+    public PhysicsManager(World world, Pixmap levelPixmap, Texture levelTexture, Timer timer, GameScreen gameScreen) {
         this.world = world;
+        this.timer = timer;
+        this.gameScreen = gameScreen;
         this.levelPixmap = levelPixmap;
         this.levelTexture = levelTexture;
         levelWidth = levelPixmap.getWidth();
@@ -92,18 +102,8 @@ public class PhysicsManager implements Disposable {
                             while (xInternal <= x + 1 && !stop) {
                                 tmpAlpha = new Color(levelPixmap.getPixel(xInternal, yInternal)).a;
                                 if (tmpAlpha == 0f) {
-                                    BodyDef groundBodyDef = new BodyDef();
-                                    groundBodyDef.type = BodyDef.BodyType.StaticBody;
-                                    groundBodyDef.position.set(new Vector2(x + BRICK_SIZE, levelHeight - y - BRICK_SIZE));
-                                    Body groundBody = world.createBody(groundBodyDef);
-                                    groundBody.setUserData(GameUserData.createBrickData(x, y));
-                                    bricks[x][y] = groundBody;
-                                    PolygonShape groundBox = new PolygonShape();
-                                    groundBox.setAsBox(BRICK_SIZE, BRICK_SIZE);
-                                    groundBody.createFixture(groundBox, 0.0f);
-                                    groundBox.dispose();
+                                    bricks[x][y] = createBrick(x, y);
                                     //Gdx.app.log("bricks", "created " + x + " " + y);
-
                                     stop = true;
                                 }
                                 xInternal++;
@@ -115,12 +115,41 @@ public class PhysicsManager implements Disposable {
             }
             it.remove();
         }
+        if (particlesToCreate.size() != 0) {
+            Iterator<Coordinate> particlesIt = particlesToCreate.iterator();
+            while (particlesIt.hasNext()) {
+                Coordinate next = particlesIt.next();
+                final Body tmpBrick = createBrick(next.x, next.y);
+                gameScreen.particles.add(tmpBrick);
+                //todo: throw pixel here
+                timer.scheduleTask(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        ((GameUserData) tmpBrick.getUserData()).isFlaggedForDelete = true;
+                    }
+                }, EXPLODE_TIME_SEC);
+                particlesIt.remove();
+            }
+        }
+    }
 
+    private Body createBrick(int x, int y) {
+        BodyDef groundBodyDef = new BodyDef();
+        groundBodyDef.type = BodyDef.BodyType.StaticBody;
+        groundBodyDef.position.set(new Vector2(x + BRICK_SIZE, levelHeight - y - BRICK_SIZE));
+        Body groundBody = world.createBody(groundBodyDef);
+        groundBody.setUserData(GameUserData.createBrickData(x, y));
+        PolygonShape groundBox = new PolygonShape();
+        groundBox.setAsBox(BRICK_SIZE, BRICK_SIZE);
+        groundBody.createFixture(groundBox, 0.0f);
+        groundBox.dispose();
+        return groundBody;
     }
 
     //the following method is called from inside physics step, so no bodies manipulation here.
     public void calculateHit(GameUserData bulletData, GameUserData brickData, Pixmap bulletPixmap) {
         bulletData.isFlaggedForDelete = true;
+        Particles particles = new Particles();
 
         int hitX = (int) brickData.position.x;
         int hitY = (int) brickData.position.y;
@@ -141,20 +170,16 @@ public class PhysicsManager implements Disposable {
                     int pixelX = x - dx + hitX;
                     int pixelY = y - dy + hitY;
                     if (pixelX < bricks.length && pixelY < bricks[1].length && pixelX >= 0 && pixelY >= 0) {
-                        Body tmpBrick = bricks[pixelX][pixelY];
-                        if (tmpBrick != null) {
-                            //Gdx.app.log("pixel", "!!!!!! " + pixelX + " " + pixelY);
-                            ((GameUserData) tmpBrick.getUserData()).isFlaggedForDelete = true;
-                            bricks[pixelX][pixelY] = null;
-                        }
 
                         if ((new Color(levelPixmap.getPixel(pixelX, pixelY)).a != 0f)) {
                             if (color.r == 0f && color.g == 0f && color.b == 0f) {
                                 writeColor = Color.rgba8888(52 / 255f, 93 / 255f, 33 / 255f, 1);
                             } else {
+                                //todo: create physics pixels here
+                                //createBrick(pixelX, pixelY);
+                                particlesToCreate.add(new Coordinate(pixelX, pixelY));
                                 writeColor = Color.rgba8888(0, 0, 0, 0);
                             }
-
                             levelPixmap.drawPixel(pixelX, pixelY, writeColor);
                         }
                     }

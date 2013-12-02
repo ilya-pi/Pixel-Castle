@@ -12,10 +12,7 @@ import com.astroberries.core.screens.game.camera.PixelCamera;
 import com.astroberries.core.screens.game.castle.Castle;
 import com.astroberries.core.screens.game.castle.CastleImpl;
 import com.astroberries.core.screens.game.debug.DebugActor;
-import com.astroberries.core.screens.game.physics.BulletContactListener;
-import com.astroberries.core.screens.game.physics.CheckRectangle;
-import com.astroberries.core.screens.game.physics.GameUserData;
-import com.astroberries.core.screens.game.physics.PhysicsManager;
+import com.astroberries.core.screens.game.physics.*;
 import com.astroberries.core.screens.game.subscreens.PauseSubScreen;
 import com.astroberries.core.screens.game.touch.MoveAndZoomListener;
 import com.astroberries.core.screens.game.wind.Wind;
@@ -79,6 +76,7 @@ public class GameScreen implements Screen {
     private boolean shuttingDown = false;
 
     public Bullet bullet;
+    public final Particles particles = new Particles();
     private boolean pause = false;
 
     private final GameLevel gameLevelConfig;
@@ -123,7 +121,7 @@ public class GameScreen implements Screen {
         disposables.add(background);
         disposables.add(sky);
 
-        physicsManager = new PhysicsManager(world, levelPixmap, level);
+        physicsManager = new PhysicsManager(world, levelPixmap, level, timer, this);
         physicsManager.addRectToCheckPhysicsObjectsCreation(new CheckRectangle(0, 0, levelWidth, levelHeight));
         physicsManager.createPhysicsObjects();
         disposables.add(physicsManager);
@@ -175,6 +173,8 @@ public class GameScreen implements Screen {
                 resizableStage.act(delta);
             }
             resizableStage.draw();
+
+            particles.render();
             staticStage.act();
             staticStage.draw();
             Table.drawDebug(staticStage);
@@ -223,12 +223,27 @@ public class GameScreen implements Screen {
                         }
                     } else if (game().state() == StateName.BULLET1) {
                         if (pvp) {
-                            game().getStateMachine().transitionTo(StateName.CAMERA_MOVING_TO_PLAYER_2);
+                            timer.scheduleTask(new Timer.Task() {
+                                @Override
+                                public void run() {
+                                    game().getStateMachine().transitionTo(StateName.CAMERA_MOVING_TO_PLAYER_2);
+                                }
+                            }, PhysicsManager.EXPLODE_TIME_SEC);
                         } else {
-                            game().getStateMachine().transitionTo(StateName.CAMERA_MOVING_TO_COMPUTER_2);
+                            timer.scheduleTask(new Timer.Task() {
+                                @Override
+                                public void run() {
+                                    game().getStateMachine().transitionTo(StateName.CAMERA_MOVING_TO_COMPUTER_2);
+                                }
+                            }, PhysicsManager.EXPLODE_TIME_SEC);
                         }
                     } else {
-                        game().getStateMachine().transitionTo(StateName.CAMERA_MOVING_TO_PLAYER_1);
+                        timer.scheduleTask(new Timer.Task() {
+                            @Override
+                            public void run() {
+                                game().getStateMachine().transitionTo(StateName.CAMERA_MOVING_TO_PLAYER_1);
+                            }
+                        }, PhysicsManager.EXPLODE_TIME_SEC);
                     }
                 }
             }
