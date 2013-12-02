@@ -173,7 +173,7 @@ public class GameScreen implements Screen {
                 resizableStage.act(delta);
             }
             resizableStage.draw();
-
+            game().shapeRenderer.setProjectionMatrix(camera.combined);
             particles.render();
             staticStage.act();
             staticStage.draw();
