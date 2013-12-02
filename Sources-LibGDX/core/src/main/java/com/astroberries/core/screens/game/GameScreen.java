@@ -175,15 +175,16 @@ public class GameScreen implements Screen {
             resizableStage.draw();
             game().shapeRenderer.setProjectionMatrix(camera.combined);
             particles.render();
-            staticStage.act();
-            staticStage.draw();
-            Table.drawDebug(staticStage);
 
             if (!pause) {
                 world.step(1 / 30f, 6, 2); //todo: play with this values for better performance
             }
 
             renderOrDisposeBullet();
+            staticStage.act();
+            staticStage.draw();
+            Table.drawDebug(staticStage);
+
 
             if (!shuttingDown) { //ugly double check to avoid exceptions
                 physicsManager.sweepDeadBodies(); //todo: sweep bodies should be only after this mess with bullet which is bad. Refactor.
@@ -281,7 +282,11 @@ public class GameScreen implements Screen {
 
     @Override
     public void resume() {
-        pause = false;
+/*
+        if (game().state() == StateName.PAUSE) {
+            game().getStateMachine().transitionTo(game().getStateMachine().getPreviousState());
+        }
+*/
     }
 
     @Override

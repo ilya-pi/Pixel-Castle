@@ -12,20 +12,23 @@ import static com.astroberries.core.CastleGame.game;
 
 public class ButtonsTable extends Table {
 
-    public static final String LEVEL_SELECT = "Level select";
-    public static final String NEXT_LEVEL = "Try again";
-
     public ButtonsTable() {
         super(game().getSkin());
         float ratio = game().getRatio();
         setFillParent(true);
         final Label title = new Label("You lose!", game().getSkin(), CastleGame.HUGE_TITLE_WHITE_STYLE);
-        final TextButton levelSelect = new TextButton(LEVEL_SELECT, game().getSkin());
-        final TextButton again = new TextButton(NEXT_LEVEL, game().getSkin());
+        final TextButton levelSelect = new TextButton("Level select", game().getSkin());
+        final TextButton again = new TextButton("Try again", game().getSkin());
         levelSelect.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game().getStateMachine().transitionTo(StateName.LEVEL_SELECT);
+            }
+        });
+        again.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game().getStateMachine().transitionTo(StateName.LEVEL_OVERVIEW);
             }
         });
 

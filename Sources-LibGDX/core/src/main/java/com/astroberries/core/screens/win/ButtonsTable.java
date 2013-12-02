@@ -12,8 +12,6 @@ import static com.astroberries.core.CastleGame.game;
 
 public class ButtonsTable extends Table {
 
-    public static final String LEVEL_SELECT = "Level select";
-    public static final String NEXT_LEVEL = "Next level";
     private final float bottomToButtonTop;
 
     public ButtonsTable() {
@@ -22,12 +20,18 @@ public class ButtonsTable extends Table {
         setFillParent(true);
         final Label titleFirstRow = new Label("LEVEL", game().getSkin(), CastleGame.HUGE_TITLE_DARK_STYLE);
         final Label titleSecondRow = new Label("CLEAR!", game().getSkin(), CastleGame.HUGE_TITLE_DARK_STYLE);
-        final TextButton levelSelect = new TextButton(LEVEL_SELECT, game().getSkin());
-        final TextButton nextLevel = new TextButton(NEXT_LEVEL, game().getSkin());
+        final TextButton levelSelect = new TextButton("Level select", game().getSkin());
+        final TextButton nextLevel = new TextButton("Next level", game().getSkin());
         levelSelect.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game().getStateMachine().transitionTo(StateName.LEVEL_SELECT);
+            }
+        });
+        nextLevel.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game().getStateMachine().transitionTo(StateName.LEVEL_OVERVIEW); //todo: set next level in gameScreen
             }
         });
 
