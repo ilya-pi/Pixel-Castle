@@ -76,7 +76,7 @@ public class GameScreen implements Screen {
     private boolean shuttingDown = false;
 
     public Bullet bullet;
-    public final Particles particles = new Particles();
+    public final Particles particles;
     private boolean pause = false;
 
     private final GameLevel gameLevelConfig;
@@ -89,6 +89,7 @@ public class GameScreen implements Screen {
     public GameScreen(int setNumber, int levelNumber, boolean pvp) {
         this.pvp = pvp;
         camera = new PixelCamera(this);
+        particles = new Particles();
         world = new World(new Vector2(0, GlobalGameConfig.GRAVITY), true);
         disposables.add(world);
 
@@ -147,6 +148,7 @@ public class GameScreen implements Screen {
         resizableStage.addActor(new BackgroundActor(level, background, sky, camera, levelWidth));
         resizableStage.addActor(castle1.getView());
         resizableStage.addActor(castle2.getView());
+        resizableStage.addActor(particles);
 
         staticStage.addActor(wind);
         staticStage.addActor(pauseButton);
@@ -173,8 +175,6 @@ public class GameScreen implements Screen {
                 resizableStage.act(delta);
             }
             resizableStage.draw();
-            game().shapeRenderer.setProjectionMatrix(camera.combined);
-            particles.render();
 
             if (!pause) {
                 world.step(1 / 30f, 6, 2); //todo: play with this values for better performance

@@ -1,51 +1,32 @@
 package com.astroberries.core.screens.game.physics;
 
-import com.badlogic.gdx.graphics.Color;
+import com.astroberries.core.screens.game.camera.PixelCamera;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import com.badlogic.gdx.scenes.scene2d.Group;
 
 import static com.astroberries.core.CastleGame.game;
 
-public class Particles {
-
-    private final static Color PARTICLE_COLOR = new Color(1, 0, 0, 0); //todo: get real color
-    private final static float particleSize = 1;
-    private final List<Body> particles = new LinkedList<>();
+public class Particles extends Group {
 
     public void add(Body body) {
-        particles.add(body);
+        addActor(new ParticleActor(body));
     }
 
-    public void render() {
-        if (particles.size() != 0) {
-            game().shapeRenderer.setColor(PARTICLE_COLOR);
-            game().shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            Iterator<Body> it = particles.iterator();
-            while (it.hasNext()) {
-                Body particleBody = it.next();
-                if (particleBody != null)  {
-                    if (particleBody.getUserData() != null &&
-                        !((GameUserData) particleBody.getUserData()).isFlaggedForDelete) {
-                        game().shapeRenderer.identity();
-                        Vector2 position = particleBody.getPosition();
-                        game().shapeRenderer.translate(position.x, position.y, 0);
-                        game().shapeRenderer.rotate(0, 0, -1, -particleBody.getAngle() * MathUtils.radiansToDegrees);
-                        game().shapeRenderer.rect(-particleSize, -particleSize, particleSize * 2, particleSize * 2);
-                    } else {
-                        if (particleBody.getUserData() != null) {
-                            ((GameUserData) particleBody.getUserData()).isFlaggedForDelete = true;
-                        }
-                        it.remove();
-                    }
-                }
-            }
-            game().shapeRenderer.end();
-        }
+    @Override
+    public void draw(SpriteBatch batch, float parentAlpha) {
+        batch.end();
+
+        Gdx.gl.glEnable(GL10.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        game().shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        super.draw(batch, parentAlpha);
+        game().shapeRenderer.end();
+        Gdx.gl.glDisable(GL10.GL_BLEND);
+
+        batch.begin();
     }
 }

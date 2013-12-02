@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class GameUserData {
     public enum Type {
-        BRICK, BULLET, TRACER
+        BRICK, BULLET, TRACER, EXPLOSION
     }
 
     public boolean isFlaggedForDelete = false;
@@ -21,6 +21,12 @@ public class GameUserData {
     public static GameUserData createTracerData() {
         GameUserData data = new GameUserData();
         data.type = Type.TRACER;
+        return data;
+    }
+
+    public static GameUserData createExplosionData() {
+        GameUserData data = new GameUserData();
+        data.type = Type.EXPLOSION;
         return data;
     }
 
